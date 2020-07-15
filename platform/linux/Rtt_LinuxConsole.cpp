@@ -21,8 +21,14 @@
 #define ID_BUTTON_MATCH_CASE wxID_HIGHEST + 6
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
 #define ID_BUTTON_SETTINGS wxID_HIGHEST + 8
+#define WX_INDICATOR_WARNING 8
+#define WX_INDICATOR_ERROR 9
+#define WX_INDICATOR_WARNING_TEXT 15
+#define WX_INDICATOR_ERROR_TEXT 16
 
 static int logCurrentPos = 0;
+static wxColour warningColor = wxColour(255, 255, 0);
+static wxColour errorColor = wxColour(192, 0, 0);
 
 using namespace std;
 
@@ -92,7 +98,7 @@ void Rtt_LinuxConsole::SetProperties()
 	txtLog->SetReadOnly(true);
 	txtLog->SetWrapMode(1);
 	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxBLACK);
-	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, wxColour(192, 192, 192));
 	txtLog->StyleClearAll();
 	txtLog->SetFocus();
 
@@ -201,7 +207,7 @@ void Rtt_LinuxConsole::OnBtnFindPreviousClick(wxCommandEvent &event)
 	}
 }
 
-void Rtt_LinuxConsole::OnBtnFindNextClick(wxCommandEvent & event)
+void Rtt_LinuxConsole::OnBtnFindNextClick(wxCommandEvent &event)
 {
 	if (!txtFind->IsEmpty())
 	{
@@ -228,7 +234,7 @@ void Rtt_LinuxConsole::OnBtnFindNextClick(wxCommandEvent & event)
 	}
 }
 
-void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent & event)
+void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent &event)
 {
 	event.Skip();
 	txtLog->SetFocus();
@@ -236,7 +242,7 @@ void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent & event)
 	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnMatchCaseClick) not implemented yet"));
 }
 
-void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent & event)
+void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 {
 	event.Skip();
 	txtLog->SetFocus();
@@ -247,25 +253,66 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent & event)
 void Rtt_LinuxConsole::ClearLog()
 {
 	txtLog->SetFocus();
-	txtLog->Clear();
+	txtLog->SetReadOnly(false);
+	txtLog->ClearAll();
+	txtLog->SetReadOnly(true);
+}
+
+void Rtt_LinuxConsole::HighlightLine(int indicatorNo, wxColor colour)
+{
+	txtLog->IndicatorSetAlpha(indicatorNo, 255);
+	txtLog->IndicatorSetUnder(indicatorNo, true);
+	txtLog->IndicatorSetStyle(indicatorNo, wxSTC_INDIC_FULLBOX);
+	txtLog->IndicatorSetForeground(indicatorNo, colour);
+
+	bool shouldChangeText = (indicatorNo == WX_INDICATOR_WARNING || indicatorNo == WX_INDICATOR_ERROR);
+	int textTargetID = 0;
+	wxColour textTargetColor;
+	int lineNo = txtLog->GetCurrentLine();
+	int startPosition = txtLog->PositionFromLine(lineNo);
+	int endPosition = txtLog->GetLineEndPosition(lineNo);
+	int length = (endPosition - startPosition);
+	txtLog->SetIndicatorCurrent(indicatorNo);
+	txtLog->IndicatorFillRange(startPosition, length);
+
+	switch (indicatorNo)
+	{
+		case WX_INDICATOR_WARNING:
+			textTargetID = WX_INDICATOR_WARNING_TEXT;
+			textTargetColor = *wxBLACK;
+			break;
+
+		case WX_INDICATOR_ERROR:
+			textTargetID = WX_INDICATOR_ERROR_TEXT;
+			textTargetColor = *wxWHITE;
+			break;
+	}
+
+	if (shouldChangeText)
+	{
+		txtLog->IndicatorSetStyle(textTargetID, wxSTC_INDIC_TEXTFORE);
+		txtLog->IndicatorSetForeground(textTargetID, textTargetColor);
+		txtLog->SetIndicatorCurrent(textTargetID);
+		txtLog->IndicatorFillRange(startPosition, length);
+	}
 }
 
 void Rtt_LinuxConsole::UpdateLog(wxString message)
 {
 	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	//txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
 	txtLog->AppendText(message);
-	txtLog->SetReadOnly(true);
 	txtLog->SelectNone();
+	txtLog->SetReadOnly(true);
 }
 
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 {
 	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	//txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
 	txtLog->AppendText(message);
+	HighlightLine(8, warningColor);
+	txtLog->SelectNone();
 	txtLog->SetReadOnly(true);
 }
 
@@ -273,7 +320,8 @@ void Rtt_LinuxConsole::UpdateLogError(wxString message)
 {
 	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	//txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
 	txtLog->AppendText(message);
+	HighlightLine(9, errorColor);
+	txtLog->SelectNone();
 	txtLog->SetReadOnly(true);
 }
