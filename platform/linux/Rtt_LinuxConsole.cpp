@@ -258,6 +258,7 @@ void Rtt_LinuxConsole::UpdateLog(wxString message)
 	txtLog->AppendText(message);
 	txtLog->SetReadOnly(true);
 	txtLog->SelectNone();
+	txtLog->ScrollToEnd();
 }
 
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
@@ -267,6 +268,7 @@ void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 	//txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
 	txtLog->AppendText(message);
 	txtLog->SetReadOnly(true);
+	txtLog->ScrollToEnd();
 }
 
 void Rtt_LinuxConsole::UpdateLogError(wxString message)
@@ -276,4 +278,5 @@ void Rtt_LinuxConsole::UpdateLogError(wxString message)
 	//txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
 	txtLog->AppendText(message);
 	txtLog->SetReadOnly(true);
+	txtLog->ScrollToEnd();
 }
