@@ -111,6 +111,11 @@ static void LinuxConsoleLog(const char *message, bool isError = false)
 		}
 	}
 
+	if (strcmp(message, "###clear###") == 0)
+	{
+		topic = "clear";
+	}
+
 	if (outputMessage.find("kShowRuntimeErrorsSet") == string::npos && outputMessage.find("luaDebugAvailable") == string::npos)
 	{
 		consoleClient->GetConnection()->Poke(topic, outputMessage.c_str());

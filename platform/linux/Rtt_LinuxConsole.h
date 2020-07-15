@@ -39,8 +39,8 @@ protected:
 	wxBitmapButton *bitmapBtnCopy;
 	wxBitmapButton *bitmapBtnErase;
 	wxTextCtrl *txtFind;
-	wxBitmapButton *bitmapBtnFindLeft;
-	wxBitmapButton *bitmapBtnFindRight;
+	wxBitmapButton *bitmapBtnFindPrevious;
+	wxBitmapButton *bitmapBtnFindNext;
 	wxBitmapButton *bitmapBtnMatchCase;
 	wxBitmapButton *bitmapBtnLoopingSearch;
 	wxBitmapButton *bitmapBtnMenu;
@@ -55,12 +55,13 @@ public:
 	void OnBtnSaveClick(wxCommandEvent &event);
 	void OnBtnCopyClick(wxCommandEvent &event);
 	void OnBtnEraseClick(wxCommandEvent &event);
-	void OnBtnFindLeftClick(wxCommandEvent &event);
-	void OnBtnFindRightClick(wxCommandEvent &event);
+	void OnBtnFindPreviousClick(wxCommandEvent &event);
+	void OnBtnFindNextClick(wxCommandEvent &event);
 	void OnBtnMatchCaseClick(wxCommandEvent &event);
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
 	void ClearLog();
+	void SearchLog(bool downDirection);
 	void UpdateLog(wxString message);
 	void UpdateLogWarning(wxString message);
 	void UpdateLogError(wxString message);

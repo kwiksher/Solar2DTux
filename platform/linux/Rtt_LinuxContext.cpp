@@ -1494,7 +1494,7 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 	// clear the simulator log
 #ifdef Rtt_SIMULATOR
-	LinuxConsoleLog("clear");
+	LinuxConsoleLog("###clear###");
 #endif
 
 	RemoveSuspendedPanel();

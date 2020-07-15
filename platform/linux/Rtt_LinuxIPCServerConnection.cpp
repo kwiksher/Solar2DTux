@@ -16,15 +16,15 @@ bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString &topic, const wxString 
 	wxString msg;
 	msg.append(input.c_str());
 
-	if (strcmp(item, "warning") == 0)
+	if (item.IsSameAs("warning"))
 	{
 		logType = 1;
 	}
-	else if (strcmp(item, "error") == 0)
+	else if (item.IsSameAs("error"))
 	{
 		logType = 2;
 	}
-	else if (strcmp(item, "clear") == 0)
+	else if (item.IsSameAs("clear"))
 	{
 		wxGetApp().ClearLog();
 		return true;
