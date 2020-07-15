@@ -15,6 +15,7 @@
 #include <sys/wait.h>
 #include <wx/wx.h>
 #include <wx/image.h>
+#include <wx/stc/stc.h>
 #include <wx/icon.h>
 #include "Rtt_LinuxIPCServer.h"
 #include "Rtt_LinuxIPCServerConnection.h"
@@ -45,7 +46,7 @@ protected:
 	wxBitmapButton *bitmapBtnLoopingSearch;
 	wxBitmapButton *bitmapBtnMenu;
 	wxPanel *panelToolBar;
-	wxTextCtrl *txtLog;
+	wxStyledTextCtrl *txtLog;
 	wxTimer *timer;
 	Rtt_LinuxIPCServer *linuxIPCServer;
 
@@ -61,7 +62,6 @@ public:
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
 	void ClearLog();
-	void SearchLog(bool downDirection);
 	void UpdateLog(wxString message);
 	void UpdateLogWarning(wxString message);
 	void UpdateLogError(wxString message);

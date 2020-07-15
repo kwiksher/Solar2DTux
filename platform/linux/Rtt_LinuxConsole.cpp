@@ -22,13 +22,7 @@
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
 #define ID_BUTTON_SETTINGS wxID_HIGHEST + 8
 
-struct LogSearch
-{
-	int startPosition;
-	int oldStartPosition;
-	bool lastDirectionWasDown;
-};
-static LogSearch logSearch;
+static int logCurrentPos = 0;
 
 using namespace std;
 
@@ -48,7 +42,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, ID_BUTTON_MATCH_CASE, wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, ID_BUTTON_LOOP_SEARCH, wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_SETTINGS, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
-	txtLog = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_RICH2 | wxTE_READONLY);
+	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_RICH2 | wxTE_READONLY);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
 	SetProperties();
 	DoLayout();
@@ -92,11 +86,13 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnMenu->SetBackgroundColour(backgroundColour);
 	bitmapBtnMenu->SetSize(bitmapBtnMenu->GetBestSize());
 	panelToolBar->SetBackgroundColour(backgroundColour);
-	txtLog->SetBackgroundColour(*wxBLACK);
-	txtLog->SetForegroundColour(*wxWHITE);
 	statusbar->SetBackgroundColour(backgroundColour);
 	statusbar->SetForegroundColour(*wxWHITE);
 	txtLog->SetFocus();
+	txtLog->SetReadOnly(true);
+	txtLog->SetWrapMode(1);
+	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxBLACK);
+	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxWHITE);
 
 	// Create a new server
 	if (!linuxIPCServer->Create(IPC_SERVICE))
@@ -182,13 +178,52 @@ void Rtt_LinuxConsole::OnBtnEraseClick(wxCommandEvent &event)
 
 void Rtt_LinuxConsole::OnBtnFindPreviousClick(wxCommandEvent &event)
 {
-	SearchLog(false);
+	if (!txtFind->IsEmpty())
+	{
+		wxString searchText = txtFind->GetLineText(0);
+		txtLog->SetFocus();
+		txtLog->SearchAnchor();
+		logCurrentPos = txtLog->SearchPrev(0, searchText);
+
+		if (logCurrentPos > 0)
+		{
+			txtLog->EnsureCaretVisible();
+			txtLog->SetCurrentPos(txtLog->GetAnchor() - searchText.Length());
+		}
+		else
+		{
+			txtLog->SetCurrentPos(txtLog->GetValue().Length());
+			txtLog->SetSelection(txtLog->GetValue().Length(), txtLog->GetValue().Length());
+			txtLog->SearchAnchor();
+		}
+	}
 }
 
 void Rtt_LinuxConsole::OnBtnFindNextClick(wxCommandEvent & event)
 {
-	logSearch.lastDirectionWasDown = true;
-	SearchLog(true);
+	if (!txtFind->IsEmpty())
+	{
+		wxString searchText = txtFind->GetLineText(0);
+		txtLog->SetFocus();
+
+		if (logCurrentPos > 0)
+		{
+			txtLog->SetCurrentPos(txtLog->GetAnchor() + searchText.Length() + 1);
+		}
+
+		txtLog->SearchAnchor();
+		logCurrentPos = txtLog->SearchNext(0, searchText);
+
+		if (logCurrentPos > 0)
+		{
+			txtLog->EnsureCaretVisible();
+		}
+		else
+		{
+			txtLog->SetCurrentPos(0);
+			txtLog->SetSelection(0, 0);
+		}
+	}
 }
 
 void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent & event)
@@ -213,78 +248,29 @@ void Rtt_LinuxConsole::ClearLog()
 	txtLog->Clear();
 }
 
-void Rtt_LinuxConsole::SearchLog(bool downDirection)
-{
-	if (!txtFind->IsEmpty())
-	{
-		wxString searchText = txtFind->GetLineText(0);
-
-		// when switching direction from next to previous
-		if (!downDirection && logSearch.lastDirectionWasDown)
-		{
-			logSearch.startPosition -= (logSearch.oldStartPosition + searchText.Length());
-			logSearch.lastDirectionWasDown = false;
-		}
-		else if (downDirection && !logSearch.lastDirectionWasDown)
-		{
-			logSearch.startPosition += (logSearch.oldStartPosition + searchText.Length());
-			logSearch.lastDirectionWasDown = true;
-		}
-
-		// search the log for a match
-		int result = txtLog->GetRange(logSearch.startPosition, txtLog->GetLastPosition()).Lower().find(searchText.Lower(), 0);
-
-		if (result != wxNOT_FOUND)
-		{
-			printf("ConsoleLog: search start position is: %d\n", logSearch.startPosition);
-			logSearch.oldStartPosition = result;
-			result += logSearch.startPosition;
-			txtLog->SetFocus();
-			txtLog->SetInsertionPoint(result);
-			txtLog->SetSelection(result, result + searchText.Length());
-
-			if (downDirection)
-			{
-				logSearch.startPosition += (logSearch.oldStartPosition + searchText.Length());
-			}
-			else
-			{
-				logSearch.startPosition -= (logSearch.oldStartPosition + searchText.Length());
-
-				if (logSearch.startPosition < 0)
-				{
-					logSearch.startPosition = txtLog->GetLastPosition() - txtLog->GetLineLength(txtLog->GetNumberOfLines() - 2);
-					printf("ConsoleLog: Search position less than zero - resetting it to: %d - last position is: %ld\n", logSearch.startPosition, txtLog->GetLastPosition());
-				}
-			}
-		}
-		else
-		{
-			printf("ConsoleLog: search term not found, resetting search position\n");
-			logSearch.startPosition = downDirection ? 0 : txtLog->GetLastPosition() - txtLog->GetLineLength(txtLog->GetNumberOfLines() - 2);
-			txtLog->SetInsertionPoint(logSearch.startPosition);
-			txtLog->SetSelection(logSearch.startPosition, 0);
-		}
-	}
-}
-
 void Rtt_LinuxConsole::UpdateLog(wxString message)
 {
+	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
+	//txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
 	txtLog->AppendText(message);
+	txtLog->SetReadOnly(true);
 }
 
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 {
+	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	//txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
 	txtLog->AppendText(message);
+	txtLog->SetReadOnly(true);
 }
 
 void Rtt_LinuxConsole::UpdateLogError(wxString message)
 {
+	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
-	txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
+	//txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
 	txtLog->AppendText(message);
+	txtLog->SetReadOnly(true);
 }
