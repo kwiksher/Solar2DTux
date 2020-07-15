@@ -30,7 +30,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
 	SetIcon(console_xpm);
-	SetSize(wxSize(640, 480));
+	SetSize(wxSize(1098, 437));
 	panelToolBar = new wxPanel(this, wxID_ANY);
 	statusbar = CreateStatusBar(1);
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
