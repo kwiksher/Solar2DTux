@@ -93,6 +93,8 @@ void Rtt_LinuxConsole::SetProperties()
 	txtLog->SetWrapMode(1);
 	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxBLACK);
 	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+	txtLog->StyleClearAll();
+	txtLog->SetFocus();
 
 	// Create a new server
 	if (!linuxIPCServer->Create(IPC_SERVICE))
@@ -255,6 +257,7 @@ void Rtt_LinuxConsole::UpdateLog(wxString message)
 	//txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
 	txtLog->AppendText(message);
 	txtLog->SetReadOnly(true);
+	txtLog->SelectNone();
 }
 
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
