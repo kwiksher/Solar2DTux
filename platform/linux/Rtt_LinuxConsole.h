@@ -62,7 +62,9 @@ public:
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
 	void ClearLog();
-	void HighlightLine(int indicatorNo, wxColor colour);
+	void UpdateStatusText();
+	void HighlightLine(int indicatorNo, wxColour colour);
+	void ResetSearch();
 	void UpdateLog(wxString message);
 	void UpdateLogWarning(wxString message);
 	void UpdateLogError(wxString message);
