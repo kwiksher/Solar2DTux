@@ -38,7 +38,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 {
 	SetIcon(console_xpm);
 	SetSize(wxSize(640, 480));
-	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(640, 24));
+	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	statusbar = CreateStatusBar(1);
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnCopy = new wxBitmapButton(panelToolBar, ID_BUTTON_COPY, wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
@@ -73,6 +73,7 @@ void Rtt_LinuxConsole::SetProperties()
 	}
 
 	wxColor backgroundColour = wxColour(128, 128, 128);
+	SetBackgroundColour(backgroundColour);
 	bitmapBtnSave->SetBackgroundColour(backgroundColour);
 	bitmapBtnSave->SetSize(bitmapBtnSave->GetBestSize());
 	bitmapBtnCopy->SetBackgroundColour(backgroundColour);
@@ -140,7 +141,7 @@ void Rtt_LinuxConsole::DoLayout()
 	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnMenu, 0, 0, 0);
 	panelToolBar->SetSizer(sizer2);
-	sizer1->Add(panelToolBar, 0, wxEXPAND, 0);
+	sizer1->Add(panelToolBar, 0, wxALL | wxEXPAND, 6);
 	sizer1->Add(txtLog, 1, wxEXPAND, 0);
 	SetSizer(sizer1);
 	Layout();
