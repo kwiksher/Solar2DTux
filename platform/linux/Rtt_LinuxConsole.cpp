@@ -1,6 +1,10 @@
 #include "Rtt_LinuxConsole.h"
 #include <sys/time.h>
 #include <wx/statbmp.h>
+#include <wx/config.h>
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
+#include <wx/fileconf.h>
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
 #include "resource/console.xpm"
@@ -23,11 +27,16 @@
 #define ID_BUTTON_FIND_NEXT wxID_HIGHEST + 5
 #define ID_BUTTON_MATCH_CASE wxID_HIGHEST + 6
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
-#define ID_BUTTON_SETTINGS wxID_HIGHEST + 8
+#define ID_BUTTON_THEME wxID_HIGHEST + 8
 #define WX_INDICATOR_WARNING 8
 #define WX_INDICATOR_ERROR 9
 #define WX_INDICATOR_WARNING_TEXT 15
 #define WX_INDICATOR_ERROR_TEXT 16
+#define CONFIG_THEME_ID "/theme"
+#define CONFIG_MATCH_CASE_ID "/matchCase"
+#define CONFIG_LOOPING_SEARCH_ID "/loopingSearch"
+#define CONFIG_DARK_THEME_VALUE "dark"
+#define CONFIG_LIGHT_THEME_VALUE "light"
 
 struct ConsoleLog
 {
@@ -36,9 +45,18 @@ struct ConsoleLog
 	int warningCount = 0;
 	bool buttonMatchCaseOn = false;
 	bool buttonLoopingSearchOn = false;
+	wxString currentTheme;
 	wxColour warningColour = wxColour(255, 255, 0);
 	wxColour errorColour = wxColour(192, 0, 0);
-	wxColour backgroundColour = wxColour(37, 37, 38);
+	wxColour textColourDarkTheme = wxColour(192, 192, 192);
+	wxColour textColourLightTheme = wxColour(0, 0, 0);
+	wxColour backgroundColourDarkTheme = wxColour(0, 0, 0);
+	wxColour backgroundColourLightTheme = wxColour(255, 255, 255);
+	wxColour toolbarBackgroundColor = wxColour(37, 37, 38);
+	wxColour themeTextColour;
+	wxColour themeBackgroundColour;
+	wxString settingsFilePath;
+	wxConfig *config;
 } consoleLog;
 
 using namespace std;
@@ -46,6 +64,35 @@ using namespace std;
 Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
 	wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+	consoleLog.settingsFilePath = homedir;
+	consoleLog.settingsFilePath.append("/.Solar2D/console.conf");
+	consoleLog.config = new wxFileConfig("", "", consoleLog.settingsFilePath);
+	consoleLog.themeTextColour = consoleLog.textColourDarkTheme;
+	consoleLog.themeBackgroundColour = consoleLog.backgroundColourDarkTheme;
+
+	// read from the config file or create it, if it doesn't exist
+	if (wxFileExists(consoleLog.settingsFilePath))
+	{
+		consoleLog.config->Read(wxT(CONFIG_THEME_ID), &consoleLog.currentTheme);
+		consoleLog.config->Read(wxT(CONFIG_MATCH_CASE_ID), &consoleLog.buttonMatchCaseOn);
+		consoleLog.config->Read(wxT(CONFIG_LOOPING_SEARCH_ID), &consoleLog.buttonLoopingSearchOn);
+
+		if (consoleLog.currentTheme.Cmp(CONFIG_LIGHT_THEME_VALUE) == 0)
+		{
+			consoleLog.themeTextColour = consoleLog.textColourLightTheme;
+			consoleLog.themeBackgroundColour = consoleLog.backgroundColourLightTheme;
+		}
+	}
+	else
+	{
+		consoleLog.config->Write(wxT(CONFIG_THEME_ID), CONFIG_DARK_THEME_VALUE);
+		consoleLog.config->Write(wxT(CONFIG_MATCH_CASE_ID), false);
+		consoleLog.config->Write(wxT(CONFIG_LOOPING_SEARCH_ID), false);
+		consoleLog.config->Flush();
+	}
+
 	SetIcon(console_xpm);
 	SetSize(wxSize(640, 480));
 	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
@@ -58,7 +105,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnFindNext = new wxBitmapButton(panelToolBar, ID_BUTTON_FIND_NEXT, wxIcon(search_right_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, ID_BUTTON_MATCH_CASE, wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, ID_BUTTON_LOOP_SEARCH, wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
-	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_SETTINGS, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_THEME, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
 	SetProperties();
@@ -82,36 +129,37 @@ void Rtt_LinuxConsole::SetProperties()
 		statusbar->SetStatusText(statusbarFields[i], i);
 	}
 
-	SetBackgroundColour(consoleLog.backgroundColour);
-	bitmapBtnSave->SetBackgroundColour(consoleLog.backgroundColour);
+	SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	bitmapBtnSave->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnSave->SetSize(bitmapBtnSave->GetBestSize());
-	bitmapBtnCopy->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnCopy->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnCopy->SetSize(bitmapBtnCopy->GetBestSize());
-	bitmapBtnErase->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnErase->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnErase->SetSize(bitmapBtnErase->GetBestSize());
 	txtFind->SetMinSize(wxSize(250, 28));
 	txtFind->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, 0, wxT("")));
 	txtFind->SetBackgroundColour(wxColour(27, 27, 28));
-	txtFind->SetForegroundColour(*wxWHITE);
-	bitmapBtnFindPrevious->SetBackgroundColour(consoleLog.backgroundColour);
+	txtFind->SetForegroundColour(consoleLog.textColourDarkTheme);
+	bitmapBtnFindPrevious->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnFindPrevious->SetSize(bitmapBtnFindPrevious->GetBestSize());
-	bitmapBtnFindNext->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnFindNext->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnFindNext->SetSize(bitmapBtnFindNext->GetBestSize());
-	bitmapBtnMatchCase->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnMatchCase->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	bitmapBtnMatchCase->SetBitmap(consoleLog.buttonMatchCaseOn ? wxIcon(match_case_on_xpm) : wxIcon(match_case_xpm));
 	bitmapBtnMatchCase->SetSize(bitmapBtnMatchCase->GetBestSize());
-	bitmapBtnLoopingSearch->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnLoopingSearch->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	bitmapBtnLoopingSearch->SetBitmap(consoleLog.buttonLoopingSearchOn ? wxIcon(looping_search_on_xpm) : wxIcon(looping_search_xpm));
 	bitmapBtnLoopingSearch->SetSize(bitmapBtnLoopingSearch->GetBestSize());
-	bitmapBtnMenu->SetBackgroundColour(consoleLog.backgroundColour);
+	bitmapBtnMenu->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnMenu->SetSize(bitmapBtnMenu->GetBestSize());
-	panelToolBar->SetBackgroundColour(consoleLog.backgroundColour);
-	statusbar->SetBackgroundColour(consoleLog.backgroundColour);
-	statusbar->SetForegroundColour(*wxWHITE);
+	panelToolBar->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	statusbar->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	txtLog->SetFocus();
 	txtLog->SetReadOnly(true);
 	txtLog->SetWrapMode(1);
 	txtLog->SetMarginOptions(wxSTC_MARGINOPTION_NONE);
-	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxBLACK);
-	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, wxColour(192, 192, 192));
+	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, consoleLog.themeBackgroundColour);
+	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, consoleLog.themeTextColour);
 	txtLog->SetCaretForeground(*wxCYAN);
 	txtLog->SetSelAlpha(127);
 	txtLog->SetSelEOLFilled(false);
@@ -120,7 +168,7 @@ void Rtt_LinuxConsole::SetProperties()
 	// remove the left hand margin block
 	for (int i = 0; i < 6; i++)
 	{
-		txtLog->SetMarginWidth (i, 0);
+		txtLog->SetMarginWidth(i, 0);
 	}
 
 	txtLog->StyleClearAll();
@@ -141,13 +189,13 @@ void Rtt_LinuxConsole::DoLayout()
 	wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);
 	wxStaticText *lblFind = new wxStaticText(panelToolBar, wxID_ANY, wxT("Find:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+	lblFind->SetForegroundColour(consoleLog.textColourDarkTheme);
 	sizer2->Add(bitmapBtnSave, 0, wxBOTTOM | wxTOP, 6);
 	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnCopy, 0, wxBOTTOM | wxTOP, 6);
 	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnErase, 0, wxBOTTOM | wxTOP, 6);
 	sizer2->AddSpacer(5);
-	lblFind->SetForegroundColour(*wxWHITE);
 	sizer2->Add(lblFind, 0, wxALIGN_CENTER_VERTICAL, 0);
 	sizer2->AddSpacer(5);
 	sizer2->Add(txtFind, 0, wxALIGN_CENTER_VERTICAL, 0);
@@ -176,6 +224,7 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
 	EVT_BUTTON(ID_BUTTON_FIND_NEXT, Rtt_LinuxConsole::OnBtnFindNextClick)
 	EVT_BUTTON(ID_BUTTON_MATCH_CASE, Rtt_LinuxConsole::OnBtnMatchCaseClick)
 	EVT_BUTTON(ID_BUTTON_LOOP_SEARCH, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
+	EVT_BUTTON(ID_BUTTON_THEME, Rtt_LinuxConsole::OnBtnChangeThemeClick)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -278,6 +327,8 @@ void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent &event)
 {
 	consoleLog.buttonMatchCaseOn = !consoleLog.buttonMatchCaseOn;
 	bitmapBtnMatchCase->SetBitmap(consoleLog.buttonMatchCaseOn ? wxIcon(match_case_on_xpm) : wxIcon(match_case_xpm));
+	consoleLog.config->Write(wxT(CONFIG_MATCH_CASE_ID), consoleLog.buttonMatchCaseOn);
+	consoleLog.config->Flush();
 	txtLog->SetFocus();
 	ResetSearch();
 }
@@ -286,8 +337,16 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 {
 	consoleLog.buttonLoopingSearchOn = !consoleLog.buttonLoopingSearchOn;
 	bitmapBtnLoopingSearch->SetBitmap(consoleLog.buttonLoopingSearchOn ? wxIcon(looping_search_on_xpm) : wxIcon(looping_search_xpm));
+	consoleLog.config->Write(wxT(CONFIG_LOOPING_SEARCH_ID), consoleLog.buttonLoopingSearchOn);
+	consoleLog.config->Flush();
 	txtLog->SetFocus();
 	ResetSearch();
+}
+
+void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
+{
+	consoleLog.currentTheme = CONFIG_LIGHT_THEME_VALUE; // OR CONFIG_LIGHT_THEME_VALUE
+	ChangeTheme();
 }
 
 void Rtt_LinuxConsole::ClearLog()
@@ -315,6 +374,19 @@ void Rtt_LinuxConsole::ResetSearch()
 	txtLog->SelectNone();
 	txtLog->SetCurrentPos(0);
 	txtLog->SetSelection(0, 0);
+}
+
+void Rtt_LinuxConsole::ChangeTheme()
+{
+	bool isLightTheme = (consoleLog.currentTheme.Cmp(CONFIG_LIGHT_THEME_VALUE) == 0);
+	consoleLog.themeTextColour = isLightTheme ? consoleLog.textColourLightTheme : consoleLog.textColourDarkTheme;
+	consoleLog.themeBackgroundColour = isLightTheme ? consoleLog.backgroundColourLightTheme : consoleLog.backgroundColourDarkTheme;
+
+	txtLog->StyleSetBackground(wxSTC_STYLE_DEFAULT, consoleLog.themeBackgroundColour);
+	txtLog->StyleSetForeground(wxSTC_STYLE_DEFAULT, consoleLog.themeTextColour);
+	txtLog->StyleClearAll();
+	consoleLog.config->Write(wxT(CONFIG_THEME_ID), consoleLog.currentTheme);
+	consoleLog.config->Flush();
 }
 
 void Rtt_LinuxConsole::HighlightLine(int indicatorNo, wxColour colour)

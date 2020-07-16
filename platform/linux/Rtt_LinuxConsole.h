@@ -60,11 +60,13 @@ public:
 	void OnBtnFindNextClick(wxCommandEvent &event);
 	void OnBtnMatchCaseClick(wxCommandEvent &event);
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
+	void OnBtnChangeThemeClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
 	void ClearLog();
 	void UpdateStatusText();
 	void HighlightLine(int indicatorNo, wxColour colour);
 	void ResetSearch();
+	void ChangeTheme();
 	void UpdateLog(wxString message);
 	void UpdateLogWarning(wxString message);
 	void UpdateLogError(wxString message);
