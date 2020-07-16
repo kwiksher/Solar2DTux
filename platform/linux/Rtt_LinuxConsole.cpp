@@ -80,8 +80,8 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnCopy->SetSize(bitmapBtnCopy->GetBestSize());
 	bitmapBtnErase->SetBackgroundColour(backgroundColour);
 	bitmapBtnErase->SetSize(bitmapBtnErase->GetBestSize());
-	txtFind->SetMinSize(wxSize(250, 24));
-	txtFind->SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, 0, wxT("")));
+	txtFind->SetMinSize(wxSize(250, 28));
+	txtFind->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, 0, wxT("")));
 	txtFind->SetBackgroundColour(backgroundColour);
 	txtFind->SetForegroundColour(*wxWHITE);
 	bitmapBtnFindPrevious->SetBackgroundColour(backgroundColour);
