@@ -1,5 +1,6 @@
 #include "Rtt_LinuxConsole.h"
 #include <sys/time.h>
+#include <wx/statbmp.h>
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
 #include "resource/console.xpm"
@@ -37,7 +38,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 {
 	SetIcon(console_xpm);
 	SetSize(wxSize(640, 480));
-	panelToolBar = new wxPanel(this, wxID_ANY);
+	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(640, 24));
 	statusbar = CreateStatusBar(1);
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnCopy = new wxBitmapButton(panelToolBar, ID_BUTTON_COPY, wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
@@ -78,7 +79,7 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnCopy->SetSize(bitmapBtnCopy->GetBestSize());
 	bitmapBtnErase->SetBackgroundColour(backgroundColour);
 	bitmapBtnErase->SetSize(bitmapBtnErase->GetBestSize());
-	txtFind->SetMinSize(wxSize(250, -1));
+	txtFind->SetMinSize(wxSize(250, 18));
 	txtFind->SetBackgroundColour(backgroundColour);
 	txtFind->SetForegroundColour(*wxWHITE);
 	bitmapBtnFindPrevious->SetBackgroundColour(backgroundColour);
@@ -117,17 +118,26 @@ void Rtt_LinuxConsole::DoLayout()
 {
 	wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticText* lblFind = new wxStaticText(panelToolBar, wxID_ANY, wxT("Find:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+	wxStaticText *lblFind = new wxStaticText(panelToolBar, wxID_ANY, wxT("Find:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
 	sizer2->Add(bitmapBtnSave, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnCopy, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnErase, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	lblFind->SetForegroundColour(*wxWHITE);
 	sizer2->Add(lblFind, 0, wxALIGN_CENTER_VERTICAL, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(txtFind, 0, wxALIGN_CENTER_VERTICAL, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnFindPrevious, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnFindNext, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnMatchCase, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnLoopingSearch, 0, 0, 0);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnMenu, 0, 0, 0);
 	panelToolBar->SetSizer(sizer2);
 	sizer1->Add(panelToolBar, 0, wxEXPAND, 0);
