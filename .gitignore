@@ -296,3 +296,4 @@ platform/linux/car.mk
 platform/linux/Solar2DConsole.txt
 platform/linux/Solar2DSimulator/Solar2DConsole
 platform/linux/Makefile
+platform/linux/Solar2DConsole.mk

@@ -29,6 +29,12 @@ bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString &topic, const wxString 
 		wxGetApp().ClearLog();
 		return true;
 	}
+	else if (item.IsSameAs("quit"))
+	{
+		Disconnect();
+		wxExit();
+		return true;
+	}
 
 	wxGetApp().UpdateLog(msg.c_str(), logType);
 	return wxConnection::OnPoke(topic, item, data, size, format);
@@ -95,5 +101,5 @@ bool Rtt_LinuxIPCServerConnection::DoAdvise(const wxString &item, const void *da
 bool Rtt_LinuxIPCServerConnection::OnDisconnect()
 {
 	//wxLogMessage("OnDisconnect()");
-	return true;
+	return false;
 }
