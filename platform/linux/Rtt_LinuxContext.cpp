@@ -1207,11 +1207,13 @@ void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 void MyFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
 	wxAboutDialogInfo info;
-	wxIcon icon = wxIcon("/opt/Solar2D/Resources/logo.png", wxBITMAP_TYPE_PNG, 60, 60);
+	wxIcon icon = wxIcon("/opt/Solar2D/Resources/logo_small.png", wxBITMAP_TYPE_PNG, 60, 60);
+	string version("Version: ");
+	version.append(to_string(Rtt_BUILD_YEAR)).append(".").append(to_string(Rtt_LOCAL_BUILD_REVISION));
 	icon.SetWidth(20);
 	icon.SetHeight(20);
 	info.SetName("Solar2DTux");
-	info.SetVersion(Rtt_STRING_VERSION);
+	info.SetVersion(version);
 	info.SetCopyright(Rtt_STRING_COPYRIGHT);
 	info.AddDeveloper("Danny Glover, Robert Craig. Based on initial port by the CoronaLabs team.");
 	info.SetWebSite("https://github.com/DannyGlover/Solar2DTux");

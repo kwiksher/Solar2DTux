@@ -1,6 +1,6 @@
 /* XPM */
 static char * cog_xpm[] = {
-"18 18 156 2",
+"18 18 158 2",
 "  	c None",
 ". 	c #5B6A89",
 "+ 	c #5B6987",
@@ -157,6 +157,8 @@ static char * cog_xpm[] = {
 "w.	c #6A697E",
 "x.	c #B5AFC6",
 "y.	c #C0B9D2",
+"z.	c #6B697E",
+"A.	c #6A6A7E",
 "                . +                 ",
 "                @ #                 ",
 "      $ %     & * = -     ; >       ",
@@ -173,5 +175,5 @@ static char * cog_xpm[] = {
 "      8.9.0.a.b.c.d.e.f.g.h.i.j.    ",
 "      k.l.m.n.o.h.p.q.r.  s.t.      ",
 "                u.v.w.              ",
-"                x.y.                ",
-"                                    "};
+"                x.y.        z.w.w.w.",
+"                              A.w.  "};

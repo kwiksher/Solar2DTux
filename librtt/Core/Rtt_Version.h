@@ -18,9 +18,8 @@
 #define Rtt_VERSION_MINOR	0
 #define Rtt_VERSION_REVISION	0
 
-#define Rtt_LOCAL_BUILD_REVISION 0
-
-#define Rtt_BUILD_YEAR 2020
+#define Rtt_LOCAL_BUILD_REVISION 1
+#define Rtt_BUILD_YEAR 1
 #define Rtt_BUILD_MONTH 6
 #define Rtt_BUILD_DAY 20
 #define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION

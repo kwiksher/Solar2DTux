@@ -2,10 +2,9 @@ application =
 {
 	content =
 	{
-		width = 1100,
-		height = 700,
+		width = 640,
+		height = 480,
 		fps = 60,
-		-- should be adaptive but that doesn't seem to work on Windows
-		scale = "letterbox", -- "adaptive",
+		scale = "letterbox",
 	}
 }
