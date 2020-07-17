@@ -21,26 +21,9 @@
 #include "Rtt_LinuxIPCServerConnection.h"
 
 using namespace std;
+class DropdownMenu;
 
 #define TIMER_ID 1000
-
-class DropdownMenu: public wxPanel
-{
-public:
-	DropdownMenu(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0);
-private:
-	void SetProperties();
-	void DoLayout();
-protected:
-	wxCheckBox* chkLightTheme;
-	wxCheckBox* chkDarkTheme;
-	
-	DECLARE_EVENT_TABLE();
-public:
-	void OnchkLightThemeClicked(wxCommandEvent &event);
-	void OnchkDarkThemeClicked(wxCommandEvent &event);
-	void ShowDropDownMenu();
-};
 
 class Rtt_LinuxConsole: public wxFrame
 {
@@ -89,6 +72,28 @@ public:
 	void UpdateLog(wxString message);
 	void UpdateLogWarning(wxString message);
 	void UpdateLogError(wxString message);
+};
+
+class DropdownMenu: public wxPanel
+{
+public:
+	DropdownMenu(wxWindow *parent, wxWindowID id, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
+
+private:
+	void SetProperties();
+	void DoLayout();
+
+protected:
+	wxCheckBox *chkLightTheme;
+	wxCheckBox *chkDarkTheme;
+
+	DECLARE_EVENT_TABLE();
+
+public:
+	Rtt_LinuxConsole *linuxConsole;
+	void OnChkLightThemeClicked(wxCommandEvent &event);
+	void OnChkDarkThemeClicked(wxCommandEvent &event);
+	void ShowDropDownMenu();
 };
 
 #endif // LINUXCONSOLE_H

@@ -28,18 +28,18 @@
 #define ID_BUTTON_MATCH_CASE wxID_HIGHEST + 6
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
 #define ID_BUTTON_THEME wxID_HIGHEST + 8
-#define wxID_LIGHTTHEME wxID_HIGHEST + 9
-#define wxID_DARKTHEME wxID_HIGHEST + 10
-#define wxID_DROPDOWNMENU wxID_HIGHEST + 11
-#define WX_INDICATOR_WARNING 8
-#define WX_INDICATOR_ERROR 9
-#define WX_INDICATOR_WARNING_TEXT 15
-#define WX_INDICATOR_ERROR_TEXT 16
+#define ID_LIGHT_THEME_MENU_ITEM wxID_HIGHEST + 9
+#define ID_DARK_THEME_MENU_ITEM wxID_HIGHEST + 10
+#define ID_DROPDOWN_MENU wxID_HIGHEST + 11
+#define ID_INDICATOR_WARNING 8
+#define ID_INDICATOR_ERROR 9
+#define ID_INDICATOR_WARNING_TEXT 15
+#define ID_INDICATOR_ERROR_TEXT 16
 #define CONFIG_THEME_ID "/theme"
 #define CONFIG_MATCH_CASE_ID "/matchCase"
 #define CONFIG_LOOPING_SEARCH_ID "/loopingSearch"
-#define CONFIG_DARK_THEME_VALUE "dark"
 #define CONFIG_LIGHT_THEME_VALUE "light"
+#define CONFIG_DARK_THEME_VALUE "dark"
 
 struct ConsoleLog
 {
@@ -82,7 +82,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 		consoleLog.config->Read(wxT(CONFIG_MATCH_CASE_ID), &consoleLog.buttonMatchCaseOn);
 		consoleLog.config->Read(wxT(CONFIG_LOOPING_SEARCH_ID), &consoleLog.buttonLoopingSearchOn);
 
-		if (consoleLog.currentTheme.Cmp(CONFIG_LIGHT_THEME_VALUE) == 0)
+		if (consoleLog.currentTheme.IsSameAs(CONFIG_LIGHT_THEME_VALUE))
 		{
 			consoleLog.themeTextColour = consoleLog.textColourLightTheme;
 			consoleLog.themeBackgroundColour = consoleLog.backgroundColourLightTheme;
@@ -111,7 +111,8 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_THEME, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
-	dropdownMenu = new DropdownMenu(this, wxID_DROPDOWNMENU, wxPoint(468, 32));
+	dropdownMenu = new DropdownMenu(this, ID_DROPDOWN_MENU, wxPoint(468, 32));
+	dropdownMenu->linuxConsole = this;
 	SetProperties();
 	DoLayout();
 }
@@ -349,8 +350,7 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
 {
-	consoleLog.currentTheme = CONFIG_LIGHT_THEME_VALUE; // OR CONFIG_LIGHT_THEME_VALUE
-	ChangeTheme();
+	dropdownMenu->Show(dropdownMenu->IsShown() ? false : true);
 }
 
 void Rtt_LinuxConsole::ClearLog()
@@ -382,7 +382,7 @@ void Rtt_LinuxConsole::ResetSearch()
 
 void Rtt_LinuxConsole::ChangeTheme()
 {
-	bool isLightTheme = (consoleLog.currentTheme.Cmp(CONFIG_LIGHT_THEME_VALUE) == 0);
+	bool isLightTheme = (consoleLog.currentTheme.IsSameAs(CONFIG_LIGHT_THEME_VALUE));
 	consoleLog.themeTextColour = isLightTheme ? consoleLog.textColourLightTheme : consoleLog.textColourDarkTheme;
 	consoleLog.themeBackgroundColour = isLightTheme ? consoleLog.backgroundColourLightTheme : consoleLog.backgroundColourDarkTheme;
 
@@ -400,7 +400,7 @@ void Rtt_LinuxConsole::HighlightLine(int indicatorNo, wxColour colour)
 	txtLog->IndicatorSetStyle(indicatorNo, wxSTC_INDIC_FULLBOX);
 	txtLog->IndicatorSetForeground(indicatorNo, colour);
 
-	bool shouldChangeText = (indicatorNo == WX_INDICATOR_WARNING || indicatorNo == WX_INDICATOR_ERROR);
+	bool shouldChangeText = (indicatorNo == ID_INDICATOR_WARNING || indicatorNo == ID_INDICATOR_ERROR);
 	int textTargetID = 0;
 	wxColour textTargetColour;
 	int lineNo = txtLog->GetCurrentLine();
@@ -412,13 +412,13 @@ void Rtt_LinuxConsole::HighlightLine(int indicatorNo, wxColour colour)
 
 	switch (indicatorNo)
 	{
-		case WX_INDICATOR_WARNING:
-			textTargetID = WX_INDICATOR_WARNING_TEXT;
+		case ID_INDICATOR_WARNING:
+			textTargetID = ID_INDICATOR_WARNING_TEXT;
 			textTargetColour = *wxBLACK;
 			break;
 
-		case WX_INDICATOR_ERROR:
-			textTargetID = WX_INDICATOR_ERROR_TEXT;
+		case ID_INDICATOR_ERROR:
+			textTargetID = ID_INDICATOR_ERROR_TEXT;
 			textTargetColour = *wxWHITE;
 			break;
 	}
@@ -447,7 +447,7 @@ void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
 	txtLog->AppendText(message);
-	HighlightLine(8, consoleLog.warningColour);
+	HighlightLine(ID_INDICATOR_WARNING, consoleLog.warningColour);
 	txtLog->SelectNone();
 	txtLog->SetReadOnly(true);
 	txtLog->ScrollToEnd();
@@ -461,7 +461,7 @@ void Rtt_LinuxConsole::UpdateLogError(wxString message)
 	txtLog->SetReadOnly(false);
 	txtLog->SetInsertionPointEnd();
 	txtLog->AppendText(message);
-	HighlightLine(9, consoleLog.errorColour);
+	HighlightLine(ID_INDICATOR_ERROR, consoleLog.errorColour);
 	txtLog->SelectNone();
 	txtLog->SetReadOnly(true);
 	txtLog->ScrollToEnd();
@@ -470,38 +470,45 @@ void Rtt_LinuxConsole::UpdateLogError(wxString message)
 	UpdateStatusText();
 }
 
-DropdownMenu::DropdownMenu(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style):
+DropdownMenu::DropdownMenu(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style):
 	wxPanel(parent, id, pos, size, wxBORDER_STATIC)
 {
-	chkLightTheme = new wxCheckBox(this, wxID_ANY, wxEmptyString);
-	chkDarkTheme = new wxCheckBox(this, wxID_ANY, wxEmptyString);
+	chkLightTheme = new wxCheckBox(this, ID_LIGHT_THEME_MENU_ITEM, wxEmptyString);
+	chkDarkTheme = new wxCheckBox(this, ID_DARK_THEME_MENU_ITEM, wxEmptyString);
+
+	if (consoleLog.currentTheme.IsSameAs(CONFIG_LIGHT_THEME_VALUE))
+	{
+		chkLightTheme->SetValue(true);
+	}
+	else
+	{
+		chkDarkTheme->SetValue(true);
+	}
 
 	SetProperties();
 	DoLayout();
 	Hide();
 }
 
-
 void DropdownMenu::SetProperties()
 {
-	SetBackgroundColour(wxColour(0, 0, 0));
-	SetForegroundColour(wxColour(255, 255, 255));
+	SetBackgroundColour(*wxBLACK);
+	SetForegroundColour(*wxWHITE);
 }
-
 
 void DropdownMenu::DoLayout()
 {
-	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer* menu2 = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer* menu1 = new wxBoxSizer(wxHORIZONTAL);
-	menu1->Add(chkLightTheme, 0, wxTOP, 2);
-	wxStaticText* lblMenuThemeLight = new wxStaticText(this, wxID_ANY, wxT("Light Theme"));
+	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *menu2 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer *menu1 = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText *lblMenuThemeLight = new wxStaticText(this, wxID_ANY, wxT("Light Theme"));
+	wxStaticText *lblMenuThemeDark = new wxStaticText(this, wxID_ANY, wxT("Dark Theme"));
 	lblMenuThemeLight->SetMinSize(wxSize(100, 20));
+	lblMenuThemeDark->SetMinSize(wxSize(100, 20));
+	menu1->Add(chkLightTheme, 0, wxTOP, 2);
 	menu1->Add(lblMenuThemeLight, 0, wxTOP, 2);
 	sizer->Add(menu1, 1, wxEXPAND, 0);
 	menu2->Add(chkDarkTheme, 0, wxTOP, 2);
-	wxStaticText* lblMenuThemeDark = new wxStaticText(this, wxID_ANY, wxT("Dark Theme"));
-	lblMenuThemeDark->SetMinSize(wxSize(100, 20));
 	menu2->Add(lblMenuThemeDark, 0, wxTOP, 2);
 	sizer->Add(menu2, 1, wxEXPAND, 0);
 	SetSizer(sizer);
@@ -509,20 +516,22 @@ void DropdownMenu::DoLayout()
 }
 
 BEGIN_EVENT_TABLE(DropdownMenu, wxPanel)
-	EVT_CHECKBOX(wxID_LIGHTTHEME, DropdownMenu::OnchkLightThemeClicked)
-	EVT_CHECKBOX(wxID_DARKTHEME, DropdownMenu::OnchkDarkThemeClicked)
+	EVT_CHECKBOX(ID_LIGHT_THEME_MENU_ITEM, DropdownMenu::OnChkLightThemeClicked)
+	EVT_CHECKBOX(ID_DARK_THEME_MENU_ITEM, DropdownMenu::OnChkDarkThemeClicked)
 END_EVENT_TABLE();
 
-void DropdownMenu::OnchkLightThemeClicked(wxCommandEvent &event) 
+void DropdownMenu::OnChkLightThemeClicked(wxCommandEvent &event)
 {
-	event.Skip();
-	// notify the user that he hasn't implemented the event handler yet
-	wxLogDebug(wxT("Event handler (DropdownMenu::OnchkLightThemeClicked) not implemented yet"));
+	chkDarkTheme->SetValue(false);
+	chkLightTheme->SetValue(true);
+	consoleLog.currentTheme = CONFIG_LIGHT_THEME_VALUE;
+	linuxConsole->ChangeTheme();
 }
 
-void DropdownMenu::OnchkDarkThemeClicked(wxCommandEvent &event) 
+void DropdownMenu::OnChkDarkThemeClicked(wxCommandEvent &event)
 {
-	event.Skip();
-	// notify the user that he hasn't implemented the event handler yet
-	wxLogDebug(wxT("Event handler (DropdownMenu::OnchkDarkThemeClicked) not implemented yet"));
+	chkLightTheme->SetValue(false);
+	chkDarkTheme->SetValue(true);
+	consoleLog.currentTheme = CONFIG_DARK_THEME_VALUE;
+	linuxConsole->ChangeTheme();
 }
