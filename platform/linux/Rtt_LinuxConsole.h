@@ -24,6 +24,24 @@ using namespace std;
 
 #define TIMER_ID 1000
 
+class DropdownMenu: public wxPanel
+{
+public:
+	DropdownMenu(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0);
+private:
+	void SetProperties();
+	void DoLayout();
+protected:
+	wxCheckBox* chkLightTheme;
+	wxCheckBox* chkDarkTheme;
+	
+	DECLARE_EVENT_TABLE();
+public:
+	void OnchkLightThemeClicked(wxCommandEvent &event);
+	void OnchkDarkThemeClicked(wxCommandEvent &event);
+	void ShowDropDownMenu();
+};
+
 class Rtt_LinuxConsole: public wxFrame
 {
 public:
@@ -49,6 +67,7 @@ protected:
 	wxStyledTextCtrl *txtLog;
 	wxTimer *timer;
 	Rtt_LinuxIPCServer *linuxIPCServer;
+	DropdownMenu *dropdownMenu;
 
 	DECLARE_EVENT_TABLE();
 

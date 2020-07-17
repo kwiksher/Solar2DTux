@@ -28,6 +28,9 @@
 #define ID_BUTTON_MATCH_CASE wxID_HIGHEST + 6
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
 #define ID_BUTTON_THEME wxID_HIGHEST + 8
+#define wxID_LIGHTTHEME wxID_HIGHEST + 9
+#define wxID_DARKTHEME wxID_HIGHEST + 10
+#define wxID_DROPDOWNMENU wxID_HIGHEST + 11
 #define WX_INDICATOR_WARNING 8
 #define WX_INDICATOR_ERROR 9
 #define WX_INDICATOR_WARNING_TEXT 15
@@ -108,6 +111,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_THEME, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
+	dropdownMenu = new DropdownMenu(this, wxID_DROPDOWNMENU, wxPoint(468, 32));
 	SetProperties();
 	DoLayout();
 }
@@ -464,4 +468,61 @@ void Rtt_LinuxConsole::UpdateLogError(wxString message)
 
 	consoleLog.errorCount++;
 	UpdateStatusText();
+}
+
+DropdownMenu::DropdownMenu(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style):
+	wxPanel(parent, id, pos, size, wxBORDER_STATIC)
+{
+	chkLightTheme = new wxCheckBox(this, wxID_ANY, wxEmptyString);
+	chkDarkTheme = new wxCheckBox(this, wxID_ANY, wxEmptyString);
+
+	SetProperties();
+	DoLayout();
+	Hide();
+}
+
+
+void DropdownMenu::SetProperties()
+{
+	SetBackgroundColour(wxColour(0, 0, 0));
+	SetForegroundColour(wxColour(255, 255, 255));
+}
+
+
+void DropdownMenu::DoLayout()
+{
+	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* menu2 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* menu1 = new wxBoxSizer(wxHORIZONTAL);
+	menu1->Add(chkLightTheme, 0, wxTOP, 2);
+	wxStaticText* lblMenuThemeLight = new wxStaticText(this, wxID_ANY, wxT("Light Theme"));
+	lblMenuThemeLight->SetMinSize(wxSize(100, 20));
+	menu1->Add(lblMenuThemeLight, 0, wxTOP, 2);
+	sizer->Add(menu1, 1, wxEXPAND, 0);
+	menu2->Add(chkDarkTheme, 0, wxTOP, 2);
+	wxStaticText* lblMenuThemeDark = new wxStaticText(this, wxID_ANY, wxT("Dark Theme"));
+	lblMenuThemeDark->SetMinSize(wxSize(100, 20));
+	menu2->Add(lblMenuThemeDark, 0, wxTOP, 2);
+	sizer->Add(menu2, 1, wxEXPAND, 0);
+	SetSizer(sizer);
+	sizer->Fit(this);
+}
+
+BEGIN_EVENT_TABLE(DropdownMenu, wxPanel)
+	EVT_CHECKBOX(wxID_LIGHTTHEME, DropdownMenu::OnchkLightThemeClicked)
+	EVT_CHECKBOX(wxID_DARKTHEME, DropdownMenu::OnchkDarkThemeClicked)
+END_EVENT_TABLE();
+
+void DropdownMenu::OnchkLightThemeClicked(wxCommandEvent &event) 
+{
+	event.Skip();
+	// notify the user that he hasn't implemented the event handler yet
+	wxLogDebug(wxT("Event handler (DropdownMenu::OnchkLightThemeClicked) not implemented yet"));
+}
+
+void DropdownMenu::OnchkDarkThemeClicked(wxCommandEvent &event) 
+{
+	event.Skip();
+	// notify the user that he hasn't implemented the event handler yet
+	wxLogDebug(wxT("Event handler (DropdownMenu::OnchkDarkThemeClicked) not implemented yet"));
 }

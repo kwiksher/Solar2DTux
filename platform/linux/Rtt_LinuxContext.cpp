@@ -59,6 +59,7 @@
 #ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
 #endif
+#include <limits.h>
 
 using namespace Rtt;
 using namespace std;
