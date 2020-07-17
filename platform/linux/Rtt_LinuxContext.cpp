@@ -35,9 +35,16 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
+#include "wx/menu.h"
+#include "wx/dcclient.h"
+#include "wx/app.h"
+#include "wx/display.h"
+
+#ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
+#include "resource/simulator.xpm"
+#endif
 
 //#define Rtt_DEBUG_TOUCH 1
-
 #define TIMER_ID wxID_HIGHEST + 11
 #define ID_MENU_WELCOME wxID_HIGHEST + 12
 #define ID_MENU_BUILD_ANDROID wxID_HIGHEST + 13
@@ -51,15 +58,6 @@
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
 #define ID_MENU_SUSPEND wxID_HIGHEST + 23
-#include "wx/menu.h"
-#include "wx/dcclient.h"
-#include "wx/app.h"
-#include "wx/display.h"
-
-#ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
-#include "resource/simulator.xpm"
-#endif
-#include <limits.h>
 
 using namespace Rtt;
 using namespace std;
@@ -109,6 +107,11 @@ static char *CalculateMD5(string filename)
 	}
 
 	return hex;
+}
+
+static bool IsHomeScreen(string appName)
+{
+	return appName.compare(HOMESCREEN_ID) == 0;
 }
 
 namespace Rtt
@@ -492,7 +495,7 @@ namespace Rtt
 
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
-			fAppName = "homescreen";
+			fAppName = HOMESCREEN_ID;
 			fPathToApp = startDir;
 			fIsDebApp = false;
 			return;
@@ -542,7 +545,7 @@ namespace Rtt
 		appDir.append("/.local/share/");
 #endif
 
-		if (fAppName.compare("homescreen") != 0)
+		if (!IsHomeScreen(fAppName))
 		{
 			appDir.append(fAppName);
 #ifdef Rtt_SIMULATOR
@@ -993,13 +996,16 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
 	EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+#ifdef Rtt_SIMULATOR
+	EVT_CLOSE(MyFrame::OnClose)
+#endif
 wxEND_EVENT_TABLE()
 
 MyFrame::MyFrame()
-	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
+	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
-	SetIcon( simulator_xpm );
+	SetIcon(simulator_xpm);
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
@@ -1059,7 +1065,7 @@ void MyFrame::watchFolder(const char *path, const char *appName)
 		Connect(wxEVT_FSWATCHER, wxFileSystemWatcherEventHandler(MyFrame::OnFileSystemEvent));
 	}
 
-	if (strcmp(appName, "homescreen") == 0)
+	if (IsHomeScreen(string(appName)))
 	{
 		// do not watch main screen folder
 		return;
@@ -1184,24 +1190,28 @@ void MyFrame::setMenu(const char *appPath)
 {
 #ifdef Rtt_SIMULATOR
 	const string &appName = getContext()->getAppName();
-
-	if (appName == "homescreen")
-	{
-		SetMenuBar(fMenuMain);
-	}
-	else
-	{
-		SetMenuBar(fMenuProject);
-	}
-
+	SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
 #endif
 }
 
 // event handlers
 void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 {
-	// true is to force the frame to close
+	// quit the simulator console
+#ifdef Rtt_SIMULATOR
+	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
+#endif
+
 	Close(true);
+}
+
+void MyFrame::OnClose(wxCloseEvent &ev)
+{
+	// quit the simulator console
+#ifdef Rtt_SIMULATOR
+	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
+	wxExit();
+#endif
 }
 
 void MyFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
@@ -1381,7 +1391,7 @@ void MyFrame::OnOpenDocumentation(wxCommandEvent &ev)
 
 void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
-	if (fAppPath.size() > 0 && fContext->getAppName() != "homescreen")
+	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->getAppName()))
 	{
 		delete fContext;
 		fContext = new CoronaAppContext(fAppPath.c_str());
@@ -1497,23 +1507,24 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 	// clear the simulator log
 #ifdef Rtt_SIMULATOR
-	LinuxConsoleLog("###clear###");
+	LinuxConsoleLog(LINUX_CONSOLE_CLEAR_CMD);
 #endif
 
+	string appName = fContext->getAppName();
 	RemoveSuspendedPanel();
-	watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
+	watchFolder(fContext->getAppPath(), appName.c_str());
 
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 		fAppPath = fContext->getAppPath(); // save for relaunch
 	}
 
 	bool fullScreen = fContext->Init();
 
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 #ifdef Rtt_SIMULATOR
-		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), appName.c_str(), fContext->getPlatform());
 #endif
 	}
 
@@ -1527,7 +1538,7 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	CentreOnScreen(wxBOTH);
 
 #ifdef Rtt_SIMULATOR
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 		Rtt_Log("Loading project from: %s\n", fContext->getAppPath());
 		Rtt_Log("Project sandbox folder: %s%s\n", "~/.Solar2D/Sandbox/", fContext->getTitle().c_str());

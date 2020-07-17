@@ -63,7 +63,7 @@ public:
 	void OnBtnMatchCaseClick(wxCommandEvent &event);
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnBtnChangeThemeClick(wxCommandEvent &event);
-	void OnProgressTimer(wxTimerEvent &event);
+	void OnClose(wxCloseEvent &ev);
 	void ClearLog();
 	void UpdateStatusText();
 	void HighlightLine(int indicatorNo, wxColour colour);

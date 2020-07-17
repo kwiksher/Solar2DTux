@@ -98,6 +98,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 
 	SetIcon(console_xpm);
 	SetSize(wxSize(640, 480));
+	EnableCloseButton(false);
 	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	statusbar = CreateStatusBar(1);
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
@@ -230,6 +231,7 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
 	EVT_BUTTON(ID_BUTTON_MATCH_CASE, Rtt_LinuxConsole::OnBtnMatchCaseClick)
 	EVT_BUTTON(ID_BUTTON_LOOP_SEARCH, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
 	EVT_BUTTON(ID_BUTTON_THEME, Rtt_LinuxConsole::OnBtnChangeThemeClick)
+	EVT_CLOSE(Rtt_LinuxConsole::OnClose)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -351,6 +353,11 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
 {
 	dropdownMenu->Show(dropdownMenu->IsShown() ? false : true);
+}
+
+void Rtt_LinuxConsole::OnClose(wxCloseEvent &ev)
+{
+	linuxIPCServer->Disconnect();
 }
 
 void Rtt_LinuxConsole::ClearLog()

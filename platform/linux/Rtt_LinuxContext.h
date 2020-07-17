@@ -30,6 +30,9 @@
 #include "wx/fswatcher.h"
 #include "wx/aboutdlg.h"
 
+#define LINUX_CONSOLE_CLEAR_CMD "###clear###"
+#define LINUX_CONSOLE_QUIT_CMD "###quit###"
+#define HOMESCREEN_ID "homescreen"
 #pragma once
 
 class MyApp;
@@ -49,7 +52,7 @@ static void LinuxConsoleLog(const char *message, bool isError = false)
 {
 	using namespace std;
 
-	if (consoleClient == NULL)
+	if (consoleClient == wxNullPtr)
 	{
 		consoleClient = new Rtt_LinuxIPCClient();
 		consoleClient->Connect(IPC_HOST, IPC_SERVICE, IPC_TOPIC);
@@ -111,9 +114,13 @@ static void LinuxConsoleLog(const char *message, bool isError = false)
 		}
 	}
 
-	if (strcmp(message, "###clear###") == 0)
+	if (strcmp(message, LINUX_CONSOLE_CLEAR_CMD) == 0)
 	{
 		topic = "clear";
+	}
+	else if (strcmp(message, LINUX_CONSOLE_QUIT_CMD) == 0)
+	{
+		topic = "quit";
 	}
 
 	if (outputMessage.find("kShowRuntimeErrorsSet") == string::npos && outputMessage.find("luaDebugAvailable") == string::npos)
@@ -305,6 +312,7 @@ public:
 	void OnClearProjectSandbox(wxCommandEvent &ev);
 	void OnOpenSampleProjects(wxCommandEvent &ev);
 	void OnOpenDocumentation(wxCommandEvent &ev);
+	void OnClose(wxCloseEvent &ev);
 	void SetOGLString(const wxString &ogls) { m_OGLString = ogls; }
 	void CreateSuspendedPanel();
 	void RemoveSuspendedPanel();
