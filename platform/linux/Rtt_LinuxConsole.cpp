@@ -231,7 +231,6 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
 	EVT_BUTTON(ID_BUTTON_MATCH_CASE, Rtt_LinuxConsole::OnBtnMatchCaseClick)
 	EVT_BUTTON(ID_BUTTON_LOOP_SEARCH, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
 	EVT_BUTTON(ID_BUTTON_THEME, Rtt_LinuxConsole::OnBtnChangeThemeClick)
-	EVT_CLOSE(Rtt_LinuxConsole::OnClose)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -353,11 +352,6 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
 {
 	dropdownMenu->Show(dropdownMenu->IsShown() ? false : true);
-}
-
-void Rtt_LinuxConsole::OnClose(wxCloseEvent &ev)
-{
-	linuxIPCServer->Disconnect();
 }
 
 void Rtt_LinuxConsole::ClearLog()
