@@ -1,4 +1,4 @@
-#include "Rtt_LinuxIPCCient.h"
+#include "Rtt_LinuxIPCClient.h"
 
 Rtt_LinuxIPCClient::Rtt_LinuxIPCClient()
 {
@@ -30,6 +30,5 @@ void Rtt_LinuxIPCClient::Disconnect()
 	{
 		//mConnection->Disconnect();
 		wxDELETE(mConnection);
-		//wxLogMessage("Disconnected client");
 	}
 }

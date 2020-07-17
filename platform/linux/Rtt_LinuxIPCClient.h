@@ -4,7 +4,6 @@
 #define LINUXIPCCLIENT_H
 
 #include "wx/ipc.h"
-#include "Rtt_LinuxIPCConnectionBase.h"
 #include "Rtt_LinuxIPCClientConnection.h"
 
 // the default service name

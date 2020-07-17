@@ -9,8 +9,8 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="linux">
+      <File Name="Rtt_LinuxIPCClient.cpp"/>
       <File Name="Rtt_LinuxIPCClientConnection.cpp"/>
-      <File Name="Rtt_LinuxIPCCient.cpp"/>
       <File Name="Rtt_HTTPClientLinux.cpp"/>
       <VirtualDirectory Name="packagers">
         <VirtualDirectory Name="include">
@@ -45,9 +45,8 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="include">
-        <File Name="Rtt_LinuxIPCConnectionBase.h"/>
+        <File Name="Rtt_LinuxIPCClient.h"/>
         <File Name="Rtt_LinuxIPCClientConnection.h"/>
-        <File Name="Rtt_LinuxIPCCient.h"/>
         <File Name="Rtt_LinuxWebView.h"/>
         <File Name="Rtt_LinuxWebPopup.h"/>
         <File Name="Rtt_LinuxVideoProvider.h"/>
