@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="corona" Database="" Version="10.0.0">
-  <Project Name="Solar2DSimulator" Path="linux_rtt.project" Active="No"/>
+  <Project Name="Solar2DSimulator" Path="linux_rtt.project" Active="Yes"/>
   <Project Name="car" Path="car.project" Active="No"/>
-  <Project Name="Solar2DConsole" Path="Solar2DTuxConsole.project" Active="Yes"/>
+  <Project Name="Solar2DConsole" Path="Solar2DTuxConsole.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>

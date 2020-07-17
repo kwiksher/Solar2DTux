@@ -527,6 +527,7 @@ void DropdownMenu::OnChkLightThemeClicked(wxCommandEvent &event)
 	chkLightTheme->SetValue(true);
 	consoleLog.currentTheme = CONFIG_LIGHT_THEME_VALUE;
 	linuxConsole->ChangeTheme();
+	Hide();
 }
 
 void DropdownMenu::OnChkDarkThemeClicked(wxCommandEvent &event)
@@ -535,4 +536,5 @@ void DropdownMenu::OnChkDarkThemeClicked(wxCommandEvent &event)
 	chkDarkTheme->SetValue(true);
 	consoleLog.currentTheme = CONFIG_DARK_THEME_VALUE;
 	linuxConsole->ChangeTheme();
+	Hide();
 }
