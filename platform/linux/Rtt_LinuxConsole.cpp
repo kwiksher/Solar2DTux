@@ -351,7 +351,6 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
 {
-	consoleLog.currentTheme = CONFIG_LIGHT_THEME_VALUE; // OR CONFIG_LIGHT_THEME_VALUE
 	dropdownMenu->Show(dropdownMenu->IsShown() ? false : true);
 }
 
