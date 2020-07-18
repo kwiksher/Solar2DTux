@@ -1,5 +1,5 @@
 /* XPM */
-static char * window_position_xpm[] = {
+static const char *const window_position_xpm[] = {
 "18 18 143 2",
 "  	c None",
 ". 	c #000000",

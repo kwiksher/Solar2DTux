@@ -1,5 +1,5 @@
 /* XPM */
-static char * erase_xpm[] = {
+static const char *const erase_xpm[] = {
 "18 18 155 2",
 "  	c None",
 ". 	c #C1C1C0",

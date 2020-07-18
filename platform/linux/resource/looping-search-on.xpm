@@ -1,5 +1,5 @@
 /* XPM */
-static char * looping_search_on_xpm[] = {
+static const char *const looping_search_on_xpm[] = {
 "18 18 219 2",
 "  	c None",
 ". 	c #FBDBB5",

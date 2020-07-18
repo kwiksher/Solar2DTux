@@ -1,5 +1,5 @@
 /* XPM */
-static char * search_left_xpm[] = {
+static const char *const search_left_xpm[] = {
 "18 18 191 2",
 "  	c None",
 ". 	c #000000",
