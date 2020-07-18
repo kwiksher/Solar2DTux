@@ -240,8 +240,11 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 	char tmpDir[kDefaultNumBytes]; Rtt_ASSERT( kDefaultNumBytes > ( strlen( tmpDirBase ) + strlen( tmpTemplate ) ) );
 	snprintf(tmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
 
-    // This is not as foolproof as mkdtemp() but has the advantage of working on Win32
-    if ( mkdir( mkdtemp(tmpDir) ) )
+#ifdef Rtt_LINUX_ENV
+	if (mkdir(mkdtemp(tmpDir) ) )
+#else
+	if (mkdir(mktemp(tmpDir) ) )
+#endif
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 

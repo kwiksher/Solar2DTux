@@ -152,9 +152,11 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 		debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
 	}
 
-
-	// This is not as foolproof as mkdtemp() but has the advantage of working on Win32
+#ifdef Rtt_LINUX_ENV
 	if (mkdir(mkdtemp(tmpDir)) == false)
+#else
+	if (mkdir(mktemp(tmpDir)) == false)
+#endif
 	{
 		// Note that the failing mkdir() that brought us here is a member of the AndroidAppPackager class
 		String tmpString;
