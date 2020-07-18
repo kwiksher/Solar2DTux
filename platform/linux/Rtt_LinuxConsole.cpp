@@ -17,6 +17,7 @@
 #include "resource/match-case-on.xpm"
 #include "resource/looping-search.xpm"
 #include "resource/looping-search-on.xpm"
+#include "resource/window-position.xpm"
 #include "resource/cog.xpm"
 #endif
 
@@ -28,9 +29,10 @@
 #define ID_BUTTON_MATCH_CASE wxID_HIGHEST + 6
 #define ID_BUTTON_LOOP_SEARCH wxID_HIGHEST + 7
 #define ID_BUTTON_THEME wxID_HIGHEST + 8
-#define ID_LIGHT_THEME_MENU_ITEM wxID_HIGHEST + 9
-#define ID_DARK_THEME_MENU_ITEM wxID_HIGHEST + 10
-#define ID_DROPDOWN_MENU wxID_HIGHEST + 11
+#define ID_BUTTON_SAVE_WINDOW_POS wxID_HIGHEST + 9
+#define ID_LIGHT_THEME_MENU_ITEM wxID_HIGHEST + 10
+#define ID_DARK_THEME_MENU_ITEM wxID_HIGHEST + 11
+#define ID_DROPDOWN_MENU wxID_HIGHEST + 12
 #define ID_INDICATOR_WARNING 8
 #define ID_INDICATOR_ERROR 9
 #define ID_INDICATOR_WARNING_TEXT 15
@@ -38,6 +40,10 @@
 #define CONFIG_THEME_ID "/theme"
 #define CONFIG_MATCH_CASE_ID "/matchCase"
 #define CONFIG_LOOPING_SEARCH_ID "/loopingSearch"
+#define CONFIG_WINDOW_X_POSITION "/xPos"
+#define CONFIG_WINDOW_Y_POSITION "/yPos"
+#define CONFIG_WINDOW_WIDTH "/windowWidth"
+#define CONFIG_WINDOW_HEIGHT "/windowHeight"
 #define CONFIG_LIGHT_THEME_VALUE "light"
 #define CONFIG_DARK_THEME_VALUE "dark"
 
@@ -59,6 +65,10 @@ struct ConsoleLog
 	wxColour themeTextColour;
 	wxColour themeBackgroundColour;
 	wxString settingsFilePath;
+	int windowXPos = 0;
+	int windowYPos = 0;
+	int windowWidth = 640;
+	int windowHeight = 480;
 	wxConfig *config;
 } consoleLog;
 
@@ -81,6 +91,10 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 		consoleLog.config->Read(wxT(CONFIG_THEME_ID), &consoleLog.currentTheme);
 		consoleLog.config->Read(wxT(CONFIG_MATCH_CASE_ID), &consoleLog.buttonMatchCaseOn);
 		consoleLog.config->Read(wxT(CONFIG_LOOPING_SEARCH_ID), &consoleLog.buttonLoopingSearchOn);
+		consoleLog.config->Read(wxT(CONFIG_WINDOW_X_POSITION), &consoleLog.windowXPos);
+		consoleLog.config->Read(wxT(CONFIG_WINDOW_Y_POSITION), &consoleLog.windowYPos);
+		consoleLog.config->Read(wxT(CONFIG_WINDOW_WIDTH), &consoleLog.windowWidth);
+		consoleLog.config->Read(wxT(CONFIG_WINDOW_HEIGHT), &consoleLog.windowHeight);
 
 		if (consoleLog.currentTheme.IsSameAs(CONFIG_LIGHT_THEME_VALUE))
 		{
@@ -90,6 +104,10 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	}
 	else
 	{
+		consoleLog.config->Write(wxT(CONFIG_WINDOW_X_POSITION), 0);
+		consoleLog.config->Write(wxT(CONFIG_WINDOW_Y_POSITION), 0);
+		consoleLog.config->Write(wxT(CONFIG_WINDOW_WIDTH), consoleLog.windowWidth);
+		consoleLog.config->Write(wxT(CONFIG_WINDOW_HEIGHT), consoleLog.windowHeight);
 		consoleLog.config->Write(wxT(CONFIG_THEME_ID), CONFIG_DARK_THEME_VALUE);
 		consoleLog.config->Write(wxT(CONFIG_MATCH_CASE_ID), false);
 		consoleLog.config->Write(wxT(CONFIG_LOOPING_SEARCH_ID), false);
@@ -97,7 +115,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	}
 
 	SetIcon(console_xpm);
-	SetSize(wxSize(640, 480));
+	SetSize(wxSize(consoleLog.windowWidth, consoleLog.windowHeight));
 	EnableCloseButton(false);
 	panelToolBar = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	statusbar = CreateStatusBar(1);
@@ -109,10 +127,11 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnFindNext = new wxBitmapButton(panelToolBar, ID_BUTTON_FIND_NEXT, wxIcon(search_right_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, ID_BUTTON_MATCH_CASE, wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, ID_BUTTON_LOOP_SEARCH, wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnSaveWindowPos = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE_WINDOW_POS, wxIcon(window_position_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_THEME, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
-	dropdownMenu = new DropdownMenu(this, ID_DROPDOWN_MENU, wxPoint(468, 32));
+	dropdownMenu = new DropdownMenu(this, ID_DROPDOWN_MENU, wxPoint(500, 32));
 	dropdownMenu->linuxConsole = this;
 	SetProperties();
 	DoLayout();
@@ -121,8 +140,8 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 void Rtt_LinuxConsole::SetProperties()
 {
 	SetTitle(wxT("Solar2DTux Console"));
-	int statusbar_widths[] = { -1 };
-	statusbar->SetStatusWidths(1, statusbar_widths);
+	int statusbarWidths[] = { -1 };
+	statusbar->SetStatusWidths(1, statusbarWidths);
 
 	// statusbar fields
 	const wxString statusbarFields[] =
@@ -156,6 +175,8 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnLoopingSearch->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnLoopingSearch->SetBitmap(consoleLog.buttonLoopingSearchOn ? wxIcon(looping_search_on_xpm) : wxIcon(looping_search_xpm));
 	bitmapBtnLoopingSearch->SetSize(bitmapBtnLoopingSearch->GetBestSize());
+	bitmapBtnSaveWindowPos->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	bitmapBtnSaveWindowPos->SetSize(bitmapBtnMenu->GetBestSize());
 	bitmapBtnMenu->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnMenu->SetSize(bitmapBtnMenu->GetBestSize());
 	panelToolBar->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
@@ -184,10 +205,6 @@ void Rtt_LinuxConsole::SetProperties()
 	{
 		//wxLogMessage("%s server failed to start on %s", kind, IPC_SERVICE);
 	}
-	else
-	{
-		//wxLogMessage("%s server started on %s", kind, IPC_SERVICE);
-	}
 }
 
 void Rtt_LinuxConsole::DoLayout()
@@ -214,12 +231,15 @@ void Rtt_LinuxConsole::DoLayout()
 	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnLoopingSearch, 0, wxBOTTOM | wxTOP, 6);
 	sizer2->AddSpacer(5);
+	sizer2->Add(bitmapBtnSaveWindowPos, 0, wxBOTTOM | wxTOP, 6);
+	sizer2->AddSpacer(5);
 	sizer2->Add(bitmapBtnMenu, 0, wxBOTTOM | wxTOP, 6);
 	panelToolBar->SetSizer(sizer2);
 	sizer1->Add(panelToolBar, 0, wxALL | wxEXPAND, 6);
 	sizer1->Add(txtLog, 1, wxEXPAND, 0);
 	SetSizer(sizer1);
 	Layout();
+	SetPosition(wxPoint(consoleLog.windowXPos, consoleLog.windowYPos));
 }
 
 BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
@@ -231,6 +251,7 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
 	EVT_BUTTON(ID_BUTTON_MATCH_CASE, Rtt_LinuxConsole::OnBtnMatchCaseClick)
 	EVT_BUTTON(ID_BUTTON_LOOP_SEARCH, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
 	EVT_BUTTON(ID_BUTTON_THEME, Rtt_LinuxConsole::OnBtnChangeThemeClick)
+	EVT_BUTTON(ID_BUTTON_SAVE_WINDOW_POS, Rtt_LinuxConsole::OnBtnSaveWindowPosClick)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -347,6 +368,20 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 	consoleLog.config->Flush();
 	txtLog->SetFocus();
 	ResetSearch();
+}
+
+void Rtt_LinuxConsole::OnBtnSaveWindowPosClick(wxCommandEvent &event)
+{
+	wxPoint windowPosition = GetPosition();
+	wxSize windowSize = GetSize();
+	consoleLog.config->Write(wxT(CONFIG_WINDOW_X_POSITION), windowPosition.x);
+	consoleLog.config->Write(wxT(CONFIG_WINDOW_Y_POSITION), windowPosition.y);
+	consoleLog.config->Write(wxT(CONFIG_WINDOW_WIDTH), windowSize.GetWidth());
+	consoleLog.config->Write(wxT(CONFIG_WINDOW_HEIGHT), windowSize.GetHeight());
+	consoleLog.config->Flush();
+
+	wxMessageDialog *msgDialog = new wxMessageDialog(this, "Your window preferences have been saved successfully.", wxT("Window Preferences"), wxOK);
+	msgDialog->ShowModal();
 }
 
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)

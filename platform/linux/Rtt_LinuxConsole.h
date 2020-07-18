@@ -45,6 +45,7 @@ protected:
 	wxBitmapButton *bitmapBtnFindNext;
 	wxBitmapButton *bitmapBtnMatchCase;
 	wxBitmapButton *bitmapBtnLoopingSearch;
+	wxBitmapButton *bitmapBtnSaveWindowPos;
 	wxBitmapButton *bitmapBtnMenu;
 	wxPanel *panelToolBar;
 	wxStyledTextCtrl *txtLog;
@@ -62,8 +63,8 @@ public:
 	void OnBtnFindNextClick(wxCommandEvent &event);
 	void OnBtnMatchCaseClick(wxCommandEvent &event);
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
+	void OnBtnSaveWindowPosClick(wxCommandEvent &event);
 	void OnBtnChangeThemeClick(wxCommandEvent &event);
-	void OnClose(wxCloseEvent &ev);
 	void ClearLog();
 	void UpdateStatusText();
 	void HighlightLine(int indicatorNo, wxColour colour);

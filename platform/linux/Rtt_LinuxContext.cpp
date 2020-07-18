@@ -948,7 +948,6 @@ bool MyApp::OnInit()
 			else
 			{
 				fFrame->Show(true);
-				fFrame->CentreOnScreen(wxBOTH);
 			}
 
 			wxInitAllImageHandlers();
@@ -977,7 +976,6 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(wxID_OPEN, MyFrame::OnOpenFileDialog)
 	EVT_MENU(wxID_NEW, MyFrame::OnNewProject)
 	EVT_MENU(wxID_PREFERENCES, MyFrame::OnOpenPreferences)
-
 	EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
 	EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
 	EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
@@ -1535,7 +1533,6 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	SetTitle(fContext->getTitle().c_str());
 	setMenu(path.c_str());
 	m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
-	CentreOnScreen(wxBOTH);
 
 #ifdef Rtt_SIMULATOR
 	if (!IsHomeScreen(appName))
