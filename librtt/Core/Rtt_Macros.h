@@ -36,6 +36,7 @@
 // ----------------------------------------------------------------------------
 
 #ifdef __cplusplus
+	#undef Rtt_EXPORT
 	#define Rtt_EXPORT						extern "C"
 	#define Rtt_EXPORT_BEGIN					extern "C" {
 	#define Rtt_EXPORT_END					}

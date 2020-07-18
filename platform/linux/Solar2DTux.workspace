@@ -4,7 +4,7 @@
   <Project Name="car" Path="car.project" Active="No"/>
   <Project Name="Solar2DConsole" Path="Solar2DTuxConsole.project" Active="No"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>
       <Project Name="car" ConfigName="Release"/>
       <Project Name="Solar2DSimulator" ConfigName="Release"/>
@@ -16,7 +16,7 @@
       <Project Name="Solar2DSimulator" ConfigName="X64 Template"/>
       <Project Name="Solar2DConsole" ConfigName="x64 Template"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Debug" Selected="no">
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
       <Project Name="car" ConfigName="Debug"/>
       <Project Name="Solar2DSimulator" ConfigName="Debug"/>
