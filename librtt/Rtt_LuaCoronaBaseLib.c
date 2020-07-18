@@ -251,7 +251,7 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		lua_pop(L, 1);  /* pop result */
 
 #if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-		char buffer[4096];
+		char buffer[(strlen(s) * sizeof(const char *)) + 100];
 		sprintf(buffer, "%s\n", s);
 		Rtt_Log(buffer);
 #endif
