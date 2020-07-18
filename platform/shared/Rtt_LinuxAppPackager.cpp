@@ -154,7 +154,7 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 
 
 	// This is not as foolproof as mkdtemp() but has the advantage of working on Win32
-	if (mkdir(mktemp(tmpDir)) == false)
+	if (mkdir(mkdtemp(tmpDir)) == false)
 	{
 		// Note that the failing mkdir() that brought us here is a member of the AndroidAppPackager class
 		String tmpString;

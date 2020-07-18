@@ -262,7 +262,7 @@ int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 
 
 	// This is not as foolproof as mkdtemp() but has the advantage of working on Win32
-	char* tmp = mktemp(tmpDir);
+	char* tmp = mkdtemp(tmpDir);
 	if (Rtt_MakeDirectory(tmp) == false)
 	{
 		// Note that the failing mkdir() that brought us here is a member of the AndroidAppPackager class

@@ -241,7 +241,7 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
 	snprintf(tmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
 
     // This is not as foolproof as mkdtemp() but has the advantage of working on Win32
-    if ( mkdir( mktemp(tmpDir) ) )
+    if ( mkdir( mkdtemp(tmpDir) ) )
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 
