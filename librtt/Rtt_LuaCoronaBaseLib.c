@@ -17,6 +17,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include "lauxlib.h"
 #include "Core/Rtt_Assert.h"
 #include "Core/Rtt_Config.h"
