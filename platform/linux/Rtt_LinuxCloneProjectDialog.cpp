@@ -44,7 +44,7 @@ namespace Rtt
 	void NewCloneDialog::SetProperties()
 	{
 		SetTitle(wxT("Clone Project"));
-		SetFont(wxFont(8, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 		txtCloneUrl->SetValue("");
 		txtProjectFolder->Enable(false);
 		btnOK->SetDefault();
@@ -65,8 +65,8 @@ namespace Rtt
 		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 
 		// set fonts
-		cloneText->SetFont(wxFont(8, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
-		cloneFolderText->SetFont(wxFont(8, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+		cloneText->SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+		cloneFolderText->SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 
 		// add to box sizers
 		boxSizerTopColumn1->Add(cloneText, 0, wxALIGN_RIGHT | wxBOTTOM | wxTOP, 6);
@@ -95,9 +95,9 @@ namespace Rtt
 	}
 
 	BEGIN_EVENT_TABLE(NewCloneDialog, wxDialog)
-	EVT_BUTTON(wxID_OPEN, NewCloneDialog::OnProjectFolderBrowse)
-	EVT_BUTTON(wxID_OK, NewCloneDialog::OnOKClicked)
-	EVT_BUTTON(wxID_CANCEL, NewCloneDialog::OnCancelClicked)
+		EVT_BUTTON(wxID_OPEN, NewCloneDialog::OnProjectFolderBrowse)
+		EVT_BUTTON(wxID_OK, NewCloneDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, NewCloneDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
 	void NewCloneDialog::OnProjectFolderBrowse(wxCommandEvent &event)

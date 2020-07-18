@@ -46,7 +46,7 @@ namespace Rtt
 	void NewPreferencesDialog::SetProperties()
 	{
 		SetTitle(wxT("Preferences"));
-		SetFont(wxFont(8, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 		// todo: read from settings
 		showRuntimeErrors->SetValue(true);
 		automaticallyLaunchLastProject->SetValue(true);
@@ -96,8 +96,8 @@ namespace Rtt
 	}
 
 	BEGIN_EVENT_TABLE(NewPreferencesDialog, wxDialog)
-	EVT_BUTTON(wxID_OK, NewPreferencesDialog::OnOKClicked)
-	EVT_BUTTON(wxID_CANCEL, NewPreferencesDialog::OnCancelClicked)
+		EVT_BUTTON(wxID_OK, NewPreferencesDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, NewPreferencesDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
 	void NewPreferencesDialog::OnOKClicked(wxCommandEvent &event)

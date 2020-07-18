@@ -40,7 +40,7 @@
 #include "wx/app.h"
 #include "wx/display.h"
 
-#ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
+#if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
 #endif
 
@@ -1218,8 +1218,6 @@ void MyFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 	wxIcon icon = wxIcon("/opt/Solar2D/Resources/logo_small.png", wxBITMAP_TYPE_PNG, 60, 60);
 	string version("Version: ");
 	version.append(to_string(Rtt_BUILD_YEAR)).append(".").append(to_string(Rtt_LOCAL_BUILD_REVISION));
-	icon.SetWidth(20);
-	icon.SetHeight(20);
 	info.SetName("Solar2DTux");
 	info.SetVersion(version);
 	info.SetCopyright(Rtt_STRING_COPYRIGHT);

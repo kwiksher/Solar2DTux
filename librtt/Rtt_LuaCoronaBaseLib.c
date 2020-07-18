@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "lauxlib.h"
+#include "Core/Rtt_Assert.h"
 #include "Core/Rtt_Config.h"
 
 /* This is the stock Lua print function.
