@@ -48,17 +48,12 @@
         <Preprocessor Value="wxUSE_XTEST"/>
         <Preprocessor Value="wxHAS_INOTIFY"/>
         <Preprocessor Value="wxUSE_SELECT_DISPATCHER"/>
-        <Preprocessor Value="wxUSE_LIBMSPACK"/>
         <Preprocessor Value="WXWIN_COMPATIBILITY_3_0"/>
-        <Preprocessor Value="wxUSE_TASKBARBUTTON"/>
-        <Preprocessor Value="wxUSE_DBGHELP"/>
-        <Preprocessor Value="wxUSE_WINRT"/>
         <Preprocessor Value="wxUSE_PRIVATE_FONTS"/>
         <Preprocessor Value="wxUSE_ACTIVITYINDICATOR"/>
         <Preprocessor Value="wxUSE_ADDREMOVECTRL"/>
         <Preprocessor Value="wxUSE_UNSAFE_WXSTRING_CONV"/>
         <Preprocessor Value="wxUSE_STD_CONTAINERS_COMPATIBLY"/>
-        <Preprocessor Value="wxUSE_SECRETSTORE"/>
         <Preprocessor Value="wxUSE_GLCANVAS"/>
         <Preprocessor Value="FT2_BUILD_LIBRARY"/>
       </Compiler>

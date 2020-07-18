@@ -7,6 +7,9 @@
 #include <wx/fileconf.h>
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
+// ignore future harmless warnings from XPMs
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #include "resource/console.xpm"
 #include "resource/save.xpm"
 #include "resource/copy.xpm"
@@ -19,6 +22,7 @@
 #include "resource/looping-search-on.xpm"
 #include "resource/window-position.xpm"
 #include "resource/cog.xpm"
+#pragma GCC diagnostic pop
 #endif
 
 #define ID_BUTTON_SAVE wxID_HIGHEST + 1
