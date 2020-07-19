@@ -44,7 +44,7 @@ namespace Rtt
 {
 
 	LinuxPlatform::LinuxPlatform(const char *resourceDir, const char *documentsDir, const char *temporaryDir,
-		              const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir) 
+	                             const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir)
 		: fAllocator(Rtt_AllocatorCreate()),
 		  fDevice(*fAllocator),
 		  fAudioPlayer(NULL),
@@ -676,7 +676,7 @@ namespace Rtt
 
 	PlatformDisplayObject *LinuxPlatform::CreateNativeMapView(const Rect &bounds) const
 	{
-		return 0; //Rtt_NEW(&GetAllocator(), LinuxMapViewObject(bounds));
+		return NULL;
 	}
 
 	PlatformDisplayObject *LinuxPlatform::CreateNativeWebView(const Rect &bounds) const
