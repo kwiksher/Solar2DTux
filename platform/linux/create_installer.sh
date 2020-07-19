@@ -2,7 +2,7 @@ INSTALLER_FOLDER=installer
 BUILD_FOLDER=deb_simulator
 DEBIAN_CONTENTS_INSTALL_FOLDER=$INSTALLER_FOLDER/opt/Solar2D
 SAMPLE_CODE_DIR=../../samples
-SAMPLE_CODE_REMOTE=https://github.com/coronalabs/samples-coronasdk.git
+SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
 mkdir -p $DEBIAN_CONTENTS_INSTALL_FOLDER
 # remove old build
 find $BUILD_FOLDER/ -name "*.deb" -type f -delete
