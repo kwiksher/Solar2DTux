@@ -1326,7 +1326,6 @@
         <Preprocessor Value="wxUSE_GLCANVAS"/>
         <Preprocessor Value="_DEBUG"/>
         <Preprocessor Value="Rtt_LINUX_ENV"/>
-        <Preprocessor Value="Rtt_EXPORT="/>
         <Preprocessor Value="FT2_BUILD_LIBRARY"/>
         <Preprocessor Value="ALMIXER_COMPILE_WITHOUT_SDL"/>
         <Preprocessor Value="SOUND_SUPPORTS_WAV"/>
@@ -1428,7 +1427,6 @@
         <Preprocessor Value="wxUSE_GLCANVAS"/>
         <Preprocessor Value="_DEBUG"/>
         <Preprocessor Value="Rtt_LINUX_ENV"/>
-        <Preprocessor Value="Rtt_EXPORT="/>
         <Preprocessor Value="FT2_BUILD_LIBRARY"/>
         <Preprocessor Value="ALMIXER_COMPILE_WITHOUT_SDL"/>
         <Preprocessor Value="SOUND_SUPPORTS_WAV"/>
@@ -1527,7 +1525,6 @@
         <Preprocessor Value="wxUSE_STD_CONTAINERS_COMPATIBLY"/>
         <Preprocessor Value="wxUSE_GLCANVAS"/>
         <Preprocessor Value="Rtt_LINUX_ENV"/>
-        <Preprocessor Value="Rtt_EXPORT="/>
         <Preprocessor Value="FT2_BUILD_LIBRARY"/>
         <Preprocessor Value="ALMIXER_COMPILE_WITHOUT_SDL"/>
         <Preprocessor Value="SOUND_SUPPORTS_WAV"/>
