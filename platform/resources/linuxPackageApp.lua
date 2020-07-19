@@ -841,7 +841,6 @@ function linuxPackageApp(args)
 
 	local template = args.templateLocation
 	local templateArm = template
-	templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
 
 	-- read settings
 	local buildSettingsFile = pathJoin(args.srcDir, 'build.settings')
@@ -861,6 +860,7 @@ function linuxPackageApp(args)
 		end
 	else
 		local startTime = os.time()
+		templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
 		printf("%s build started", linuxBuilderPrefx)
 		--print(json.prettify(args))
 		--printf("%s template: %s", linuxBuilderPrefx, getLastPathComponent(args.templateLocation))
@@ -884,7 +884,6 @@ function linuxPackageApp(args)
 		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
 		lfs.mkdir(pluginDownloadDir)
 		lfs.mkdir(pluginExtractDir)
-
 
 		local rc = makeApp('x86-64', linuxappFolder, template, args, getLastPathComponent(template))
 
