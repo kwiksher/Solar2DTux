@@ -152,11 +152,15 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 		debugBuildProcess = (int) strtol(debugBuildProcessPref.GetString(), (char **)NULL, 10);
 	}
 
+	bool success = false;
+
 #ifdef Rtt_LINUX_ENV
-	if (mkdir(mkdtemp(tmpDir)) == false)
+	success = mkdir(mkdtemp(tmpDir));
 #else
-	if (mkdir(mktemp(tmpDir)) == false)
+	success = mkdir(mktemp(tmpDir));
 #endif
+	
+	if (!success)
 	{
 		// Note that the failing mkdir() that brought us here is a member of the AndroidAppPackager class
 		String tmpString;

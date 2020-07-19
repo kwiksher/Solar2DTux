@@ -239,12 +239,15 @@ AndroidAppPackager::Build( AppPackagerParams * params, const char * tmpDirBase )
     const char tmpTemplate[] = "CLtmpXXXXXX";
 	char tmpDir[kDefaultNumBytes]; Rtt_ASSERT( kDefaultNumBytes > ( strlen( tmpDirBase ) + strlen( tmpTemplate ) ) );
 	snprintf(tmpDir, kDefaultNumBytes, "%s" LUA_DIRSEP "%s", tmpDirBase, tmpTemplate);
+	bool success = 
 
 #ifdef Rtt_LINUX_ENV
-	if (mkdir(mkdtemp(tmpDir) ) )
+	success = mkdir(mkdtemp(tmpDir));
 #else
-	if (mkdir(mktemp(tmpDir) ) )
+	success = mkdir(mktemp(tmpDir));
 #endif
+
+	if (success)
 	{
 		char* inputFile = Prepackage( params, tmpDir );
 
