@@ -298,3 +298,4 @@ platform/linux/Solar2DTuxConsole.txt
 platform/linux/Solar2DSimulator/Solar2DConsole
 platform/linux/Makefile
 platform/linux/Solar2DConsole.mk
+platform/linux/Console
