@@ -46,7 +46,6 @@ wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
-wxDECLARE_EVENT(eventSuspendOrResume, wxCommandEvent);
 
 static void LinuxConsoleLog(const char *message, bool isError = false)
 {

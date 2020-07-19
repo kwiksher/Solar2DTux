@@ -68,7 +68,6 @@ wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
 wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
-wxDEFINE_EVENT(eventSuspendOrResume, wxCommandEvent);
 
 static const char *getStartupPath(string *exeFileName)
 {
@@ -388,36 +387,6 @@ namespace Rtt
 		PlatformInputDevice *dev = NULL;
 		auto it = fKeyName.find(keycode);
 		const char *keyName = it == fKeyName.end() ? KeyName::kUnknown : it->second.c_str();
-		bool wasCtrlDown = false;
-		bool wasDownArrowDown = false;
-
-		if (down == false)
-		{
-			wasCtrlDown = isCtrlDown;
-			wasDownArrowDown = strcmp(keyName, KeyName::kDown) == 0;
-
-			// relaunch
-			if (strcmp(keyName, KeyName::kR) == 0 && isCtrlDown)
-			{
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-			// close
-			else if (strcmp(keyName, KeyName::kW) == 0 && isCtrlDown)
-			{
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-		}
-		else
-		{
-			// suspend/resume
-			if (wasDownArrowDown && wasCtrlDown)
-			{
-				wxCommandEvent ev(eventSuspendOrResume);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-		}
 
 		KeyEvent ke(dev, down ? KeyEvent::kDown : KeyEvent::kUp, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
 		fRuntime.DispatchEvent(ke);
@@ -989,7 +958,6 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
 	EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
 	EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
-	EVT_COMMAND(wxID_ANY, eventSuspendOrResume, MyFrame::OnSuspendOrResume)
 	EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
 	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
