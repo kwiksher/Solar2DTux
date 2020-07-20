@@ -89,6 +89,18 @@ static const char *getStartupPath(string *exeFileName)
 	return buf;
 }
 
+static const char *getHomePath()
+{
+	const char *homeDir = NULL;
+
+	if ((homeDir = getenv("HOME")) == NULL)
+	{
+		homeDir = getpwuid(getuid())->pw_dir;
+	}
+
+	return homeDir;
+}
+
 static char *CalculateMD5(string filename)
 {
 	LinuxCrypto crypto;
@@ -396,8 +408,7 @@ namespace Rtt
 		: fRuntime(NULL), fRuntimeDelegate(new LinuxRuntimeDelegate()), fMouseListener(NULL), fKeyListener(NULL), fPlatform(NULL), fTouchDeviceExist(false), fMode("normal"), fIsDebApp(false), fSimulator(NULL), fIsStarted(false)
 	{
 		string exeFileName;
-		struct passwd *pw = getpwuid(getuid());
-		const char *homedir = pw->pw_dir;
+		const char *homeDir = getHomePath();
 		const char *appPath = getStartupPath(&exeFileName);
 
 		// override appPath if arg isn't NULL
@@ -434,8 +445,8 @@ namespace Rtt
 		Rtt_ASSERT(fAppName.size() > 0);
 		string startDir(appPath);
 
-		fSaveFolder.append(homedir);
-		fSaveFolder.append("/Documents/Solar Built Apps");
+		fSaveFolder.append(homeDir);
+		fSaveFolder.append("/Documents/Solar2D Built Apps");
 
 		string assetsDir = startDir;
 		assetsDir.append("/Resources/resource.car");
@@ -499,13 +510,7 @@ namespace Rtt
 
 	bool CoronaAppContext::Init()
 	{
-		const char *homeDir = NULL;
-
-		if ((homeDir = getenv("HOME")) == NULL)
-		{
-			homeDir = getpwuid(getuid())->pw_dir;
-		}
-
+		const char *homeDir = getHomePath();
 		string appDir(homeDir);
 
 #ifdef Rtt_SIMULATOR
@@ -971,7 +976,9 @@ MyFrame::MyFrame()
 	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
+#ifdef Rtt_SIMULATOR
 	SetIcon(simulator_xpm);
+#endif
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
@@ -997,15 +1004,14 @@ MyFrame::MyFrame()
 
 	SetWindowStyle(wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX);
 
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	fProjectPath = string(homeDir);
 	fProjectPath.append("/Documents/Solar2D Projects");
+
+	if (!Rtt_IsDirectory(fProjectPath.c_str()))
+	{
+		Rtt_MakeDirectory(fProjectPath.c_str());
+	}
 }
 
 MyFrame::~MyFrame()
@@ -1286,13 +1292,7 @@ void MyFrame::OnOpenInEditor(wxCommandEvent &ev)
 
 void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
 {
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	string command("xdg-open ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");
@@ -1305,13 +1305,7 @@ void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
 
 void MyFrame::OnClearProjectSandbox(wxCommandEvent &ev)
 {
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	string command("rm -rf ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -27,7 +27,7 @@
 //
 
 namespace Rtt
-{ 
+{
 
 	enum io_method
 	{
@@ -36,18 +36,18 @@ namespace Rtt
 		IO_METHOD_USERPTR,
 	};
 
-	#define CLEAR(x) memset(&(x), 0, sizeof(x))
+#define CLEAR(x) memset(&(x), 0, sizeof(x))
 
 	static const char* dev_name = "/dev/video0";
 	static enum io_method   io = IO_METHOD_MMAP;
-	
-struct buffer
-{
-	void   *start;
-	size_t  length;
-};
-struct buffer* buffers;	
-static unsigned int n_buffers;
+
+	struct buffer
+	{
+		void   *start;
+		size_t  length;
+	};
+	struct buffer* buffers;
+	static unsigned int n_buffers;
 
 	/// Creates a new image provider.
 	/// @param handle Reference to Lua state used to send image selection notifications to a Lua listener function.
@@ -59,7 +59,7 @@ static unsigned int n_buffers;
 		{
 			init_device();
 		}
-	} 
+	}
 
 	LinuxImageProvider::~LinuxImageProvider()
 	{
@@ -103,7 +103,8 @@ static unsigned int n_buffers;
 	int LinuxImageProvider::xioctl(int fh, unsigned long int request, void *arg)
 	{
 		int r;
-		do {
+		do
+		{
 			r = ioctl(fh, request, arg);
 		}
 		while (r == -1 && EINTR == errno);
@@ -114,7 +115,8 @@ static unsigned int n_buffers;
 	{
 		buffers = (buffer*) calloc(1, sizeof(*buffers));
 
-		if (!buffers) {
+		if (!buffers)
+		{
 			fprintf(stderr, "Out of memory\n");
 			exit(EXIT_FAILURE);
 		}
@@ -122,7 +124,8 @@ static unsigned int n_buffers;
 		buffers[0].length = buffer_size;
 		buffers[0].start = malloc(buffer_size);
 
-		if (!buffers[0].start) {
+		if (!buffers[0].start)
+		{
 			fprintf(stderr, "Out of memory\n");
 			exit(EXIT_FAILURE);
 		}
@@ -138,13 +141,13 @@ static unsigned int n_buffers;
 		req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		req.memory = V4L2_MEMORY_MMAP;
 
-		if (xioctl(fd, VIDIOC_REQBUFS, &req) == -1) 
+		if (xioctl(fd, VIDIOC_REQBUFS, &req) == -1)
 		{
 			if (EINVAL == errno)
 			{
 				Rtt_LogException("%s does not support memory mapping\n", dev_name);
 				return false;
-			} 
+			}
 			else
 			{
 				Rtt_LogException("VIDIOC_REQBUFS failed");
@@ -183,11 +186,11 @@ static unsigned int n_buffers;
 
 			buffers[n_buffers].length = buf.length;
 			buffers[n_buffers].start =
-				mmap(NULL, // start anywhere
-							buf.length,
-							PROT_READ | PROT_WRITE,
-							MAP_SHARED,  // recommended
-							fd, buf.m.offset);
+			    mmap(NULL, // start anywhere
+			         buf.length,
+			         PROT_READ | PROT_WRITE,
+			         MAP_SHARED,  // recommended
+			         fd, buf.m.offset);
 
 			if (MAP_FAILED == buffers[n_buffers].start)
 			{
@@ -208,28 +211,35 @@ static unsigned int n_buffers;
 		req.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		req.memory = V4L2_MEMORY_USERPTR;
 
-		if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req)) {
-			if (EINVAL == errno) {
+		if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req))
+		{
+			if (EINVAL == errno)
+			{
 				fprintf(stderr, "%s does not support "
-					 "user pointer i/o\n", dev_name);
+				        "user pointer i/o\n", dev_name);
 				exit(EXIT_FAILURE);
-			} else {
+			}
+			else
+			{
 				printf("VIDIOC_REQBUFS");
 			}
 		}
 
 		buffers = (buffer*) calloc(4, sizeof(*buffers));
 
-		if (!buffers) {
+		if (!buffers)
+		{
 			fprintf(stderr, "Out of memory\n");
 			exit(EXIT_FAILURE);
 		}
 
-		for (n_buffers = 0; n_buffers < 4; ++n_buffers) {
+		for (n_buffers = 0; n_buffers < 4; ++n_buffers)
+		{
 			buffers[n_buffers].length = buffer_size;
 			buffers[n_buffers].start = malloc(buffer_size);
 
-			if (!buffers[n_buffers].start) {
+			if (!buffers[n_buffers].start)
+			{
 				fprintf(stderr, "Out of memory\n");
 				exit(EXIT_FAILURE);
 			}
@@ -243,13 +253,13 @@ static unsigned int n_buffers;
 		struct v4l2_crop crop;
 		struct v4l2_format fmt;
 
-		if (xioctl(fd, VIDIOC_QUERYCAP, &cap) == -1) 
+		if (xioctl(fd, VIDIOC_QUERYCAP, &cap) == -1)
 		{
-			if (errno == EINVAL) 
+			if (errno == EINVAL)
 			{
 				Rtt_LogException("%s is no V4L2 device\n", dev_name);
-			} 
-			else 
+			}
+			else
 			{
 				Rtt_LogException("VIDIOC_QUERYCAP failed");
 			}
@@ -292,18 +302,18 @@ static unsigned int n_buffers;
 		if (xioctl(fd, VIDIOC_CROPCAP, &cropcap) == 0)
 		{
 			crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-			crop.c = cropcap.defrect; // reset to default 
+			crop.c = cropcap.defrect; // reset to default
 
-			if (xioctl(fd, VIDIOC_S_CROP, &crop) == -1) 
+			if (xioctl(fd, VIDIOC_S_CROP, &crop) == -1)
 			{
 				switch (errno)
 				{
 					case EINVAL:
-					// Cropping not supported.
-					break;
+						// Cropping not supported.
+						break;
 					default:
-						// Errors ignored. 
-					break;
+						// Errors ignored.
+						break;
 				}
 			}
 		}
@@ -328,11 +338,11 @@ static unsigned int n_buffers;
 				Rtt_LogException("VIDIOC_S_FMT failed");
 				return false;
 			}
-			// Note VIDIOC_S_FMT may change width and height. 
+			// Note VIDIOC_S_FMT may change width and height.
 		}
 		else
 		{
-			// Preserve original settings as set by v4l2-ctl for example 
+			// Preserve original settings as set by v4l2-ctl for example
 			if (xioctl(fd, VIDIOC_G_FMT, &fmt) == -1)
 			{
 				Rtt_LogException("VIDIOC_G_FMT filed");
@@ -363,27 +373,27 @@ static unsigned int n_buffers;
 		unsigned int i;
 		switch (io)
 		{
-		case IO_METHOD_READ:
-			free(buffers[0].start);
-			break;
+			case IO_METHOD_READ:
+				free(buffers[0].start);
+				break;
 
-		case IO_METHOD_MMAP:
-			for (i = 0; i < n_buffers; ++i)
-			{
-				if (munmap(buffers[i].start, buffers[i].length) == -1)
+			case IO_METHOD_MMAP:
+				for (i = 0; i < n_buffers; ++i)
 				{
-					Rtt_LogException("munmap failed");
-					break;
+					if (munmap(buffers[i].start, buffers[i].length) == -1)
+					{
+						Rtt_LogException("munmap failed");
+						break;
+					}
 				}
-			}
-			break;
+				break;
 
-		case IO_METHOD_USERPTR:
-			for (i = 0; i < n_buffers; ++i)
-			{
-				free(buffers[i].start);
-			}
-			break;
+			case IO_METHOD_USERPTR:
+				for (i = 0; i < n_buffers; ++i)
+				{
+					free(buffers[i].start);
+				}
+				break;
 		}
 		free(buffers);
 	}
@@ -428,10 +438,10 @@ static unsigned int n_buffers;
 			filePath = NULL;
 		}
 
-		if (fd < 0)		// streamer created ?
+		if (fd < 0)	// streamer created ?
 		{
-			Rtt_LogException("LinuxImageProvider is not implememnted\n");
-			return false; 
+			Rtt_LogException("LinuxImageProvider is not implemented\n");
+			return false;
 		}
 		return true;
 	}
@@ -442,7 +452,7 @@ static unsigned int n_buffers;
 
 		if (eventID == onCreated)
 		{
-//			fObjID = w;
+			//fObjID = w;
 			return;
 		}
 
@@ -453,8 +463,8 @@ static unsigned int n_buffers;
 
 		if (fd < 0)
 		{
-//			jsImageProviderHide(fObjID);
-			Rtt_LogException("LinuxImageProvider is not implememnted\n");
+			//jsImageProviderHide(fObjID);
+			Rtt_LogException("LinuxImageProvider is not implemented\n");
 		}
 	}
 

@@ -12,8 +12,6 @@
 #include <wx/string.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
-
-//#include "Core\Rtt_Build.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_LuaFile.h"
 #include "Rtt_MPlatform.h"
@@ -205,15 +203,10 @@ namespace Rtt
 		ctx->getPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
 		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
-		std::string tmp = Rtt_GetSystemTempDirectory();
-		tmp += LUA_DIRSEP;
-		tmp += "CoronaLabs";
-
 		// build the app. (Warning! This is blocking call.)
 		platform->SetActivityIndicator(true);
-		int rc = packager.Build(&linuxBuilderParams, tmp.c_str());
+		int rc = packager.Build(&linuxBuilderParams);
 		platform->SetActivityIndicator(false);
-
 		params->fDlg->Close();
 
 		wxMessageDialog *dial;
@@ -283,7 +276,7 @@ namespace Rtt
 		tmp += LUA_DIRSEP;
 		tmp += "CoronaLabs";
 
-		int rc = packager.Build(&linuxBuilderParams, tmp.c_str());
+		int rc = packager.Build(&linuxBuilderParams);
 	}
 
 	void LinuxSimulatorView::OnWebBuild(wxCommandEvent &e)
@@ -435,7 +428,7 @@ namespace Rtt
 
 	void LinuxSimulatorView::OnBuildForLinux(CoronaAppContext *ctx)
 	{
-		wxDialog *OpenDialog = new wxDialog(NULL, -1, "Linux Build Setup (beta)", wxDefaultPosition, wxSize(550, 280));
+		wxDialog *OpenDialog = new wxDialog(NULL, -1, "Linux Build Setup", wxDefaultPosition, wxSize(550, 280));
 		wxPanel *panel = new wxPanel(OpenDialog, -1);
 		wxBoxSizer *vbox = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);

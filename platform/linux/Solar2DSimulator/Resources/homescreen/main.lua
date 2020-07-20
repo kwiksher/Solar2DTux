@@ -8,9 +8,6 @@
 ------------------------------------------------------------------------------
 local widget = require("widget")
 local simErr, simulator = pcall(require, "simulator")
-if not simErr then
-	simulator = require "simulator_stub"
-end
 local json = require("json")
 local lfs = require("lfs")
 local sFormat = string.format

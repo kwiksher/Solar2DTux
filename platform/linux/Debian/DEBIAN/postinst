@@ -1,13 +1,18 @@
 #!/bin/bash
-# download android sdk
-wget -c http://vlad-test.s3.amazonaws.com/tmp/android-sdk.tar.gz -P /tmp
-tar -xzkf --skip-old-files /tmp/android-sdk.tar.gz -C /opt/Solar2D/
 
 if [[ "$OSTYPE" != "linux-gnu" ]]
 then
     echo "This script is meant to run on Linux"
     exit 1
 fi
+
+# set permissions
+chmod -R a+rwx $USER:$USER /opt/Solar2D/
+chmod -R a+rwx /opt/Solar2D/start.sh
+
+# download android sdk
+wget -c http://vlad-test.s3.amazonaws.com/tmp/android-sdk.tar.gz -P /tmp
+tar -xzf /tmp/android-sdk.tar.gz -C /opt/Solar2D/
 
 # make sure we have the latest package lists
 apt-get update  
@@ -18,7 +23,6 @@ apt-get install libopenal-dev -y
 apt-get install libgtk-3-dev -y
 apt-get install libpng-dev -y
 apt-get install zlib1g-dev -y
-apt-get install libwebkitgtk-3.0-dev -y
 apt-get install libgstreamer1.0-dev -y
 apt-get install libgstreamer-plugins-base1.0-dev -y
 apt-get install libjpeg-dev -y
@@ -43,7 +47,14 @@ apt-get install openjdk-8-jdk-headless -y
 apt-get install openjdk-8-jre-headless -y
 apt-get install p7zip -y
 apt-get install p7zip-full -y
-# set permissions
-chown -R root /opt/Solar2D/
+# copy wx web extensions
+mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
+sudo mv /opt/Solar2D/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
 # copy desktop file
-cp /opt/Solar2D/Resources/Solar2D.desktop /usr/share/applications/
+cp /opt/Solar2D/Resources/Solar2DTux.desktop /usr/share/applications/
+# add to path
+if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
+    echo "Application path already configured"
+else
+    echo 'export PATH="/opt/Solar2D:$PATH"' >> ~/.bashrc
+fi

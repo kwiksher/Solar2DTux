@@ -1,5 +1,5 @@
 INSTALLER_FOLDER=installer
-BUILD_FOLDER=deb_simulator
+BUILD_FOLDER=Debian
 DEBIAN_CONTENTS_INSTALL_FOLDER=$INSTALLER_FOLDER/opt/Solar2D
 SAMPLE_CODE_DIR=../../samples
 SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
@@ -27,10 +27,10 @@ rsync -avz -q --exclude "android*" Solar2DSimulator/ $DEBIAN_CONTENTS_INSTALL_FO
 rm -rf $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_debug
 # copy corona resources
 rsync -r Solar2DSimulator/Resources/ $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
-# copy extensions
-rsync -r ../../simulator-extensions/ $DEBIAN_CONTENTS_INSTALL_FOLDER/Extensions/
+# copy wx web extensions
+cp -u wx/lib/webkit2_extu-3.1.3.so $DEBIAN_CONTENTS_INSTALL_FOLDER
 # copy desktop file
-cp -u $BUILD_FOLDER/Solar2D.desktop $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
+cp -u $BUILD_FOLDER/Solar2DTux.desktop $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
 # copy logo
 cp -u $BUILD_FOLDER/logo.png $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
 # copy sample code

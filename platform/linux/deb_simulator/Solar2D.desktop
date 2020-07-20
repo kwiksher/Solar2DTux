@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Solar2D
-Comment=Solar2D SDK
-Exec=/opt/Solar2D/start.sh
-Icon=/opt/Solar2D/Resources/logo.png
-Terminal=true
-Type=Application
-StartupNotify=true

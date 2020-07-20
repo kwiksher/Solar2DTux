@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -40,7 +40,7 @@ namespace Rtt
 		{
 			Rect outBounds;
 			GetScreenBounds(outBounds);
-			
+
 			Rtt_ASSERT(fWindow == NULL);
 			fWindow = new myTextCtrl(this, outBounds.xMin, outBounds.yMin, outBounds.Width(), outBounds.Height(), fIsSingleLine);
 			return true;
@@ -54,7 +54,7 @@ namespace Rtt
 		{
 			Rect outBounds{};
 			GetScreenBounds(outBounds);
-			
+
 			fWindow->SetPosition((wxPoint(outBounds.xMin, outBounds.yMin)));
 			fWindow->SetSize(outBounds.Width(), outBounds.Height());
 		}
@@ -128,13 +128,13 @@ namespace Rtt
 		else if (strcmp("align", key) == 0)
 		{
 			char buf[16] = {0};
-			Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
 			lua_pushstring(L, buf);
 		}
 		else if (strcmp("isSecure", key) == 0)
 		{
 			char buf[64] = {0};
-			Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
 			lua_pushboolean(L, strcmp(buf, "password") == 0);
 		}
 		else if (strcmp("inputType", key) == 0)
@@ -142,7 +142,7 @@ namespace Rtt
 			if (fIsSingleLine)
 			{
 				char buf[64] = {0};
-				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implememnted\n", key);
+				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
 				lua_pushstring(L, buf);
 			}
 			else
@@ -155,7 +155,7 @@ namespace Rtt
 			if (!fIsSingleLine)
 			{
 				bool val = 0; //jsTextFieldGetEditable(fElementID);
-				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implememnted\n", key);
+				Rtt_LogException("LinuxTextBoxObject: ValueForKey '%s' is not implemented\n", key);
 				lua_pushboolean(L, val);
 			}
 		}
@@ -239,19 +239,19 @@ namespace Rtt
 		{
 			const char *s = lua_tostring(L, valueIndex);
 			//			jsTextFieldSetPlaceholder(fElementID, s ? s : "");
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else if (strcmp("isSecure", key) == 0)
 		{
 			bool secure = lua_toboolean(L, valueIndex) ? true : false;
 			//			jsTextFieldSetSecure(fElementID, secure);
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else if (strcmp("align", key) == 0)
 		{
 			const char * align = lua_tostring(L, valueIndex);
 			//			jsTextFieldSetAlign(fElementID, align);
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else if (strcmp("inputType", key) == 0)
 		{
@@ -259,14 +259,14 @@ namespace Rtt
 			if (inputType)
 			{
 				//				jsTextFieldSetInputType(fElementID, inputType);
-				Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implememnted\n", key);
+				Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 			}
 		}
 		else if (strcmp("isEditable", key) == 0)
 		{
 			bool isEditable = lua_toboolean(L, valueIndex) ? true : false;
 			//			jsTextFieldSetEditable(fElementID, isEditable);
-			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implememnted\n", key);
+			Rtt_LogException("LinuxTextBoxObject: SetValueForKey '%s' is not implemented\n", key);
 		}
 		else
 		{
@@ -294,7 +294,7 @@ namespace Rtt
 		char rgb[8];
 		snprintf(rgb, sizeof(rgb), "#%02X%02X%02X", r, g, b);
 		//jsTextFieldSetColor(obj->fElementID, rgb);
-		Rtt_LogException("LinuxVideoObject is not implememnted\n");
+		Rtt_LogException("LinuxVideoObject:SetTextColor() is not implemented\n");
 
 		return 0;
 	}
@@ -362,46 +362,46 @@ namespace Rtt
 
 		switch (eventID)
 		{
-		case 1:		// began
-			// User begins editing "defaultField"
-			break;
+			case 1:		// began
+				// User begins editing "defaultField"
+				break;
 
-		case 2:		// editing
-		{
-			wxString strval = GetValue();
+			case 2:		// editing
+			{
+				wxString strval = GetValue();
 
-			lua_pushstring(L, strval.c_str());
-			lua_setfield(L, luaTableStackIndex, "newCharacters");
-			nPushed++;
+				lua_pushstring(L, strval.c_str());
+				lua_setfield(L, luaTableStackIndex, "newCharacters");
+				nPushed++;
 
-			int val = 0; //jsVideoTotalTime(fElementID);
-			lua_pushnumber(L, val);
-			lua_setfield(L, luaTableStackIndex, "numDeleted");
-			nPushed++;
+				int val = 0; //jsVideoTotalTime(fElementID);
+				lua_pushnumber(L, val);
+				lua_setfield(L, luaTableStackIndex, "numDeleted");
+				nPushed++;
 
-			lua_pushstring(L, fOldValue.c_str());
-			lua_setfield(L, luaTableStackIndex, "oldText");
-			nPushed++;
+				lua_pushstring(L, fOldValue.c_str());
+				lua_setfield(L, luaTableStackIndex, "oldText");
+				nPushed++;
 
-			int pos = GetInsertionPoint();
-			lua_pushnumber(L, pos);
-			lua_setfield(L, luaTableStackIndex, "startPosition");
-			nPushed++;
+				int pos = GetInsertionPoint();
+				lua_pushnumber(L, pos);
+				lua_setfield(L, luaTableStackIndex, "startPosition");
+				nPushed++;
 
-			lua_pushstring(L, strval.c_str());
-			lua_setfield(L, luaTableStackIndex, "text");
-			nPushed++;
+				lua_pushstring(L, strval.c_str());
+				lua_setfield(L, luaTableStackIndex, "text");
+				nPushed++;
 
-			fOldValue = strval;
+				fOldValue = strval;
 
-			break;
-		}
-		case 3:		// ended
-			// Output resulting text from "defaultField"
-			break;
+				break;
+			}
+			case 3:		// ended
+				// Output resulting text from "defaultField"
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 
 		CoronaLuaDispatchEvent(L, fLuaReference, 0);

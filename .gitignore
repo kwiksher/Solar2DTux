@@ -227,14 +227,6 @@ platform/mac/CoronaLiveServer/libs/bin
 platform/mac/CoronaLiveServer/libs/ssl
 platform/mac/CoronaLiveServer/libevent
 platform/mac/CoronaLiveServer/openssl
-platform/linux/lua
-platform/linux/linux_rtt.txt
-platform/linux/linuxtemplate.tar.gz
-platform/linux/raspbiantemplate.tar.gz
-platform/linux/rtt.mk
-platform/linux/rtt_arm.mk
-platform/linux/deb/
-platform/linux/deb_arm/
 
 tools/node-post
 # ignore abandoned, prototyes and closed source
@@ -243,21 +235,16 @@ platform/gametree
 platform/nintendo
 platform/symbian
 platform/webos
-
 .hg*
 _hg/
 *.p12
 *.cert
 /platform/windows/Build.Tools/CoronaLabsInc.pfx
 premake4.lua
-
-
 !bin/mac/lfs.so
-!platform/linux/deb/CONTENTS
 !platform/test/assets/main.lua
 librtt/Renderer/ios/build
 librtt/Renderer/mac/build
-
 
 #legacy entries
 /plugins/viewer
@@ -271,8 +258,6 @@ plugins/ads-inneractive
 commit-email.sh
 platform/resources/iostemplate
 platform/tvos/license.ccdata
-
-.codelite
 platform/iphone/*.tar.bz
 platform/tvos/*.tar.bz
 /*_output.zip
@@ -285,17 +270,21 @@ external/JNLua/.settings/
 external/JNLua/target/
 external/JNLua/.classpath
 external/JNLua/.project
-platform/linux/Solar2DSimulator/Resources/template_x64.tgz
-platform/linux/deb_simulator/solar2dtux.deb
-platform/Solar2DSimulator/Solar2DSimulator
-platform/linux/compile_flags.txt
-platform/linux/Solar2DSimulator.txt
-platform/linux/Solar2DSimulator/Solar2DSimulator
+
+# Linux
+.codelite
+*.deb
 platform/linux/Solar2DSimulator.mk
-platform/linux/car.mk
-platform/linux/Solar2DConsole.txt
-platform/linux/Solar2DTuxConsole.txt
-platform/linux/Solar2DSimulator/Solar2DConsole
-platform/linux/Makefile
 platform/linux/Solar2DConsole.mk
+platform/linux/car.mk
+platform/linux/Makefile
+platform/linux/Solar2DSimulator.txt
+platform/linux/Solar2DConsole.txt
+platform/linux/compile_flags.txt
+platform/linux/Solar2DSimulator/Solar2DSimulator
+platform/linux/Solar2DSimulator/Solar2DConsole
+platform/linux/Solar2DSimulator/Resources/template_x64.tgz
+platform/linux/Solar2DSimulator/Resources/template_arm.tgz
+platform/linux/Solar2DSimulator/Resources/template_web.tgz
+platform/linux/lua
 platform/linux/Console

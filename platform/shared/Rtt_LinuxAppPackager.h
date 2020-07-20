@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -17,45 +17,45 @@
 namespace Rtt
 {
 
-class LuaContext;
-class MPlatformServices;
+	class LuaContext;
+	class MPlatformServices;
 
 // ----------------------------------------------------------------------------
 
-class LinuxAppPackagerParams : public AppPackagerParams
-{
+	class LinuxAppPackagerParams : public AppPackagerParams
+	{
 	public:
 		typedef AppPackagerParams Super;
 
 	public:
-		LinuxAppPackagerParams( 
-			const char* appName, 
-			const char* version,
-			const char* identity,
-			const char* provisionFile,
-			const char* srcDir,
-			const char* dstDir,
-			const char* sdkRoot,
-			TargetDevice::Platform targetPlatform,
-			S32 targetVersion,
-			S32 targetDevice,
-			const char * customBuildId,
-			const char * productId,
-			const char * appPackage,
-			bool isDistributionBuild,
-			const char * debtemplate,
-			bool useStandardResources,
-			bool runAfterBuild,
-			bool onlyGetPlugins
-			)
-		: AppPackagerParams( 
-			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
-			targetPlatform, (char*)"linux", targetVersion, targetDevice, customBuildId, productId,
-			appPackage, isDistributionBuild )
-		, fDebTemplate(debtemplate)
-		, fUseStandardResources(useStandardResources)
-		, fRunAfterBuild(runAfterBuild)
-		, fOnlyGetPlugins(onlyGetPlugins)
+		LinuxAppPackagerParams(
+		    const char* appName,
+		    const char* version,
+		    const char* identity,
+		    const char* provisionFile,
+		    const char* srcDir,
+		    const char* dstDir,
+		    const char* sdkRoot,
+		    TargetDevice::Platform targetPlatform,
+		    S32 targetVersion,
+		    S32 targetDevice,
+		    const char * customBuildId,
+		    const char * productId,
+		    const char * appPackage,
+		    bool isDistributionBuild,
+		    const char * debtemplate,
+		    bool useStandardResources,
+		    bool runAfterBuild,
+		    bool onlyGetPlugins
+		)
+			: AppPackagerParams(
+			      appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
+			      targetPlatform, (char*)"linux", targetVersion, targetDevice, customBuildId, productId,
+			      appPackage, isDistributionBuild )
+			, fDebTemplate(debtemplate)
+			, fUseStandardResources(useStandardResources)
+			, fRunAfterBuild(runAfterBuild)
+			, fOnlyGetPlugins(onlyGetPlugins)
 		{
 		}
 
@@ -64,10 +64,10 @@ class LinuxAppPackagerParams : public AppPackagerParams
 		const bool fUseStandardResources;
 		const bool fRunAfterBuild;
 		const bool fOnlyGetPlugins;
-};
+	};
 
-class LinuxAppPackager : public PlatformAppPackager
-{
+	class LinuxAppPackager : public PlatformAppPackager
+	{
 	public:
 		typedef PlatformAppPackager Super;
 
@@ -76,10 +76,10 @@ class LinuxAppPackager : public PlatformAppPackager
 		virtual ~LinuxAppPackager();
 
 	public:
-		virtual int Build( AppPackagerParams *params, const char *tmpDirBase);
+		virtual int Build( AppPackagerParams *params);
 
 	private:
-};
+	};
 
 // ----------------------------------------------------------------------------
 
