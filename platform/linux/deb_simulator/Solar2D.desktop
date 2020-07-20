@@ -6,3 +6,4 @@ Icon=/opt/Solar2D/Resources/logo.png
 Terminal=true
 Type=Application
 StartupNotify=true
+StartupWMClass=Solar2DSimulator

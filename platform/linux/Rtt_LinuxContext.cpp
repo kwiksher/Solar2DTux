@@ -1119,8 +1119,6 @@ void MyFrame::createMenus()
 		mi = m_pBuildMenu->Append(ID_MENU_BUILD_WEB, _T("HTML5	\tCtrl-Shift-Alt-B"));
 		wxMenu *m_pBuildForLinuxMenu = new wxMenu();
 		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x64	\tCtrl-Alt-B"));
-		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x86	\tCtrl-Alt-I"));
-		mi->Enable(false);
 		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("ARM	\tCtrl-Alt-A"));
 		mi->Enable(false);
 		m_pBuildMenu->AppendSubMenu(m_pBuildForLinuxMenu, _T("&Linux"));
@@ -1748,6 +1746,23 @@ void MyGLCanvas::OnMouse(wxMouseEvent &e)
 
 			runtime->DispatchEvent(mouseEvent);
 			fContext->GetMouseListener()->TouchMoved(x, y, 0);
+		}
+
+		// mousewheel events
+		if (e.GetWheelRotation() > 0 || e.GetWheelRotation() < 0)
+		{
+			if (e.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL)
+			{
+				scrollWheelDeltaY = e.GetWheelRotation() * -1;
+			}
+			else
+			{
+				scrollWheelDeltaX = e.GetWheelRotation() * -1;
+			}
+
+			Rtt::MouseEvent mouseEvent(Rtt::MouseEvent::kScroll, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
+			                           isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+			runtime->DispatchEvent(mouseEvent);
 		}
 	}
 }

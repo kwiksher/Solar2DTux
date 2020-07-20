@@ -9,8 +9,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="linux">
-      <File Name="Rtt_LinuxIPCClientConnection.cpp"/>
-      <File Name="Rtt_LinuxIPCCient.cpp"/>
+      <File Name="Rtt_Freetype.cpp"/>
       <File Name="Rtt_HTTPClientLinux.cpp"/>
       <VirtualDirectory Name="packagers">
         <VirtualDirectory Name="include">
@@ -45,9 +44,7 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="include">
-        <File Name="Rtt_LinuxIPCConnectionBase.h"/>
-        <File Name="Rtt_LinuxIPCClientConnection.h"/>
-        <File Name="Rtt_LinuxIPCCient.h"/>
+        <File Name="Rtt_Freetype.h"/>
         <File Name="Rtt_LinuxWebView.h"/>
         <File Name="Rtt_LinuxWebPopup.h"/>
         <File Name="Rtt_LinuxVideoProvider.h"/>
@@ -408,7 +405,6 @@
     </VirtualDirectory>
     <VirtualDirectory Name="rtt">
       <File Name="../../librtt/Core/Rtt_Assert.cpp"/>
-      <File Name="../../librtt/Rtt_LuaCoronaBaseLib.c"/>
       <VirtualDirectory Name="include">
         <File Name="../../librtt/Rtt_GPU.h"/>
         <File Name="../../external/smoothpolygon/SmoothPolygon.h"/>
@@ -599,7 +595,6 @@
         <File Name="../../librtt/Display/Rtt_GradientPaint.h"/>
         <File Name="../../librtt/Rtt_GPUStream.h"/>
         <File Name="../../librtt/Core/Rtt_Geometry.h"/>
-        <File Name="Rtt_Freetype.h"/>
         <File Name="../../librtt/Rtt_FillTesselatorStream.h"/>
         <File Name="../../librtt/Core/Rtt_FileSystem.h"/>
         <File Name="../../librtt/Rtt_FilePath.h"/>
@@ -641,7 +636,6 @@
         <File Name="../../librtt/b2GLESDebugDraw.h"/>
         <File Name="../../external/b2Separator-cpp/b2Separator.h"/>
       </VirtualDirectory>
-      <File Name="Rtt_Freetype.cpp"/>
       <File Name="../shared/Rtt_TargetDevice.cpp"/>
       <File Name="../shared/Rtt_TargetAndroidAppStore.cpp"/>
       <File Name="../shared/Rtt_PlatformObjectWrapper.cpp"/>
@@ -984,6 +978,7 @@
       <File Name="../../librtt/Rtt_LuaLibFacebook.cpp"/>
       <File Name="../../librtt/Rtt_LuaLibCrypto.cpp"/>
       <File Name="../../librtt/Rtt_LuaData.cpp"/>
+      <File Name="../../librtt/Rtt_LuaCoronaBaseLib.c"/>
       <File Name="../../librtt/Rtt_LuaContext.cpp"/>
       <File Name="../../librtt/Rtt_LuaContainer.cpp"/>
       <File Name="../../librtt/Rtt_LuaAux.cpp"/>
@@ -1357,7 +1352,6 @@
         <StartupCommands/>
       </Debugger>
       <PreBuild>
-        <Command Enabled="yes">make -f Solar2DConsole.mk</Command>
         <Command Enabled="yes">make -f lua2cpp.mk</Command>
       </PreBuild>
       <PostBuild>

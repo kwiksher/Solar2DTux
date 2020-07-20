@@ -44,7 +44,7 @@ namespace Rtt
 {
 
 	LinuxPlatform::LinuxPlatform(const char *resourceDir, const char *documentsDir, const char *temporaryDir,
-		              const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir) 
+	                             const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir)
 		: fAllocator(Rtt_AllocatorCreate()),
 		  fDevice(*fAllocator),
 		  fAudioPlayer(NULL),
@@ -68,6 +68,7 @@ namespace Rtt
 		fTemporaryDir.Set(temporaryDir);
 		fCachesDir.Set(cachesDir);
 		fSystemCachesDir.Set(systemCachesDir);
+		fSkinDir.Set(skinDir);
 		fInstallDir.Set(installDir);
 	}
 

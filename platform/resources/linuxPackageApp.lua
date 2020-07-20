@@ -461,6 +461,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 		local pluginPath = options.pluginPath
 		local pluginCatalogKey = options.pluginCatalogKey
 		local pluginArchiveDir = sFormat("%sdata.tgz", downloadDir)
+		local isLuaPlugin = options.isLuaPlugin
 
 		local function removeOldPlugin()
 			if (fileExists(pluginPath)) then
@@ -482,30 +483,120 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 
 		printf("%s trying to download %s from %s", pluginMessagePrefix, pluginName, url)
 		
-		local file = ltn12.sink.file(io.open(pluginArchiveDir, 'w'))
-		local body, code, headers, err = http.request(
-		{
-			url = url,
-			method = "GET",
-			sink = file,
-		})
+		local code, response = _download(url, pluginArchiveDir)
 
-		if (code == 200 and fileExists(pluginArchiveDir)) then
+		if (code == 0 and fileExists(pluginArchiveDir)) then
 			printf("%s downloaded %s successfully", pluginMessagePrefix, pluginName)
 
 			local ret = extractTar(pluginArchiveDir, pluginDestinationDir)
 
 			if (ret ~= 0) then
-				return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
+				return sFormat('%s failed to unpack plugin %s to %s - curl error code: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, code)
 			end
 
 			if (fileExists(pluginPath)) then
 				pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
 				saveTable(pluginCatalog, pluginCatalogPath)
 			end
+
+			if (isLuaPlugin) then
+				copyDir(sFormat("%s/.Solar2D/Plugins/lua_51/plugin", os.getenv("HOME")), sFormat("%s/.Solar2D/Plugins/plugin/", os.getenv("HOME")))
+				removeDir(sFormat("%s/.Solar2D/Plugins/lua_51", os.getenv("HOME")))
+			end
 		else
 			removeOldPlugin()
 			printf("%s Failed to download %s. err: %s, %s", pluginMessagePrefix, pluginName, code, err)
+		end
+	end
+
+	local function getPluginFromRepo(options)
+		local pluginName = options.pluginName
+		local publisherID = options.publisherID
+		local downloadDir = options.downloadDir
+		local pluginCatalogKey = options.pluginCatalogKey
+		local url = "https://plugins.solar2d.com/plugins.json"
+		local repoCatalogPath = sFormat("%s/.Solar2D/Plugins/repo.json", os.getenv("HOME"))
+
+		printf("%s looking for %s in plugin repo", pluginMessagePrefix, pluginName)
+		
+		local code, response = _fetch(url)
+
+		if (code == 0) then
+			local file = io.open(repoCatalogPath, 'w')
+			file:write(response)
+			file:close()
+		end
+
+		if (fileExists(repoCatalogPath)) then
+			printf("%s found catalog file", pluginMessagePrefix)
+			local repoData = loadTable(repoCatalogPath)
+			local publisherTable = repoData["solar2d"][publisherID]
+			local pluginTable = publisherTable[pluginName]
+
+			if (pluginTable ~= nil) then
+				printf("%s found plugin %s in plugin repo", pluginMessagePrefix, pluginName)
+
+				print(json.prettify(pluginTable))
+				print("------------------------")
+
+				local pluginInfo = {
+					name = pluginName,
+					publisherID = publisherID,
+				}
+
+				for k, v in pairs(pluginTable) do
+					if (k == "r") then
+						pluginInfo.releaseVersion = v
+					end
+
+					if (type(v) == "table") then
+						for buildKey, buildValue in pairs(v) do
+							if (buildKey:gmatch("?(%d.%d)")) then
+								pluginInfo.supportedBuildNumber = buildKey
+							end
+
+							if (type(buildValue) == "table") then
+								for _, platform in pairs(buildValue) do
+
+									if (platform == "lua") then
+										pluginInfo.isLuaPlugin = true
+									elseif (platform == linuxKey or platform == linuxSimKey) then
+										pluginInfo.platformKey = platform
+										pluginInfo.isNativePlugin = true
+									end
+								end
+							end
+						end
+					end
+				end
+				
+				print(json.prettify(pluginInfo))
+				local pluginPath = pluginDestinationDir
+				local url = nil
+
+				if (pluginInfo.isLuaPlugin) then
+					url = sFormat("https://github.com/solar2d/%s-%s/releases/download/%s/%s-lua.tgz", publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber)
+					pluginPath = downloadDir .. pluginName:sub(8) .. ".lua"
+				else
+					url = sFormat("https://github.com/solar2d/%s-%s/releases/download/%s/%s-%s.tgz", publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, pluginInfo.platformKey)
+					pluginPath = downloadDir .. pluginName:sub(8) .. ".so"
+				end
+
+				printf("%s plugin url from repo is: %s", pluginMessagePrefix, url)
+				printf("%s plugin path: %s, plugin download dir: %s", pluginMessagePrefix, pluginPath, downloadDir)
+
+				downloadPlugin(
+				{
+					url = url,
+					pluginName = pluginName,
+					pluginPath = pluginPath,
+					downloadDir = downloadDir,
+					pluginCatalogKey = pluginCatalogKey,
+					isLuaPlugin = pluginInfo.isLuaPlugin
+				})
+			end
+			-- https://github.com/solar2d/provider-plugin.name/releases/download/version/SOLARVERSION-lua.tgz
+			--https://github.com/solar2d/com.schroederapps-plugin.progressRing/releases/download/v1/2017.3032-lua.tgz
 		end
 	end
 
@@ -589,9 +680,20 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 												pluginPath = pluginPath,
 												downloadDir = pluginDownloadDir,
 												pluginCatalogKey = pluginCatalogKey
-											})	
+											})
 										end
 									end
+									-- search the repo for lua plugins
+								else
+									--[[
+									printf("%s time to check the plugin repo for %s plugin by %s", pluginMessagePrefix, pluginName, publisherID)
+									getPluginFromRepo(
+									{
+										pluginName = pluginName,
+										publisherID = publisherID,
+										downloadDir = pluginDownloadDir,
+										pluginCatalogKey = pluginCatalogKey
+									})--]]
 								end
 							end
 						end
