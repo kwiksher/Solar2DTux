@@ -101,12 +101,12 @@ namespace Rtt
 
 		switch (mask)
 		{
-		case kIsBitsFullResolution:
-			break;
-		case kIsBitsAutoRotated:
-			break;
-		default:
-			break;
+			case kIsBitsFullResolution:
+				break;
+			case kIsBitsAutoRotated:
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -198,10 +198,10 @@ namespace Rtt
 		{
 			for (int x = 0; x < w; x++)
 			{
-				prgb[0] = bits[0];
-				prgb[1] = bits[1];
-				prgb[2] = bits[2];
-				*palpha = bits[3];
+				prgb[0] = bits[1];
+				prgb[1] = bits[2];
+				prgb[2] = bits[3];
+				*palpha = bits[0];
 
 				bits += 4;
 				prgb += 3;
@@ -215,8 +215,6 @@ namespace Rtt
 		free(rgb);
 		free(alpha);
 		return rc;
-
-		return true;
 	}
 
 	//
