@@ -133,11 +133,7 @@ namespace Rtt
 	{
 		if (!fImageProvider)
 		{
-			int w, h;
-			fScreenSurface->getWindowSize(&w, &h);
-#ifndef _WIN32
-			fImageProvider = Rtt_NEW(fAllocator, LinuxImageProvider(handle, w, h));
-#endif
+			fImageProvider = Rtt_NEW(&GetAllocator(), LinuxImageProvider(handle));
 		}
 		return fImageProvider;
 	}
