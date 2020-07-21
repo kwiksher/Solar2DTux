@@ -587,7 +587,11 @@ namespace Rtt
 			if (fi)
 			{
 				fclose(fi);
+#ifdef Rtt_SIMULATOR
 				fRuntime->SetProperty(Runtime::kLinuxMaskSet | Runtime::kIsApplicationNotArchived | Runtime::kShouldVerifyLicense, true);
+#else
+				fRuntime->SetProperty(Runtime::kLinuxMaskSet, true);
+#endif
 			}
 		}
 
