@@ -1,5 +1,5 @@
-#ifndef LINUXIPCSERVER_H
-#define LINUXIPCSERVER_H
+#ifndef LINUX_IPC_SERVER_H
+#define LINUX_IPC_SERVER_H
 
 #include <wx/ipc.h>
 
@@ -26,4 +26,4 @@ protected:
 	wxConnection *mConnection;
 };
 
-#endif //LINUXIPCSERVER_H
+#endif //LINUX_IPC_SERVER_H

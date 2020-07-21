@@ -1,5 +1,5 @@
-#ifndef LINUXIPCSERVERCONNECTION_H
-#define LINUXIPCSERVERCONNECTION_H
+#ifndef LINUX_IPC_SERVER_CONNECTION_H
+#define LINUX_IPC_SERVER_CONNECTION_H
 
 #include <wx/wx.h>
 #include <wx/ipc.h>
@@ -13,4 +13,4 @@ public:
 	virtual bool OnPoke(const wxString &topic, const wxString &item, const void *data, size_t size, wxIPCFormat format) wxOVERRIDE;
 };
 
-#endif //LINUXIPCSERVERCONNECTION_H
+#endif //LINUX_IPC_SERVER_CONNECTION_H

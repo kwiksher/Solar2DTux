@@ -1,5 +1,5 @@
-#ifndef LINUXCONSOLEAPP_H
-#define LINUXCONSOLEAPP_H
+#ifndef LINUX_CONSOLE_APP_H
+#define LINUX_CONSOLE_APP_H
 
 #include <wx/app.h>
 #include "Rtt_LinuxConsole.h"

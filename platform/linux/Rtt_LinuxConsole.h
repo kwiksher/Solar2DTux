@@ -1,5 +1,5 @@
-#ifndef LINUXCONSOLE_H
-#define LINUXCONSOLE_H
+#ifndef LINUX_CONSOLE_H
+#define LINUX_CONSOLE_H
 
 #include <pwd.h>
 #include <sys/types.h>
@@ -97,4 +97,4 @@ public:
 	void ShowDropDownMenu();
 };
 
-#endif // LINUXCONSOLE_H
+#endif // LINUX_CONSOLE_H
