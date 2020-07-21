@@ -9,11 +9,13 @@
 
 //#include "Core/Rtt_Build.h"
 #include "Core/Rtt_Config.h"
-
 #include "Core/Rtt_Macros.h"
 #include "Core/Rtt_Types.h"
-
 #include "Core/Rtt_Assert.h"
+
+#ifdef Rtt_LINUX_ENV
+#include "../../platform/linux/Rtt_LinuxContext.h"
+#endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
 #undef Rtt_Log
@@ -37,7 +39,7 @@ Rtt_EXPORT_BEGIN
 
 #include <stdio.h>
 #include <stdarg.h>
-
+#include <string.h>
 #if defined( Rtt_ANDROID_ENV )
 #include <android/log.h>
 #elif defined( Rtt_WIN_ENV ) || defined( Rtt_POWERVR_ENV )
@@ -45,7 +47,9 @@ Rtt_EXPORT_BEGIN
 #include <windows.h>
 #endif
 
-
+#ifdef Rtt_LINUX_ENV
+static bool linuxIsErrorMsg = false;
+#endif
 /// Static variable set to non-zero if logging is enabled. Set to zero if logging is disabled.
 static int fIsLoggingEnabled = 1;
 
@@ -105,16 +109,16 @@ Rtt_LogGetHandler(void)
 int
 Rtt_LogException( const char *format, ... )
 {
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+	linuxIsErrorMsg = true;
+#endif
+
 	int result = 0;
 	va_list ap;
 
 	va_start( ap, format );
 	result = Rtt_VLogException( format, ap );
 	va_end( ap );
-
-#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-	// console app output here
-#endif
 
 	return result;
 }
@@ -198,10 +202,6 @@ Rtt_VLogException(const char *format, va_list ap)
 			// Output the string to stdout and the Visual Studio debugger.
 #if defined(Rtt_NINTENDO_ENV)
 			fputs(stringPointer, stdout);
-#elif defined(Rtt_LINUX_ENV)
-			fputs(stringPointer, stdout);
-#elif defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-			// console app output here
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
 			{
@@ -226,7 +226,7 @@ Rtt_VLogException(const char *format, va_list ap)
 #elif defined( Rtt_ANDROID_ENV )
 	result = __android_log_vprint( ANDROID_LOG_INFO, "Corona", format, ap );
 #elif defined(EMSCRIPTEN)
-	char	buffer[4096];
+	char buffer[4096];
 	int n = vsnprintf(buffer, 4096, format, ap);
 	if (n > 0)
 	{
@@ -237,6 +237,15 @@ Rtt_VLogException(const char *format, va_list ap)
 		}, buffer);
 	}
 #else
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+	char buffer[4096];
+	va_list apCopy;
+	va_copy(apCopy, ap);
+
+	int n = vsnprintf(buffer, 4096, format, apCopy);
+	LinuxConsoleLog((n > 0) ? buffer : format, linuxIsErrorMsg);
+#endif
+
 	result = vfprintf( stderr, format, ap );
 	fflush( stderr );
 #endif
@@ -258,14 +267,14 @@ Rtt_Log( const char *format, ... )
 
 	if (Rtt_LogIsEnabled())
 	{
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+		linuxIsErrorMsg = false;
+#endif
+
 		va_list ap;
 		va_start(ap, format);
 		result = Rtt_VLogException(format, ap);
 		va_end(ap);
-
-#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-		// console app output here
-#endif
 	}
 
 	return result;
