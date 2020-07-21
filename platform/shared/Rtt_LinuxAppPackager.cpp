@@ -59,6 +59,8 @@ namespace Rtt
 		char buffer[(strlen(message) * sizeof(const char *)) + 100];
 		sprintf(buffer, "%s\n", message);
 		Rtt_Log(buffer);
+
+		return 0;
 	}
 
 // ----------------------------------------------------------------------------

@@ -17,7 +17,7 @@ namespace Rtt
 
 	// ----------------------------------------------------------------------------
 
-#pragma region Constructors / Destructors
+	#pragma region Constructors / Destructors
 	LinuxDevice::LinuxDevice(Rtt_Allocator &allocator)
 		: fAllocator(allocator),
 		  fInputDeviceManager(&allocator),
@@ -29,9 +29,9 @@ namespace Rtt
 	{
 	}
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Public Member Functions
+	#pragma region Public Member Functions
 	void LinuxDevice::SetOrientation(DeviceOrientation::Type orientation)
 	{
 		fOrientation = orientation;
@@ -55,19 +55,19 @@ namespace Rtt
 
 		switch (type)
 		{
-		case MPlatformDevice::kGyroscopeEvent:
-			break;
-		case MPlatformDevice::kOrientationEvent:
-		case MPlatformDevice::kLocationEvent:
-		case MPlatformDevice::kHeadingEvent:
-		case MPlatformDevice::kMultitouchEvent:
-		case MPlatformDevice::kKeyEvent:
-		case MPlatformDevice::kAccelerometerEvent:
-			hasEventSource = true;
-			break;
-		default:
-			Rtt_ASSERT_NOT_REACHED();
-			break;
+			case MPlatformDevice::kGyroscopeEvent:
+				break;
+			case MPlatformDevice::kOrientationEvent:
+			case MPlatformDevice::kLocationEvent:
+			case MPlatformDevice::kHeadingEvent:
+			case MPlatformDevice::kMultitouchEvent:
+			case MPlatformDevice::kKeyEvent:
+			case MPlatformDevice::kAccelerometerEvent:
+				hasEventSource = true;
+				break;
+			default:
+				Rtt_ASSERT_NOT_REACHED();
+				break;
 		}
 		return hasEventSource;
 	}
@@ -78,16 +78,16 @@ namespace Rtt
 
 		switch (type)
 		{
-		case MPlatformDevice::kOrientationEvent:
-		case MPlatformDevice::kLocationEvent:
-		case MPlatformDevice::kAccelerometerEvent:
-		case MPlatformDevice::kGyroscopeEvent:
-		case MPlatformDevice::kHeadingEvent:
-		case MPlatformDevice::kMultitouchEvent:
-			break;
-		default:
-			Rtt_ASSERT_NOT_REACHED();
-			break;
+			case MPlatformDevice::kOrientationEvent:
+			case MPlatformDevice::kLocationEvent:
+			case MPlatformDevice::kAccelerometerEvent:
+			case MPlatformDevice::kGyroscopeEvent:
+			case MPlatformDevice::kHeadingEvent:
+			case MPlatformDevice::kMultitouchEvent:
+				break;
+			default:
+				Rtt_ASSERT_NOT_REACHED();
+				break;
 		}
 	}
 
@@ -97,16 +97,16 @@ namespace Rtt
 
 		switch (type)
 		{
-		case MPlatformDevice::kOrientationEvent:
-		case MPlatformDevice::kLocationEvent:
-		case MPlatformDevice::kAccelerometerEvent:
-		case MPlatformDevice::kGyroscopeEvent:
-		case MPlatformDevice::kHeadingEvent:
-		case MPlatformDevice::kMultitouchEvent:
-			break;
-		default:
-			Rtt_ASSERT_NOT_REACHED();
-			break;
+			case MPlatformDevice::kOrientationEvent:
+			case MPlatformDevice::kLocationEvent:
+			case MPlatformDevice::kAccelerometerEvent:
+			case MPlatformDevice::kGyroscopeEvent:
+			case MPlatformDevice::kHeadingEvent:
+			case MPlatformDevice::kMultitouchEvent:
+				break;
+			default:
+				Rtt_ASSERT_NOT_REACHED();
+				break;
 		}
 	}
 
@@ -131,22 +131,25 @@ namespace Rtt
 
 		switch (t)
 		{
-		case MPlatformDevice::kDeviceIdentifier:
-			break;
-		case MPlatformDevice::kHardwareIdentifier:
-			break;
-		case MPlatformDevice::kOSIdentifier:
-			break;
-		case MPlatformDevice::kUdidIdentifier:
-			break;
-		default:
-			break;
+			case MPlatformDevice::kDeviceIdentifier:
+				break;
+			case MPlatformDevice::kHardwareIdentifier:
+				break;
+			case MPlatformDevice::kOSIdentifier:
+				break;
+			case MPlatformDevice::kUdidIdentifier:
+				break;
+			default:
+				break;
 		}
 		return result;
 	}
 
 	MPlatformDevice::EnvironmentType LinuxDevice::GetEnvironment() const
 	{
+#ifdef Rtt_SIMULATOR
+		return kSimulatorEnvironment;
+#endif
 		return kDeviceEnvironment;
 	}
 
@@ -198,7 +201,7 @@ namespace Rtt
 		return "CoronaLabs";
 	}
 
-#pragma endregion
+	#pragma endregion
 
 	// ----------------------------------------------------------------------------
 
