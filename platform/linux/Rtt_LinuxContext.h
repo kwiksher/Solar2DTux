@@ -222,6 +222,7 @@ namespace Rtt
 		int getFPS() const { return fRuntime ? fRuntime->GetFPS() : 30; }
 		int getWidth() const { return fRuntimeDelegate->fContentWidth; }
 		int getHeight() const { return fRuntimeDelegate->fContentHeight; }
+		LinuxRuntimeDelegate *getRuntimeDelegate() { return fRuntimeDelegate; }
 		DeviceOrientation::Type getOrientation() const { return fRuntimeDelegate->fOrientation; }
 		const std::string &getTitle() const { return fTitle; }
 		void flush(); // redraw
@@ -311,6 +312,7 @@ public:
 	void OnClearProjectSandbox(wxCommandEvent &ev);
 	void OnOpenSampleProjects(wxCommandEvent &ev);
 	void OnOpenDocumentation(wxCommandEvent &ev);
+	void OnSize(wxSizeEvent &event);
 	void OnClose(wxCloseEvent &ev);
 	void SetOGLString(const wxString &ogls) { m_OGLString = ogls; }
 	void CreateSuspendedPanel();
@@ -323,6 +325,8 @@ public:
 	void createMenus();
 	void watchFolder(const char *path, const char *appName);
 
+	wxPanel *mainPanel;
+	wxBoxSizer *glSizer;
 	wxPanel *suspendedPanel;
 	wxStaticText *suspendedText;
 	wxMenu *m_pHardwareMenu;

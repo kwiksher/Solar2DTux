@@ -967,13 +967,14 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
 	EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+	EVT_SIZE(MyFrame::OnSize)
 #ifdef Rtt_SIMULATOR
 	EVT_CLOSE(MyFrame::OnClose)
 #endif
 wxEND_EVENT_TABLE()
 
 MyFrame::MyFrame()
-	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
+	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX | wxRESIZE_BORDER), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
 #ifdef Rtt_SIMULATOR
@@ -982,6 +983,9 @@ MyFrame::MyFrame()
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
+	mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+	glSizer = new wxBoxSizer(wxHORIZONTAL);
+	mainPanel->SetSizer(glSizer);
 	bool accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
 	if (accepted == false)
@@ -1001,8 +1005,6 @@ MyFrame::MyFrame()
 
 	createMenus();
 	m_mycanvas = new MyGLCanvas(this, vAttrs);
-
-	SetWindowStyle(wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX);
 
 	const char *homeDir = getHomePath();
 	fProjectPath = string(homeDir);
@@ -1173,6 +1175,22 @@ void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 #endif
 
 	Close(true);
+}
+
+void MyFrame::OnSize(wxSizeEvent &event)
+{
+	event.Skip();
+
+	if (fContext && fContext->GetRuntime())
+	{
+		mainPanel->SetSize(wxSize(fContext->getWidth(), fContext->getHeight()));
+		fContext->getRuntimeDelegate()->fContentWidth = GetSize().x;
+		fContext->getRuntimeDelegate()->fContentHeight = GetSize().y;
+		fContext->GetRuntime()->WindowSizeChanged();
+		fContext->GetRuntime()->RestartRenderer(fContext->getOrientation());
+		fContext->GetRuntime()->GetDisplay().Invalidate();
+		fContext->GetRuntime()->DispatchEvent(ResizeEvent());
+	}
 }
 
 void MyFrame::OnClose(wxCloseEvent &ev)
@@ -1617,16 +1635,15 @@ void MyGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 // In wxGTK, window creation and sizing requires several size-events. At least
 // one of them happens after GTK+ has notified the realization. We use this
 // circumstance and do initialization then.
-
 void MyGLCanvas::OnSize(wxSizeEvent &event)
 {
+	static bool isInited = false;
+
 	// If this window is not fully initialized, dismiss this event
 	if (!IsShownOnScreen())
 	{
 		return;
 	}
-
-	static bool isInited = false;
 
 	//Now we have a context, retrieve pointers to OGL functions
 	if (isInited == false)
@@ -1636,6 +1653,7 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 
 		// The current context must be set before we get OGL pointers
 		SetCurrent(*m_oglContext);
+		m_parent->glSizer->Add(this, 1, wxEXPAND );
 
 		// open home screen
 		wxCommandEvent eventOpen(eventOpenProject);
@@ -1648,12 +1666,6 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 
 	// It's up to the application code to update the OpenGL viewport settings.
 	m_winHeight = event.GetSize().y;
-	// m_oglManager->SetViewport(0, 0, event.GetSize().x, m_winHeight);
-
-	if (fContext && fContext->GetRuntime())
-	{
-		fContext->GetRuntime()->GetDisplay().Invalidate();
-	}
 
 	// Generate paint event
 	Refresh(false);
