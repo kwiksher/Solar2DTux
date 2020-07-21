@@ -40,7 +40,6 @@ protected:
 	wxBitmapButton *bitmapBtnSave;
 	wxBitmapButton *bitmapBtnCopy;
 	wxBitmapButton *bitmapBtnErase;
-	wxTextCtrl *txtFind;
 	wxBitmapButton *bitmapBtnFindPrevious;
 	wxBitmapButton *bitmapBtnFindNext;
 	wxBitmapButton *bitmapBtnMatchCase;
@@ -48,8 +47,8 @@ protected:
 	wxBitmapButton *bitmapBtnSaveWindowPos;
 	wxBitmapButton *bitmapBtnMenu;
 	wxPanel *panelToolBar;
+	wxTextCtrl *txtFind;
 	wxStyledTextCtrl *txtLog;
-	wxTimer *timer;
 	Rtt_LinuxIPCServer *linuxIPCServer;
 	DropdownMenu *dropdownMenu;
 
@@ -65,6 +64,7 @@ public:
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnBtnSaveWindowPosClick(wxCommandEvent &event);
 	void OnBtnChangeThemeClick(wxCommandEvent &event);
+	void OnKeyUp(wxKeyEvent &event);
 	void ClearLog();
 	void UpdateStatusText();
 	void HighlightLine(int indicatorNo, wxColour colour);

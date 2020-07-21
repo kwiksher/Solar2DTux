@@ -51,6 +51,8 @@
 #define CONFIG_LIGHT_THEME_VALUE "light"
 #define CONFIG_DARK_THEME_VALUE "dark"
 
+wxDEFINE_EVENT(eventFindNext, wxCommandEvent);
+
 struct ConsoleLog
 {
 	int currentPosition = 0;
@@ -126,13 +128,13 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxStri
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnCopy = new wxBitmapButton(panelToolBar, ID_BUTTON_COPY, wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnErase = new wxBitmapButton(panelToolBar, ID_BUTTON_CLEAR, wxIcon(erase_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
-	txtFind = new wxTextCtrl(panelToolBar, wxID_ANY, wxEmptyString);
 	bitmapBtnFindPrevious = new wxBitmapButton(panelToolBar, ID_BUTTON_FIND_PREVIOUS, wxIcon(search_left_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnFindNext = new wxBitmapButton(panelToolBar, ID_BUTTON_FIND_NEXT, wxIcon(search_right_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, ID_BUTTON_MATCH_CASE, wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, ID_BUTTON_LOOP_SEARCH, wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnSaveWindowPos = new wxBitmapButton(panelToolBar, ID_BUTTON_SAVE_WINDOW_POS, wxIcon(window_position_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, ID_BUTTON_THEME, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	txtFind = new wxTextCtrl(panelToolBar, wxID_ANY, wxEmptyString);
 	txtLog = new wxStyledTextCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
 	dropdownMenu = new DropdownMenu(this, ID_DROPDOWN_MENU, wxPoint(500, 32));
@@ -165,10 +167,6 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnCopy->SetSize(bitmapBtnCopy->GetBestSize());
 	bitmapBtnErase->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnErase->SetSize(bitmapBtnErase->GetBestSize());
-	txtFind->SetMinSize(wxSize(250, 28));
-	txtFind->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, 0, wxT("")));
-	txtFind->SetBackgroundColour(wxColour(27, 27, 28));
-	txtFind->SetForegroundColour(consoleLog.textColourDarkTheme);
 	bitmapBtnFindPrevious->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	bitmapBtnFindPrevious->SetSize(bitmapBtnFindPrevious->GetBestSize());
 	bitmapBtnFindNext->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
@@ -185,6 +183,11 @@ void Rtt_LinuxConsole::SetProperties()
 	bitmapBtnMenu->SetSize(bitmapBtnMenu->GetBestSize());
 	panelToolBar->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
 	statusbar->SetBackgroundColour(consoleLog.toolbarBackgroundColor);
+	txtFind->SetMinSize(wxSize(250, 28));
+	txtFind->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, 0, wxT("")));
+	txtFind->SetBackgroundColour(wxColour(27, 27, 28));
+	txtFind->SetForegroundColour(consoleLog.textColourDarkTheme);
+	txtFind->Connect(wxEVT_CHAR, wxCharEventHandler(Rtt_LinuxConsole::OnKeyUp));
 	txtLog->SetFocus();
 	txtLog->SetReadOnly(true);
 	txtLog->SetWrapMode(1);
@@ -256,6 +259,7 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
 	EVT_BUTTON(ID_BUTTON_LOOP_SEARCH, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
 	EVT_BUTTON(ID_BUTTON_THEME, Rtt_LinuxConsole::OnBtnChangeThemeClick)
 	EVT_BUTTON(ID_BUTTON_SAVE_WINDOW_POS, Rtt_LinuxConsole::OnBtnSaveWindowPosClick)
+	EVT_COMMAND(wxID_ANY, eventFindNext, Rtt_LinuxConsole::OnBtnFindNextClick)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -302,7 +306,6 @@ void Rtt_LinuxConsole::OnBtnFindPreviousClick(wxCommandEvent &event)
 	{
 		int searchFlags = (consoleLog.buttonMatchCaseOn) ? wxSTC_FIND_MATCHCASE : 0;
 		wxString searchText = txtFind->GetLineText(0);
-		txtLog->SetFocus();
 		txtLog->SearchAnchor();
 		consoleLog.currentPosition = txtLog->SearchPrev(searchFlags, searchText);
 
@@ -329,7 +332,6 @@ void Rtt_LinuxConsole::OnBtnFindNextClick(wxCommandEvent &event)
 	{
 		int searchFlags = (consoleLog.buttonMatchCaseOn) ? wxSTC_FIND_MATCHCASE : 0;
 		wxString searchText = txtFind->GetLineText(0);
-		txtLog->SetFocus();
 
 		if (consoleLog.currentPosition > 0)
 		{
@@ -391,6 +393,17 @@ void Rtt_LinuxConsole::OnBtnSaveWindowPosClick(wxCommandEvent &event)
 void Rtt_LinuxConsole::OnBtnChangeThemeClick(wxCommandEvent &event)
 {
 	dropdownMenu->Show(dropdownMenu->IsShown() ? false : true);
+}
+
+void Rtt_LinuxConsole::OnKeyUp(wxKeyEvent &event)
+{
+	if (event.GetKeyCode() == WXK_RETURN)
+	{
+		wxCommandEvent ev(eventFindNext);
+		wxPostEvent(this, ev);
+	}
+
+	event.Skip();
 }
 
 void Rtt_LinuxConsole::ClearLog()
