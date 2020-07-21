@@ -8,18 +8,22 @@
 ------------------------------------------------------------------------------
 local widget = require("widget")
 local simErr, simulator = pcall(require, "simulator")
-if not simErr then
-	simulator = require "simulator_stub"
-end
 local json = require("json")
 local lfs = require("lfs")
 local sFormat = string.format
 local recentProjectsPath = sFormat("%s/.Solar2D/Sandbox/Simulator/Documents/recents.json", os.getenv("HOME")) 
-local backgroundColor = {37 / 255, 37 / 255, 38 / 255, 1}
-local buttonBackgroundColor = {51 / 255, 51 / 255, 55 / 255, 1}
+local backgroundColor = {0.14, 0.14, 0.149, 1}
+local buttonBackgroundColor = {0.2, 0.2, 0.21, 1}
 local mainFont = "OpenSans-Regular.ttf"
 local lightFont = "OpenSans-Light.ttf"
-local buttonYOffset = 50
+local buttonWidth = 150
+local buttonHeight = 30
+local buttonFontSize = 14
+local buttonYPadding = 5
+local recentProjectIconSize = 30
+local headerFontSize = 14
+local sidePadding = 12
+local recentProjectTitles = {}
 
 display.setDefault("background", backgroundColor[1], backgroundColor[2], backgroundColor[3])
 
@@ -124,36 +128,38 @@ local function removeExistingProjectFromRecents(recentProjects, projectName)
 	end
 end
 
-local solar2DTuxLogo = display.newImageRect("images/logo.png", 600, 200)
+local solar2DTuxLogo = display.newImageRect("images/logo.png", display.contentWidth / 2.5, display.contentHeight / 5)
 solar2DTuxLogo.anchorX = 0
 solar2DTuxLogo.anchorY = 0
-solar2DTuxLogo.x = 20
+solar2DTuxLogo.x = sidePadding
 solar2DTuxLogo.y = 10
 
 local latestNewsTitle = display.newText(
 {
 	text = "Latest News:",
 	font = mainFont,
-	fontSize = 24,
+	fontSize = headerFontSize,
 	align = "left"
 })
 latestNewsTitle.anchorX = 1
 latestNewsTitle.anchorY = 0
-latestNewsTitle.x = display.contentWidth - 180
+latestNewsTitle.x = display.contentWidth - 10
 latestNewsTitle.y = 20
 latestNewsTitle:setFillColor(1, 1, 1, 1)
 
 local latestNewsText = display.newText(
 {
-	text = "Version 0.1-RC is in development.\nWe're hard at work developing the\nlatest version of Solar2DTux.\n\nStay tuned for more info!",
+	text = "Solar2DTux is developed primarily by Danny Glover & Robert Craig. If you are in a position to support our work, please visit our homepage via the 'website' button to see our GitHub/Patreon sponsor accounts. Thank you.",
 	font = lightFont,
-	fontSize = 20,
+	fontSize = headerFontSize - 1,
+	width = display.contentWidth / 2.2,
+	height = solar2DTuxLogo.contentHeight / 1.5,
 	align = "left"
 })
 latestNewsText.anchorX = 1
 latestNewsText.anchorY = 0
-latestNewsText.x = display.contentWidth - 20
-latestNewsText.y = latestNewsTitle.y + 30
+latestNewsText.x = display.contentWidth - 10
+latestNewsText.y = latestNewsTitle.y + latestNewsTitle.contentHeight + 2
 latestNewsText:setFillColor(1, 1, 1, 1)
 
 -- get started
@@ -161,19 +167,19 @@ local getStartedText = display.newText(
 {
 	text = "Get Started",
 	font = mainFont,
-	fontSize = 24,
+	fontSize = headerFontSize,
 	align = "left"
 })
 getStartedText.anchorX = 0
 getStartedText.anchorY = 0
-getStartedText.x = 20
-getStartedText.y = 220
+getStartedText.x = sidePadding
+getStartedText.y = solar2DTuxLogo.y + solar2DTuxLogo.contentHeight + 4
 getStartedText:setFillColor(1, 1, 1, 1)
 
 local separatorLine = display.newRect(0, 0, display.contentWidth - 20, 1)
 separatorLine.anchorY = 0
 separatorLine.x = display.contentCenterX
-separatorLine.y = getStartedText.y + 30
+separatorLine.y = getStartedText.y + getStartedText.contentHeight + 2
 separatorLine:setFillColor(unpack(buttonBackgroundColor))
 
 local function createButton(label, onRelease)
@@ -182,9 +188,10 @@ local function createButton(label, onRelease)
 		label = label,
 		emboss = false,
 		shape = "roundedRect",
-		width = 200,
-		height = 40,
+		width = buttonWidth,
+		height = buttonHeight,
 		cornerRadius = 2,
+		fontSize = buttonFontSize,
 		fillColor = 
 		{ 
 			default = buttonBackgroundColor, 
@@ -207,8 +214,8 @@ local cloneProjectButton = createButton("Clone A Repository",
 	end
 )
 cloneProjectButton.anchorX = 0
-cloneProjectButton.x = 20
-cloneProjectButton.y = getStartedText.y + 60
+cloneProjectButton.x = sidePadding
+cloneProjectButton.y = (separatorLine.y + separatorLine.contentHeight) + (cloneProjectButton.contentHeight * 0.5) + 4
 
 local openProjectButton = createButton("Open Existing Project",
 	function(event)
@@ -231,8 +238,8 @@ local openProjectButton = createButton("Open Existing Project",
 	end
 )
 openProjectButton.anchorX = 0
-openProjectButton.x = 20
-openProjectButton.y = cloneProjectButton.y + buttonYOffset
+openProjectButton.x = sidePadding
+openProjectButton.y = cloneProjectButton.y + buttonHeight + buttonYPadding
 
 local createProjectButton = createButton("Create New Project",
 	function(event)
@@ -240,8 +247,8 @@ local createProjectButton = createButton("Create New Project",
 	end
 )
 createProjectButton.anchorX = 0
-createProjectButton.x = 20
-createProjectButton.y = openProjectButton.y + buttonYOffset
+createProjectButton.x = sidePadding
+createProjectButton.y = openProjectButton.y + buttonHeight + buttonYPadding
 
 local openSampleCodeButton = createButton("View Sample Code",
 	function(event)
@@ -249,8 +256,8 @@ local openSampleCodeButton = createButton("View Sample Code",
 	end
 )
 openSampleCodeButton.anchorX = 0
-openSampleCodeButton.x = 20
-openSampleCodeButton.y = createProjectButton.y + buttonYOffset
+openSampleCodeButton.x = sidePadding
+openSampleCodeButton.y = createProjectButton.y + buttonHeight + buttonYPadding
 
 local reportAnIssueButton = createButton("Report An Issue",
 	function(event)
@@ -258,79 +265,56 @@ local reportAnIssueButton = createButton("Report An Issue",
 	end
 )
 reportAnIssueButton.anchorX = 0
-reportAnIssueButton.x = 20
-reportAnIssueButton.y = openSampleCodeButton.y + buttonYOffset
-
--- helpful links
-local helpfulLinksText = display.newText(
-{
-	text = "Helpful Links",
-	font = mainFont,
-	fontSize = 24,
-	align = "left"
-})
-helpfulLinksText.anchorX = 1
-helpfulLinksText.anchorY = 0
-helpfulLinksText.x = display.contentWidth - 80
-helpfulLinksText.y = getStartedText.y
-helpfulLinksText:setFillColor(1, 1, 1, 1)
+reportAnIssueButton.x = sidePadding
+reportAnIssueButton.y = openSampleCodeButton.y + buttonHeight + buttonYPadding
 
 local documentationButton = createButton("Documentation", 
 	function(event) 
 		system.openURL("https://docs.coronalabs.com/api") 
 	end
 )
-documentationButton.anchorX = 1
-documentationButton.x = display.contentWidth - 20
-documentationButton.y = helpfulLinksText.y + 60
+documentationButton.anchorX = 0
+documentationButton.x = sidePadding
+documentationButton.y = reportAnIssueButton.y + buttonHeight + buttonYPadding
 
 local githubButton = createButton("GitHub", 
 	function(event) 
 		system.openURL("https://github.com/DannyGlover/Solar2DTux") 
 	end
 )
-githubButton.anchorX = 1
-githubButton.x = display.contentWidth - 20
-githubButton.y = documentationButton.y + buttonYOffset
+githubButton.anchorX = 0
+githubButton.x = sidePadding
+githubButton.y = documentationButton.y + buttonHeight + buttonYPadding
 
-local forumsButton = createButton("Forums",
+local websiteButton = createButton("Website",
 	function(event) 
-		system.openURL("https://forums.solar2d.com/") 
+		system.openURL("https://solar2dtux.com/") 
 	end
 )
-forumsButton.anchorX = 1
-forumsButton.x = display.contentWidth - 20
-forumsButton.y = githubButton.y + buttonYOffset
+websiteButton.anchorX = 0
+websiteButton.x = sidePadding
+websiteButton.y = githubButton.y + buttonHeight + buttonYPadding
 
 local pluginsButton = createButton("Plugins",
 	function(event) 
 		system.openURL("https://plugins.solar2d.com/") 
 	end
 )
-pluginsButton.anchorX = 1
-pluginsButton.x = display.contentWidth - 20
-pluginsButton.y = forumsButton.y + buttonYOffset
-
-local patreonButton = createButton("Patreon",
-	function(event) 
-		system.openURL("https://patreon.com/dannyglover") 
-	end
-)
-patreonButton.anchorX = 1
-patreonButton.x = display.contentWidth - 20
-patreonButton.y = pluginsButton.y + buttonYOffset
+pluginsButton.anchorX = 0
+pluginsButton.x = sidePadding
+pluginsButton.y = websiteButton.y + buttonHeight + buttonYPadding
 
 -- recent projects
 local recentProjectsText = display.newText(
 {
 	text = "Recent Projects",
 	font = mainFont,
-	fontSize = 24,
+	fontSize = headerFontSize,
 	align = "left"
 })
-recentProjectsText.anchorX = 0.5
+recentProjectsText.anchorX = 1
 recentProjectsText.anchorY = 0
-recentProjectsText.x = display.contentCenterX - 10
+recentProjectsText.x = display.contentWidth - sidePadding
 recentProjectsText.y = getStartedText.y
 recentProjectsText:setFillColor(1, 1, 1, 1)
 
@@ -357,46 +341,54 @@ if (#recentProjects > 0) then
 
 		if (lfs.attributes(projectIcon) ~= nil) then
 			simulator.setProjectResourceDirectory(projectDir .. "/")
-			icon = display.newImageRect(projectIconFile, system.ResourceDirectory, 40, 40)
+			icon = display.newImageRect(projectIconFile, system.ResourceDirectory, recentProjectIconSize, recentProjectIconSize)
 		else
-			icon = display.newImageRect("Icon.png", system.ResourceDirectory, 40, 40)
+			icon = display.newImageRect("Icon.png", system.ResourceDirectory, recentProjectIconSize, recentProjectIconSize)
 		end
 
-		icon.anchorX = 0
+		local initialYPosition = (separatorLine.y + separatorLine.contentHeight) + 4
+		icon.anchorX = 1
 		icon.anchorY = 0
-		icon.x = getStartedText.x + getStartedText.contentWidth + 180
-		icon.y = i == 1 and recentProjectsText.y + 50 or recentProjectsText.y + (50 * i)
+		icon.x = display.contentWidth - sidePadding
+		icon.y = i == 1 and initialYPosition or (separatorLine.y + separatorLine.contentHeight) - recentProjectIconSize - 4 + ((recentProjectIconSize + 8) * i)
 		
-		local projectNameText = display.newText(
+		recentProjectTitles[#recentProjectTitles + 1] = display.newText(
 		{
 			text = projectName,
-			fontSize = 18,
 			font = mainFont,
+			fontSize = buttonFontSize,
 			align = "left"
 		})
-		projectNameText.anchorX = 0
-		projectNameText.anchorY = 0
-		projectNameText.x = icon.x + icon.contentWidth + 15
-		projectNameText.y = icon.y
-		projectNameText.details = {formattedString = projectName, fullURL = sFormat("%s/main.lua", projectDir)}
-		projectNameText:addEventListener("tap", openRecentProject)
+		recentProjectTitles[#recentProjectTitles].anchorX = 1
+		recentProjectTitles[#recentProjectTitles].anchorY = 0
+		recentProjectTitles[#recentProjectTitles].x = icon.x - icon.contentWidth - sidePadding
+		recentProjectTitles[#recentProjectTitles].y = icon.y
+		recentProjectTitles[#recentProjectTitles].details = {formattedString = projectName, fullURL = sFormat("%s/main.lua", projectDir)}
+		recentProjectTitles[#recentProjectTitles]:addEventListener("tap", openRecentProject)
 
 		-- limit long paths
-		if (projectDir:len() > 70) then
+		if (projectDir:len() > 78) then
 			projectDir = sFormat("..%s", projectDir:sub(projectDir:len() - 70, projectDir:len()))
 		end
 
 		local projectPathText = display.newText(
 		{
 			text = projectDir,
-			fontSize = 14,
 			font = lightFont,
+			fontSize = buttonFontSize - 2,
 			align = "left"
 		})
-		projectPathText.anchorX = 0
+		projectPathText.anchorX = 1
 		projectPathText.anchorY = 0
-		projectPathText.x = projectNameText.x
-		projectPathText.y = projectNameText.y + 20
+		projectPathText.x = recentProjectTitles[#recentProjectTitles].x
+		projectPathText.y = recentProjectTitles[#recentProjectTitles].y + (recentProjectIconSize * 0.5)
+
+		local separatorLine = display.newRect(0, 0, display.contentWidth / 1.70, 1)
+		separatorLine.anchorX = 1
+		separatorLine.anchorY = 0
+		separatorLine.x = projectPathText.x
+		separatorLine.y = projectPathText.y + projectPathText.contentHeight + 2
+		separatorLine:setFillColor(unpack(buttonBackgroundColor))
 	end
 else
 	local noRecentProjectsText = display.newText(
@@ -415,30 +407,57 @@ end
 
 local versionText = display.newText(
 {
-	text = "Solar2DTux Version: 0.1-RC",
+	text = ("Version: %s"):format(system.getInfo("build")),
 	font = lightFont,
-	fontSize = 18,
+	fontSize = buttonFontSize,
 	align = "left"
 })
 versionText.anchorX = 0
 versionText.anchorY = 1
-versionText.x = 20
-versionText.y = display.contentHeight - 10
+versionText.x = sidePadding
+versionText.y = display.contentHeight - 6
 
 local copyrightText = display.newText(
 {
 	text = "Copyright 2020 © Solar2D / Solar2DTux",
 	font = lightFont,
-	fontSize = 18,
+	fontSize = buttonFontSize,
 	align = "left"
 })
 copyrightText.anchorX = 1
 copyrightText.anchorY = 1
-copyrightText.x = display.contentWidth - 20
-copyrightText.y = display.contentHeight - 10
+copyrightText.x = display.contentWidth - sidePadding
+copyrightText.y = display.contentHeight - 6
 
 local function onResize(event)
-	print(">>>>> WINDOW RESIZED FROM LUA")
+	
 end
 
 Runtime:addEventListener("resize", onResize)
+
+local function onMouse(event)
+	local phase = event.type
+	local x, y = event.x, event.y
+
+	if (phase == "move") then
+		for i = 1, #recentProjectTitles do
+			local withinRange = false
+
+			if (x >= recentProjectTitles[i].x - recentProjectTitles[i].contentWidth and x <= recentProjectTitles[i].x) then
+				if (y >= recentProjectTitles[i].y and y <= recentProjectTitles[i].y + recentProjectTitles[i].contentHeight) then
+					withinRange = true
+				end
+			end
+
+			if (withinRange) then
+				recentProjectTitles[i]:setFillColor(0.70, 0.70, 0.70)
+			else
+				recentProjectTitles[i]:setFillColor(1, 1, 1)
+			end
+		end
+	end
+
+	return true
+end
+
+Runtime:addEventListener("mouse", onMouse)

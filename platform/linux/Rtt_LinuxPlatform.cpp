@@ -677,7 +677,7 @@ namespace Rtt
 
 	PlatformDisplayObject *LinuxPlatform::CreateNativeMapView(const Rect &bounds) const
 	{
-		return 0; //Rtt_NEW(&GetAllocator(), LinuxMapViewObject(bounds));
+		return NULL;
 	}
 
 	PlatformDisplayObject *LinuxPlatform::CreateNativeWebView(const Rect &bounds) const

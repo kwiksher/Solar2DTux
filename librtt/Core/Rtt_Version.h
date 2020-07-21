@@ -14,19 +14,19 @@
 
 #include "Core/Rtt_Macros.h"
 
-#define Rtt_VERSION_MAJOR	1
+#define Rtt_VERSION_MAJOR	3
 #define Rtt_VERSION_MINOR	0
 #define Rtt_VERSION_REVISION	0
 
-#define Rtt_LOCAL_BUILD_REVISION 0
+#define Rtt_LOCAL_BUILD_REVISION 9999
 
-#define Rtt_BUILD_YEAR 2020
-#define Rtt_BUILD_MONTH 6
-#define Rtt_BUILD_DAY 20
+#define Rtt_BUILD_YEAR 2100
+#define Rtt_BUILD_MONTH 1
+#define Rtt_BUILD_DAY 1
 #define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
 
 // If this is a public release, this should be 0
-#define Rtt_IS_DAILYBUILD	0
+#define Rtt_IS_DAILYBUILD	1
 
 // Used to determine if this is an internal/locally built version of Corona.
 // This will never be defined for customer builds.
@@ -45,7 +45,7 @@
 // 2010.9.26
 #define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY )
 
-#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2020 Solar2DTux, Solar2D."
+#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2009-" Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "  C o r o n a   L a b s   I n c ."
 
 #define Rtt_STRING_CREDITS		"Walter Luh | Perry Clarke, Alex Frangeti, Sean Head, Ajay McCaleb, Tom Newman, Josh Quick, Vlad Shcherban, Michael Wallar"
 

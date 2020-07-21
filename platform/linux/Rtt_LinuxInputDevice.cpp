@@ -105,11 +105,14 @@ namespace Rtt
 namespace Rtt
 {
 
-	static char *sAxisNames[ABS_MAX + 1] = {
+	static char const *sAxisNames[ABS_MAX + 1] =
+	{
 		"X", "Y", "Z", "Rx", "Ry", "Rz", "Throttle", "Rudder", "Wheel", "Gas", "Brake", "?", "?", "?", "?", "?", "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X",
-		"Hat2Y", "Hat3X", "Hat3Y", "?", "?", "?", "?", "?", "?", "?"};
+		"Hat2Y", "Hat3X", "Hat3Y", "?", "?", "?", "?", "?", "?", "?"
+	};
 
-	static std::map<std::string, InputAxisType> sAxisTypes = {
+	static std::map<std::string, InputAxisType> sAxisTypes =
+	{
 		{"X", InputAxisType::kX},
 		{"Y", InputAxisType::kY},
 		{"Z", InputAxisType::kZ},
@@ -233,47 +236,47 @@ namespace Rtt
 
 			switch (e.type)
 			{
-			case JS_EVENT_BUTTON:
-			{
-				//printf("JS_EVENT_BUTTON: type=%d, value=%d, button=%d\n", e.type, e.value, e.number);
-				bool pressed = e.value == 1;
-				unsigned int key = e.number;
-				KeyEvent::Phase phase = e.value == 1 ? KeyEvent::kDown : KeyEvent::kUp;
-
-				// disabled system button-map
-
-				char buttonName[25];
-
-				//this part is sketcy. I'm not really sure how to tell which button is it...
-				const char *keyNames[] = {KeyName::kButton1, KeyName::kButton2, KeyName::kButton3, KeyName::kButton4, KeyName::kButton5, KeyName::kButton6, KeyName::kButton7, KeyName::kButton8, KeyName::kButton9, KeyName::kButton10, KeyName::kButton11, KeyName::kButton12, KeyName::kButton13, KeyName::kButton14, KeyName::kButton15, KeyName::kButton16};
-				if (key < ARRAYSIZE(keyNames))
+				case JS_EVENT_BUTTON:
 				{
-					strncpy(buttonName, keyNames[key], sizeof(buttonName));
-				}
-				else
-				{
-					snprintf(buttonName, sizeof(buttonName), "button%d", key + 1);
-				}
+					//printf("JS_EVENT_BUTTON: type=%d, value=%d, button=%d\n", e.type, e.value, e.number);
+					bool pressed = e.value == 1;
+					unsigned int key = e.number;
+					KeyEvent::Phase phase = e.value == 1 ? KeyEvent::kDown : KeyEvent::kUp;
 
-				// 188 - copied from android. Joystick buttons should not use KeyCodes, but it is required. So joystick keycodes would
-				// start from 188 as they do on Android.
-				KeyEvent event(this, phase, buttonName, 188 + key % 100, false, false, false, false);
-				runtime->DispatchEvent(event);
-				break;
-			}
-			case JS_EVENT_AXIS:
-			{
-				//	printf("JS_EVENT_AXIS: type=%d, value=%d, axis=%d, axisname=%s\n", e.type, e.value, e.number, getAxisName(e.number));
-				PlatformInputAxis *axis = GetAxes().GetByIndex(e.number);
-				if (axis)
-				{
-					AxisEvent event(this, axis, e.value);
+					// disabled system button-map
+
+					char buttonName[25];
+
+					//this part is sketcy. I'm not really sure how to tell which button is it...
+					const char *keyNames[] = {KeyName::kButton1, KeyName::kButton2, KeyName::kButton3, KeyName::kButton4, KeyName::kButton5, KeyName::kButton6, KeyName::kButton7, KeyName::kButton8, KeyName::kButton9, KeyName::kButton10, KeyName::kButton11, KeyName::kButton12, KeyName::kButton13, KeyName::kButton14, KeyName::kButton15, KeyName::kButton16};
+					if (key < ARRAYSIZE(keyNames))
+					{
+						strncpy(buttonName, keyNames[key], sizeof(buttonName));
+					}
+					else
+					{
+						snprintf(buttonName, sizeof(buttonName), "button%d", key + 1);
+					}
+
+					// 188 - copied from android. Joystick buttons should not use KeyCodes, but it is required. So joystick keycodes would
+					// start from 188 as they do on Android.
+					KeyEvent event(this, phase, buttonName, 188 + key % 100, false, false, false, false);
 					runtime->DispatchEvent(event);
+					break;
 				}
-				break;
-			}
-			default:
-				Rtt_ASSERT(0);
+				case JS_EVENT_AXIS:
+				{
+					//	printf("JS_EVENT_AXIS: type=%d, value=%d, axis=%d, axisname=%s\n", e.type, e.value, e.number, getAxisName(e.number));
+					PlatformInputAxis *axis = GetAxes().GetByIndex(e.number);
+					if (axis)
+					{
+						AxisEvent event(this, axis, e.value);
+						runtime->DispatchEvent(event);
+					}
+					break;
+				}
+				default:
+					Rtt_ASSERT(0);
 			}
 		}
 	}
@@ -339,7 +342,7 @@ namespace Rtt
 
 	const char *LinuxInputDevice::GetDriverName()
 	{
-		fDriverName.c_str();
+		return fDriverName.c_str();
 	}
 
 	void LinuxInputDevice::Vibrate()

@@ -46,7 +46,7 @@ namespace Rtt
 		SetTitle(title);
 		errorText->SetValue(errorMsg);
 		stackTraceText->SetValue(stackTraceback);
-		SetFont(wxFont(8, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 		btnOK->SetDefault();
 	}
 
@@ -85,8 +85,8 @@ namespace Rtt
 	}
 
 	BEGIN_EVENT_TABLE(NewRuntimeErrorDialog, wxDialog)
-	EVT_BUTTON(wxID_OK, NewRuntimeErrorDialog::OnOKClicked)
-	EVT_BUTTON(wxID_CANCEL, NewRuntimeErrorDialog::OnCancelClicked)
+		EVT_BUTTON(wxID_OK, NewRuntimeErrorDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, NewRuntimeErrorDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
 	void NewRuntimeErrorDialog::OnOKClicked(wxCommandEvent &event)

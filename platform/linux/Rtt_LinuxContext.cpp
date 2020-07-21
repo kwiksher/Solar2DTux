@@ -35,9 +35,16 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
+#include "wx/menu.h"
+#include "wx/dcclient.h"
+#include "wx/app.h"
+#include "wx/display.h"
+
+#if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
+#include "resource/simulator.xpm"
+#endif
 
 //#define Rtt_DEBUG_TOUCH 1
-
 #define TIMER_ID wxID_HIGHEST + 11
 #define ID_MENU_WELCOME wxID_HIGHEST + 12
 #define ID_MENU_BUILD_ANDROID wxID_HIGHEST + 13
@@ -51,14 +58,6 @@
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
 #define ID_MENU_SUSPEND wxID_HIGHEST + 23
-#include "wx/menu.h"
-#include "wx/dcclient.h"
-#include "wx/app.h"
-#include "wx/display.h"
-
-#ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
-#include "resource/simulator.xpm"
-#endif
 
 using namespace Rtt;
 using namespace std;
@@ -69,7 +68,6 @@ wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
 wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
-wxDEFINE_EVENT(eventSuspendOrResume, wxCommandEvent);
 
 static const char *getStartupPath(string *exeFileName)
 {
@@ -91,6 +89,18 @@ static const char *getStartupPath(string *exeFileName)
 	return buf;
 }
 
+static const char *getHomePath()
+{
+	const char *homeDir = NULL;
+
+	if ((homeDir = getenv("HOME")) == NULL)
+	{
+		homeDir = getpwuid(getuid())->pw_dir;
+	}
+
+	return homeDir;
+}
+
 static char *CalculateMD5(string filename)
 {
 	LinuxCrypto crypto;
@@ -108,6 +118,11 @@ static char *CalculateMD5(string filename)
 	}
 
 	return hex;
+}
+
+static bool IsHomeScreen(string appName)
+{
+	return appName.compare(HOMESCREEN_ID) == 0;
 }
 
 namespace Rtt
@@ -384,36 +399,6 @@ namespace Rtt
 		PlatformInputDevice *dev = NULL;
 		auto it = fKeyName.find(keycode);
 		const char *keyName = it == fKeyName.end() ? KeyName::kUnknown : it->second.c_str();
-		bool wasCtrlDown = false;
-		bool wasDownArrowDown = false;
-
-		if (down == false)
-		{
-			wasCtrlDown = isCtrlDown;
-			wasDownArrowDown = strcmp(keyName, KeyName::kDown) == 0;
-
-			// relaunch
-			if (strcmp(keyName, KeyName::kR) == 0 && isCtrlDown)
-			{
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-			// close
-			else if (strcmp(keyName, KeyName::kW) == 0 && isCtrlDown)
-			{
-				wxCommandEvent ev(eventRelaunchProject);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-		}
-		else
-		{
-			// suspend/resume
-			if (wasDownArrowDown && wasCtrlDown)
-			{
-				wxCommandEvent ev(eventSuspendOrResume);
-				wxPostEvent(wxGetApp().getFrame(), ev);
-			}
-		}
 
 		KeyEvent ke(dev, down ? KeyEvent::kDown : KeyEvent::kUp, keyName, keycode, isShiftDown, isAltDown, isCtrlDown, isCommandDown);
 		fRuntime.DispatchEvent(ke);
@@ -423,8 +408,7 @@ namespace Rtt
 		: fRuntime(NULL), fRuntimeDelegate(new LinuxRuntimeDelegate()), fMouseListener(NULL), fKeyListener(NULL), fPlatform(NULL), fTouchDeviceExist(false), fMode("normal"), fIsDebApp(false), fSimulator(NULL), fIsStarted(false)
 	{
 		string exeFileName;
-		struct passwd *pw = getpwuid(getuid());
-		const char *homedir = pw->pw_dir;
+		const char *homeDir = getHomePath();
 		const char *appPath = getStartupPath(&exeFileName);
 
 		// override appPath if arg isn't NULL
@@ -461,8 +445,8 @@ namespace Rtt
 		Rtt_ASSERT(fAppName.size() > 0);
 		string startDir(appPath);
 
-		fSaveFolder.append(homedir);
-		fSaveFolder.append("/Documents/Solar Built Apps");
+		fSaveFolder.append(homeDir);
+		fSaveFolder.append("/Documents/Solar2D Built Apps");
 
 		string assetsDir = startDir;
 		assetsDir.append("/Resources/resource.car");
@@ -491,7 +475,7 @@ namespace Rtt
 
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
-			fAppName = "homescreen";
+			fAppName = HOMESCREEN_ID;
 			fPathToApp = startDir;
 			fIsDebApp = false;
 			return;
@@ -526,13 +510,7 @@ namespace Rtt
 
 	bool CoronaAppContext::Init()
 	{
-		const char *homeDir = NULL;
-
-		if ((homeDir = getenv("HOME")) == NULL)
-		{
-			homeDir = getpwuid(getuid())->pw_dir;
-		}
-
+		const char *homeDir = getHomePath();
 		string appDir(homeDir);
 
 #ifdef Rtt_SIMULATOR
@@ -541,7 +519,7 @@ namespace Rtt
 		appDir.append("/.local/share/");
 #endif
 
-		if (fAppName.compare("homescreen") != 0)
+		if (!IsHomeScreen(fAppName))
 		{
 			appDir.append(fAppName);
 #ifdef Rtt_SIMULATOR
@@ -944,7 +922,6 @@ bool MyApp::OnInit()
 			else
 			{
 				fFrame->Show(true);
-				fFrame->CentreOnScreen(wxBOTH);
 			}
 
 			wxInitAllImageHandlers();
@@ -973,7 +950,6 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(wxID_OPEN, MyFrame::OnOpenFileDialog)
 	EVT_MENU(wxID_NEW, MyFrame::OnNewProject)
 	EVT_MENU(wxID_PREFERENCES, MyFrame::OnOpenPreferences)
-
 	EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
 	EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
 	EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
@@ -987,18 +963,22 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
 	EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
 	EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
-	EVT_COMMAND(wxID_ANY, eventSuspendOrResume, MyFrame::OnSuspendOrResume)
 	EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
 	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
 	EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+#ifdef Rtt_SIMULATOR
+	EVT_CLOSE(MyFrame::OnClose)
+#endif
 wxEND_EVENT_TABLE()
 
 MyFrame::MyFrame()
-	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
+	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
-	SetIcon( simulator_xpm );
+#ifdef Rtt_SIMULATOR
+	SetIcon(simulator_xpm);
+#endif
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
@@ -1024,15 +1004,14 @@ MyFrame::MyFrame()
 
 	SetWindowStyle(wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX);
 
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	fProjectPath = string(homeDir);
 	fProjectPath.append("/Documents/Solar2D Projects");
+
+	if (!Rtt_IsDirectory(fProjectPath.c_str()))
+	{
+		Rtt_MakeDirectory(fProjectPath.c_str());
+	}
 }
 
 MyFrame::~MyFrame()
@@ -1058,7 +1037,7 @@ void MyFrame::watchFolder(const char *path, const char *appName)
 		Connect(wxEVT_FSWATCHER, wxFileSystemWatcherEventHandler(MyFrame::OnFileSystemEvent));
 	}
 
-	if (strcmp(appName, "homescreen") == 0)
+	if (IsHomeScreen(string(appName)))
 	{
 		// do not watch main screen folder
 		return;
@@ -1181,34 +1160,38 @@ void MyFrame::setMenu(const char *appPath)
 {
 #ifdef Rtt_SIMULATOR
 	const string &appName = getContext()->getAppName();
-
-	if (appName == "homescreen")
-	{
-		SetMenuBar(fMenuMain);
-	}
-	else
-	{
-		SetMenuBar(fMenuProject);
-	}
-
+	SetMenuBar(IsHomeScreen(appName) ? fMenuMain : fMenuProject);
 #endif
 }
 
 // event handlers
 void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 {
-	// true is to force the frame to close
+	// quit the simulator console
+#ifdef Rtt_SIMULATOR
+	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
+#endif
+
 	Close(true);
+}
+
+void MyFrame::OnClose(wxCloseEvent &ev)
+{
+	// quit the simulator console
+#ifdef Rtt_SIMULATOR
+	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
+	wxExit();
+#endif
 }
 
 void MyFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
 	wxAboutDialogInfo info;
-	wxIcon icon = wxIcon("/opt/Solar2D/Resources/logo.png", wxBITMAP_TYPE_PNG, 60, 60);
-	icon.SetWidth(20);
-	icon.SetHeight(20);
+	wxIcon icon = wxIcon("/opt/Solar2D/Resources/logo_small.png", wxBITMAP_TYPE_PNG, 60, 60);
+	string version("Version: ");
+	version.append(to_string(Rtt_BUILD_YEAR)).append(".").append(to_string(Rtt_LOCAL_BUILD_REVISION));
 	info.SetName("Solar2DTux");
-	info.SetVersion(Rtt_STRING_VERSION);
+	info.SetVersion(version);
 	info.SetCopyright(Rtt_STRING_COPYRIGHT);
 	info.AddDeveloper("Danny Glover, Robert Craig. Based on initial port by the CoronaLabs team.");
 	info.SetWebSite("https://github.com/DannyGlover/Solar2DTux");
@@ -1307,13 +1290,7 @@ void MyFrame::OnOpenInEditor(wxCommandEvent &ev)
 
 void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
 {
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	string command("xdg-open ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");
@@ -1326,13 +1303,7 @@ void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
 
 void MyFrame::OnClearProjectSandbox(wxCommandEvent &ev)
 {
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
+	const char *homeDir = getHomePath();
 	string command("rm -rf ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");
@@ -1376,7 +1347,7 @@ void MyFrame::OnOpenDocumentation(wxCommandEvent &ev)
 
 void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
-	if (fAppPath.size() > 0 && fContext->getAppName() != "homescreen")
+	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->getAppName()))
 	{
 		delete fContext;
 		fContext = new CoronaAppContext(fAppPath.c_str());
@@ -1492,23 +1463,24 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 	// clear the simulator log
 #ifdef Rtt_SIMULATOR
-	LinuxConsoleLog("clear");
+	LinuxConsoleLog(LINUX_CONSOLE_CLEAR_CMD);
 #endif
 
+	string appName = fContext->getAppName();
 	RemoveSuspendedPanel();
-	watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
+	watchFolder(fContext->getAppPath(), appName.c_str());
 
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 		fAppPath = fContext->getAppPath(); // save for relaunch
 	}
 
 	bool fullScreen = fContext->Init();
 
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 #ifdef Rtt_SIMULATOR
-		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), appName.c_str(), fContext->getPlatform());
 #endif
 	}
 
@@ -1519,10 +1491,9 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	SetTitle(fContext->getTitle().c_str());
 	setMenu(path.c_str());
 	m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
-	CentreOnScreen(wxBOTH);
 
 #ifdef Rtt_SIMULATOR
-	if (fContext->getAppName() != "homescreen")
+	if (!IsHomeScreen(appName))
 	{
 		Rtt_Log("Loading project from: %s\n", fContext->getAppPath());
 		Rtt_Log("Project sandbox folder: %s%s\n", "~/.Solar2D/Sandbox/", fContext->getTitle().c_str());
