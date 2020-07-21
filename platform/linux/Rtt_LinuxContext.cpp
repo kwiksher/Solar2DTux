@@ -487,6 +487,7 @@ namespace Rtt
 
 	CoronaAppContext::~CoronaAppContext()
 	{
+		GetRuntime()->End();
 		close();
 	}
 
@@ -534,7 +535,7 @@ namespace Rtt
 #endif
 		}
 
-		if (Rtt_IsDirectory(appDir.c_str()) == false)
+		if (!Rtt_IsDirectory(appDir.c_str()))
 		{
 			Rtt_MakeDirectory(appDir.c_str());
 		}
@@ -551,24 +552,22 @@ namespace Rtt
 		cachesDir.append("/CachedFiles/");
 		systemCachesDir.append("/.system/");
 
-		if (Rtt_IsDirectory(documentsDir.c_str()) == false)
+		if (!Rtt_IsDirectory(documentsDir.c_str()))
 		{
 			Rtt_MakeDirectory(documentsDir.c_str());
 		}
 
-		if (Rtt_IsDirectory(systemCachesDir.c_str()) == false)
+		if (!Rtt_IsDirectory(systemCachesDir.c_str()))
 		{
 			Rtt_MakeDirectory(systemCachesDir.c_str());
 		}
 
-		Rtt_DeleteDirectory(temporaryDir.c_str());
-
-		if (Rtt_IsDirectory(temporaryDir.c_str()) == false)
+		if (!Rtt_IsDirectory(temporaryDir.c_str()))
 		{
 			Rtt_MakeDirectory(temporaryDir.c_str());
 		}
 
-		if (Rtt_IsDirectory(cachesDir.c_str()) == false)
+		if (!Rtt_IsDirectory(cachesDir.c_str()))
 		{
 			Rtt_MakeDirectory(cachesDir.c_str());
 		}
@@ -1349,6 +1348,7 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
 	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->getAppName()))
 	{
+		fContext->GetRuntime()->End();
 		delete fContext;
 		fContext = new CoronaAppContext(fAppPath.c_str());
 		_chdir(fContext->getAppPath());
