@@ -856,6 +856,98 @@ namespace Rtt
 				wxGetApp().getFrame()->SetCursor(cursor);
 			}
 		}
+		// mouse cursor type
+		else if (Rtt_StringCompare(key, "mouseCursor") == 0)
+		{
+			if (lua_type(L, valueIndex) == LUA_TSTRING)
+			{
+				const char *cursorName = lua_tostring(L, valueIndex);
+				wxCursor cursor(wxCURSOR_ARROW);
+
+				if (strcasecmp(cursorName, "arrow") == 0)
+				{
+					cursor = wxCURSOR_ARROW;
+				}
+				else if (strcasecmp(cursorName, "beam") == 0)
+				{
+					cursor = wxCURSOR_IBEAM;
+				}
+				else if (strcasecmp(cursorName, "bullseye") == 0)
+				{
+					cursor = wxCURSOR_BULLSEYE;
+				}
+				else if (strcasecmp(cursorName, "crosshair") == 0)
+				{
+					cursor = wxCURSOR_CROSS;
+				}
+				else if (strcasecmp(cursorName, "leftButton") == 0)
+				{
+					cursor = wxCURSOR_LEFT_BUTTON;
+				}
+				else if (strcasecmp(cursorName, "middleButton") == 0)
+				{
+					cursor = wxCURSOR_MIDDLE_BUTTON;
+				}
+				else if (strcasecmp(cursorName, "notAllowed") == 0)
+				{
+					cursor = wxCURSOR_NO_ENTRY;
+				}
+				else if (strcasecmp(cursorName, "paintBrush") == 0)
+				{
+					cursor = wxCURSOR_PAINT_BRUSH;
+				}
+				else if (strcasecmp(cursorName, "pencil") == 0)
+				{
+					cursor = wxCURSOR_PENCIL;
+				}
+				else if (strcasecmp(cursorName, "pointingHand") == 0)
+				{
+					cursor = wxCURSOR_HAND;
+				}
+				else if (strcasecmp(cursorName, "pointLeft") == 0)
+				{
+					cursor = wxCURSOR_POINT_LEFT;
+				}
+				else if (strcasecmp(cursorName, "pointRight") == 0)
+				{
+					cursor = wxCURSOR_POINT_RIGHT;
+				}
+				else if (strcasecmp(cursorName, "questionArrow") == 0)
+				{
+					cursor = wxCURSOR_QUESTION_ARROW;
+				}
+				else if (strcasecmp(cursorName, "resizeLeftRight") == 0)
+				{
+					cursor = wxCURSOR_SIZEWE;
+				}
+				else if (strcasecmp(cursorName, "resizeUpDown") == 0)
+				{
+					cursor = wxCURSOR_SIZENS;
+				}
+				else if (strcasecmp(cursorName, "rightArrow") == 0)
+				{
+					cursor = wxCURSOR_RIGHT_ARROW;
+				}
+				else if (strcasecmp(cursorName, "rightButton") == 0)
+				{
+					cursor = wxCURSOR_RIGHT_BUTTON;
+				}
+				else if (strcasecmp(cursorName, "sizing") == 0)
+				{
+					cursor = wxCURSOR_SIZING;
+				}
+				else if (strcasecmp(cursorName, "sprayCan") == 0)
+				{
+					cursor = wxCURSOR_SPRAYCAN;
+				}
+				else if (strcasecmp(cursorName, "wait") == 0)
+				{
+					cursor = wxCURSOR_WAIT;
+				}
+
+				wxGetApp().getFrame()->SetCursor(cursor);
+			}
+		}
 	}
 
 	int LinuxPlatform::PushNativeProperty(lua_State *L, const char *key) const

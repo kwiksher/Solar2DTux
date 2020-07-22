@@ -1359,6 +1359,7 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 
 		RemoveSuspendedPanel();
 		watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
+		SetCursor(wxCURSOR_ARROW);
 
 		bool fullScreen = fContext->Init();
 
@@ -1473,6 +1474,7 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	string appName = fContext->getAppName();
 	RemoveSuspendedPanel();
 	watchFolder(fContext->getAppPath(), appName.c_str());
+	SetCursor(wxCURSOR_ARROW);
 
 	if (!IsHomeScreen(appName))
 	{
