@@ -33,7 +33,6 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-#include "Rtt_LinuxRuntimeErrorDialog.h"
 #include <wx/wx.h>
 #include "wx/activityindicator.h"
 #include <pwd.h>
@@ -42,7 +41,6 @@ using namespace std;
 
 namespace Rtt
 {
-
 	LinuxPlatform::LinuxPlatform(const char *resourceDir, const char *documentsDir, const char *temporaryDir,
 	                             const char *cachesDir, const char *systemCachesDir, const char *skinDir, const char *installDir)
 		: fAllocator(Rtt_AllocatorCreate()),
@@ -71,10 +69,12 @@ namespace Rtt
 		fSkinDir.Set(skinDir);
 		fInstallDir.Set(installDir);
 		isMouseCursorVisible = true;
+		fRuntimeErrorDialog = new NewRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()
 	{
+		fRuntimeErrorDialog->Destroy();
 		Rtt_DELETE(fFBConnect);
 		Rtt_DELETE(fStoreProvider);
 		Rtt_DELETE(fWebPopup);
@@ -519,14 +519,16 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char *errorType, const char *message, const char *stacktrace) const
 	{
-		NewRuntimeErrorDialog *newRuntimeErrorDialog = new NewRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
-		newRuntimeErrorDialog->SetProperties(errorType, message, stacktrace);
-
-		if (newRuntimeErrorDialog->ShowModal() == wxID_OK)
+		if (fRuntimeErrorDialog->IsShown())
 		{
+			return;
 		}
 
-		newRuntimeErrorDialog->Destroy();
+		fRuntimeErrorDialog->SetProperties(errorType, message, stacktrace);
+
+		if (fRuntimeErrorDialog->ShowModal() == wxID_OK)
+		{
+		}
 	}
 
 	const MCrypto &LinuxPlatform::GetCrypto() const

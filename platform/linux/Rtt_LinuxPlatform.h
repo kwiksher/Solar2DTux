@@ -15,6 +15,7 @@
 #include "Core/Rtt_String.h"
 #include "Rtt_PlatformTimer.h"
 #include "Rtt_PlatformSimulator.h"
+#include "Rtt_LinuxRuntimeErrorDialog.h"
 #include <wx/wx.h>
 
 #undef CreateFont
@@ -186,11 +187,12 @@ namespace Rtt
 		virtual PlatformReachability *NewReachability(const ResourceHandle<lua_State> &handle, PlatformReachability::PlatformReachabilityType type, const char *address) const;
 		virtual bool SupportsNetworkStatus() const;
 		const char *getInstallDir() const { return fInstallDir.GetString(); }
-
 		void setWindow(void *ctx);
+		NewRuntimeErrorDialog *GetRuntimeErrorDialog() { return fRuntimeErrorDialog; }
 
 	protected:
 		Rtt_Allocator *fAllocator;
+		NewRuntimeErrorDialog *fRuntimeErrorDialog;
 		mutable LinuxAudioPlayer *fAudioPlayer;
 		mutable bool isMouseCursorVisible;
 

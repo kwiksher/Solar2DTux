@@ -1352,6 +1352,11 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
 	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->getAppName()))
 	{
+		if (fContext->getPlatform()->GetRuntimeErrorDialog()->IsShown())
+		{
+			return;
+		}
+
 		fContext->GetRuntime()->End();
 		delete fContext;
 		fContext = new CoronaAppContext(fAppPath.c_str());
