@@ -212,6 +212,7 @@ namespace Rtt
 		void enumerateFontFiles(const char *dir, std::vector<std::string> &fileList);
 
 		Runtime *GetRuntime() { return fRuntime; }
+		LinuxRuntimeDelegate *GetDelegate() { return fRuntimeDelegate; }
 		const Runtime *GetRuntime() const { return fRuntime; }
 		MouseListener *GetMouseListener() { return fMouseListener; }
 		const MouseListener *GetMouseListener() const { return fMouseListener; }

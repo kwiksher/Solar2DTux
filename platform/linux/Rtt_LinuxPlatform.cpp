@@ -70,6 +70,7 @@ namespace Rtt
 		fSystemCachesDir.Set(systemCachesDir);
 		fSkinDir.Set(skinDir);
 		fInstallDir.Set(installDir);
+		isMouseCursorVisible = true;
 	}
 
 	LinuxPlatform::~LinuxPlatform()
@@ -790,18 +791,69 @@ namespace Rtt
 		}
 
 		// Handle the given property value.
-		if (Rtt_StringCompare(key, "applicationIconBadgeNumber") == 0)
+		if (Rtt_StringCompare(key, "windowMode") == 0)
 		{
-			// Clear all notifications if the application badge number was set to zero.
-			// Note: This is to match iOS' behavior.
-			if (lua_type(L, valueIndex) == LUA_TNUMBER)
+			//
+			if (lua_type(L, valueIndex) == LUA_TSTRING)
 			{
-				int badgeNumber = lua_tointeger(L, valueIndex);
-				if (badgeNumber <= 0)
+				const char *windowMode = lua_tostring(L, valueIndex);
+
+				if (windowMode != NULL)
 				{
-					//TODO: Cancel all notifications.
+					if (Rtt_StringCompare(windowMode, "normal") == 0)
+					{
+						// todo
+					}
+					else if (Rtt_StringCompare(windowMode, "minimized") == 0)
+					{
+						wxGetApp().getFrame()->Iconize(true);
+					}
+					else if (Rtt_StringCompare(windowMode, "maximized") == 0)
+					{
+						/*
+						bool isFullScreen = wxGetApp().getFrame()->IsFullScreen();
+
+						if (isFullScreen)
+						{
+							wxGetApp().getFrame()->ShowFullScreen(false);
+						}
+						else
+						{
+							wxGetApp().getFrame()->Maximize(true);
+						}*/
+					}
+					else if (Rtt_StringCompare(windowMode, "fullscreen") == 0)
+					{
+						// note: seems to need the frame set to wxDEFAULT_FRAME_STYLE to work
+						// commenting out as it isn't enough to just set the window to fullscreen for this to work
+						//wxGetApp().getFrame()->ShowFullScreen(true, wxFULLSCREEN_ALL);
+					}
 				}
-				//TODO: Update the badge count on the Windows Phone tile???
+			}
+		}
+		// window title text
+		else if (Rtt_StringCompare(key, "windowTitleText") == 0)
+		{
+			//
+			if (lua_type(L, valueIndex) == LUA_TSTRING)
+			{
+				const char *windowTitle = lua_tostring(L, valueIndex);
+
+				if (windowTitle != NULL)
+				{
+					wxGetApp().getFrame()->SetTitle(windowTitle);
+				}
+			}
+		}
+		// mouse cursor
+		else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
+		{
+			if (lua_type(L, valueIndex) == LUA_TBOOLEAN)
+			{
+				bool cursorVisible = lua_toboolean(L, valueIndex);
+				isMouseCursorVisible = cursorVisible;
+				wxCursor cursor = cursorVisible ? *wxSTANDARD_CURSOR : wxCURSOR_BLANK;
+				wxGetApp().getFrame()->SetCursor(cursor);
 			}
 		}
 	}
@@ -816,28 +868,43 @@ namespace Rtt
 
 		int pushedValues = 0;
 
-		// todo
-		/*
 		// Push the requested native property information to Lua.
 		if (Rtt_StringCompare(key, "windowTitleText") == 0)
 		{
-			// Fetch the window's title bar text.
-			// todo
-			lua_pushstring(L, "");
+			lua_pushstring(L, wxGetApp().getFrame()->GetTitle().ToStdString().c_str());
 			pushedValues = 1;
 		}
 		else if (Rtt_StringCompare(key, "windowMode") == 0)
 		{
-			// Fetch the window's current mode such as "normal", "maximized", "fullscreen", etc.
-			// todo
-			lua_pushstring(L, "");
+			bool isFullScreen = wxGetApp().getFrame()->IsFullScreen();
+			bool isMinimized = wxGetApp().getFrame()->IsIconized();
+			bool isMaximized = wxGetApp().getFrame()->IsMaximized();
+			bool isNormal = !isFullScreen || !isMinimized || !isMaximized;
+			const char *windowMode = NULL;
+
+			if (isFullScreen)
+			{
+				windowMode = "fullscreen";
+			}
+			else if (isMinimized)
+			{
+				windowMode = "minimized";
+			}
+			else if (isMaximized)
+			{
+				windowMode = "maximized";
+			}
+			else if (isNormal)
+			{
+				windowMode = "normal";
+			}
+
+			lua_pushstring(L, windowMode);
 			pushedValues = 1;
 		}
 		else if (Rtt_StringCompare(key, "mouseCursorVisible") == 0)
 		{
-			// Fetch the mouse cursor's current visibility state.
-			// todo
-			lua_pushboolean(L, 1);
+			lua_pushboolean(L, isMouseCursorVisible);
 			pushedValues = 1;
 		}
 		else
@@ -852,7 +919,6 @@ namespace Rtt
 				Rtt_LogException("native.getProperty() was given unknown key: %s", key);
 			}
 		}
-		*/
 
 		// Push nil if given a key that is unknown on this platform.
 		if (pushedValues <= 0)

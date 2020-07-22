@@ -192,6 +192,7 @@ namespace Rtt
 	protected:
 		Rtt_Allocator *fAllocator;
 		mutable LinuxAudioPlayer *fAudioPlayer;
+		mutable bool isMouseCursorVisible;
 
 	private:
 		LinuxDevice fDevice;
