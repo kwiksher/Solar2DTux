@@ -487,7 +487,6 @@ namespace Rtt
 
 	CoronaAppContext::~CoronaAppContext()
 	{
-		GetRuntime()->End();
 		close();
 	}
 
@@ -1182,6 +1181,7 @@ void MyFrame::OnClose(wxCloseEvent &ev)
 {
 	// quit the simulator console
 #ifdef Rtt_SIMULATOR
+	fContext->GetRuntime()->End();
 	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
 	wxExit();
 #endif
