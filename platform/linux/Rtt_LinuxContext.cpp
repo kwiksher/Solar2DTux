@@ -1363,8 +1363,10 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 		_chdir(fContext->getAppPath());
 
 		RemoveSuspendedPanel();
+#ifdef Rtt_SIMULATOR
 		watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
 		SetCursor(wxCURSOR_ARROW);
+#endif
 
 		bool fullScreen = fContext->Init();
 
@@ -1478,8 +1480,11 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 	string appName = fContext->getAppName();
 	RemoveSuspendedPanel();
+
+#ifdef Rtt_SIMULATOR
 	watchFolder(fContext->getAppPath(), appName.c_str());
 	SetCursor(wxCURSOR_ARROW);
+#endif
 
 	if (!IsHomeScreen(appName))
 	{

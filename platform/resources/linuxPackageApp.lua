@@ -730,6 +730,8 @@ local function getExcludePredecate()
 		"**AndroidResources",
 		"**res",
 		"*Icon*.png",
+		"*.icns",
+		"*.ico",
 	}
 
 	-- append 'all:' and 'linux:'
