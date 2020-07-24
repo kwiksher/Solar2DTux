@@ -393,15 +393,15 @@ if (#recentProjects > 0) then
 else
 	local noRecentProjectsText = display.newText(
 	{
-		text = "No recent projects were found. Why not create one?",
+		text = "No recent projects were found.\nWhy not create one?",
 		font = mainFont,
-		fontSize = 18,
-		align = "left"
+		fontSize = buttonFontSize + 1,
+		align = "center"
 	})
-	noRecentProjectsText.anchorX = 0
+	noRecentProjectsText.anchorX = 1
 	noRecentProjectsText.anchorY = 0
-	noRecentProjectsText.x = getStartedText.x + getStartedText.contentWidth + 180
-	noRecentProjectsText.y = recentProjectsText.y + 40
+	noRecentProjectsText.x = display.contentWidth - sidePadding
+	noRecentProjectsText.y =  (separatorLine.y + separatorLine.contentHeight) + 4
 	noRecentProjectsText:setFillColor(1, 1, 1, 1)
 end
 
