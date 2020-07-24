@@ -49,9 +49,76 @@ namespace Rtt
 {
 	bool CompileScriptsInDirectory(lua_State *L, AppPackagerParams &params, const char *dstDir, const char *srcDir);
 	bool FetchDirectoryTreeFilePaths(const char* directoryPath, std::vector<std::string> &filePathCollection);
-	int CompileScriptsAndMakeCAR(lua_State *L);
 	int processExecute(lua_State *L);
 	int luaload_linuxPackageApp(lua_State* L);
+
+	int GenerateResourceCar(lua_State *L)
+	{
+		Rtt_ASSERT(lua_isuserdata(L, 1));
+		AppPackagerParams* p =  (AppPackagerParams*) lua_touserdata( L, 1);
+		Rtt_ASSERT(lua_isstring(L, 2));
+		const char* srcDir = lua_tostring( L, 2);
+		Rtt_ASSERT(lua_isstring(L, 3));
+		const char* dstDir = lua_tostring( L, 3);
+		Rtt_ASSERT(lua_isstring(L, 4));
+		const char* tmpDir = lua_tostring( L, 4);
+
+		// Package build settings parameters.
+		Rtt::AppPackagerParams params(p->GetAppName(), p->GetVersion(), p->GetIdentity(), NULL, srcDir, dstDir, NULL, p->GetTargetPlatform(), NULL,	0, 0, NULL, NULL, NULL, true);
+		params.SetStripDebug(p->IsStripDebug());
+
+		bool rc = CompileScriptsInDirectory(L, params, dstDir, srcDir);
+
+		if (rc)
+		{
+			// Bundle all of the compiled Lua scripts in the intermediate directory into a "resource.car" file.
+			String resourceCarPath(params.GetSrcDir());
+			resourceCarPath.AppendPathSeparator();
+			resourceCarPath.Append("resource.car");
+
+			// create .car file
+
+			// Fetch all file paths under the given source directory.
+			std::vector<std::string> sourceFilePathCollection;
+			bool wasSuccessful = FetchDirectoryTreeFilePaths(srcDir, sourceFilePathCollection);
+
+			if (wasSuccessful && sourceFilePathCollection.empty() == false)
+			{
+				// Allocate enough space for ALL file paths to a string array.
+				const char** sourceFilePathArray = new const char*[sourceFilePathCollection.size()];
+				int fileToIncludeCount = 0;
+
+				for (int fileIndex = (int)sourceFilePathCollection.size() - 1; fileIndex >= 0; fileIndex--)
+				{
+					const char* fileToInclude = sourceFilePathCollection.at(fileIndex).c_str();
+
+					// pack only .lu and .settings files
+					int size = strlen(fileToInclude);
+
+					if (size > 3 && strcmp(fileToInclude + size - 3, ".lu") == 0)
+					{
+						sourceFilePathArray[fileToIncludeCount++] = fileToInclude;
+					}
+					else if (size > 9 && strcmp(fileToInclude + size - 9, ".settings") == 0)
+					{
+						sourceFilePathArray[fileToIncludeCount++] = fileToInclude;
+					}
+				}
+
+				// Create the "resource.car" archive file containing the files fetched up above.
+				Archive::Serialize(resourceCarPath.GetString(), fileToIncludeCount, sourceFilePathArray);
+
+				// Clean up memory allocated up above.
+				delete[] sourceFilePathArray;
+
+				// Return true if the archive file was successfully created.
+				rc = Rtt_FileExists(resourceCarPath.GetString());
+			}
+		}
+
+		lua_pushboolean(L, rc);
+		return 1;
+	}
 
 	static int luaPrint(lua_State *L)
 	{
@@ -176,7 +243,7 @@ namespace Rtt
 			lua_pushinteger(L, debugBuildProcess);
 			lua_setfield(L, -2, "debugBuildProcess");
 
-			lua_pushlightuserdata(L, (void*) params); // keep for compileScriptsAndMakeCAR
+			lua_pushlightuserdata(L, (void*) params); // keep for GenerateResourceCar
 			lua_setfield(L, -2, "linuxParams");
 
 			const LinuxAppPackagerParams* linuxParams = (LinuxAppPackagerParams*)params;
@@ -203,7 +270,7 @@ namespace Rtt
 		lua_setglobal(L, "_download");
 		lua_pushcfunction(L, luaPrint);
 		lua_setglobal(L, "luaPrint");
-		lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
+		lua_pushcfunction(L, Rtt::GenerateResourceCar);
 		lua_setglobal(L, "compileScriptsAndMakeCAR");
 
 		int result = PlatformAppPackager::kNoError;
