@@ -15,12 +15,14 @@
 #include "Rtt_Event.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_Runtime.h"
-#include "Rtt_LinuxRuntimeDelegate.h"
 #include "Core/Rtt_Math.h"
 #include "Core/Rtt_Array.h"
+#include "shared/Rtt_ProjectSettings.h"
+#include "shared/Rtt_NativeWindowMode.h"
 #include "Rtt_LinuxInputDeviceManager.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxIPCClient.h"
+#include "Rtt_LinuxRuntimeDelegate.h"
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
@@ -139,10 +141,6 @@ namespace Rtt
 			: Runtime(platform, viewCallback)
 		{
 		}
-
-		void readConfig(int *w, int *h, const char *scaleMode);
-		void readSettings(int *w, int *h, std::string *orientation, std::string *title, std::string *mode);
-		bool readTable(lua_State *L, const char *name, int *w, int *h, std::string *title, std::string *mode) const;
 	};
 
 	class KeyListener
@@ -233,6 +231,7 @@ namespace Rtt
 		LinuxPlatform *getPlatform() const { return fPlatform; }
 		const std::string &getAppName() const { return fAppName; }
 		const std::string &getSaveFolder() const { return fSaveFolder; }
+		const LinuxRuntimeDelegate *GetRuntimeDelegate() const { return fRuntimeDelegate; }
 		bool fIsStarted;
 
 	private:
@@ -245,7 +244,7 @@ namespace Rtt
 		std::string fAppName;
 		LinuxPlatform *fPlatform;
 		bool fTouchDeviceExist;
-		std::string fMode;
+		const char *fMode;
 		MyGLCanvas *fCanvas;
 		bool fIsDebApp;
 		LinuxSimulatorServices *fSimulator;
@@ -290,7 +289,7 @@ public:
 class MyFrame : public wxFrame
 {
 public:
-	MyFrame();
+	MyFrame(int style);
 	virtual ~MyFrame();
 
 	void OnFileSystemEvent(wxFileSystemWatcherEvent &event);

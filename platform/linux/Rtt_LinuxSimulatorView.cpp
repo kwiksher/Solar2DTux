@@ -271,11 +271,6 @@ namespace Rtt
 		Rtt::String buildSettingsPath;
 		platform->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
 		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
-
-		std::string tmp = Rtt_GetSystemTempDirectory();
-		tmp += LUA_DIRSEP;
-		tmp += "CoronaLabs";
-
 		int rc = packager.Build(&linuxBuilderParams);
 	}
 

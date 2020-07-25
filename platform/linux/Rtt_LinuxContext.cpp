@@ -127,6 +127,8 @@ static bool IsHomeScreen(string appName)
 
 namespace Rtt
 {
+	static Rtt::ProjectSettings *fProjectSettings;
+
 	MouseListener::MouseListener(Runtime &runtime)
 		: fRuntime(runtime), fScaleX(1), fScaleY(1)
 	{
@@ -140,7 +142,7 @@ namespace Rtt
 		y = (int)(y / fScaleY);
 
 		// sanity check
-		if (fStartPoint.find(fid) != fStartPoint.end() || (notifyMultitouch == false && fStartPoint.size() > 0))
+		if (fStartPoint.find(fid) != fStartPoint.end() || (!notifyMultitouch && fStartPoint.size() > 0))
 		{
 			return;
 		}
@@ -318,7 +320,7 @@ namespace Rtt
 		fKeyName[367] = KeyName::kPageDown;
 		fKeyName[322] = KeyName::kInsert;
 		fKeyName[127] = KeyName::kDeleteForward;
-		fKeyName[8] = KeyName::kDeleteBack; //kBack;
+		fKeyName[8] = KeyName::kDeleteBack;
 		fKeyName[47] = KeyName::kForwardSlash;
 		fKeyName[92] = KeyName::kBackSlash;
 		fKeyName['='] = KeyName::kPlus;
@@ -594,92 +596,133 @@ namespace Rtt
 			}
 		}
 
-		// settings
-		string orientation;
-		int w = 0;
-		int h = 0;
-		fRuntime->readSettings(&w, &h, &orientation, &fTitle, &fMode);
+		bool fullScreen = false;
+		int width = 320;
+		int height = 480;
+		string projectPath(fPathToApp.c_str());
+#ifndef Rtt_SIMULATOR
+		projectPath.append("/Resources");
+#endif
 
-		if (orientation == "landscapeRight")
+		fProjectSettings->ResetBuildSettings();
+		fProjectSettings->ResetConfigLuaSettings();
+		fProjectSettings->LoadFromDirectory(projectPath.c_str());
+
+		// read config.lua
+		if (fProjectSettings->HasConfigLua())
 		{
-			fRuntimeDelegate->fOrientation = DeviceOrientation::kSidewaysRight; // bottom of device is to the right
-
-			if (w > 0 && h > 0)
+			if (width <= 0 || height <= 0)
 			{
-				fRuntimeDelegate->fContentWidth = w;
-				fRuntimeDelegate->fContentHeight = h;
+				width = fProjectSettings->GetContentWidth();
+				height = fProjectSettings->GetContentHeight();
+			}
+		}
+
+		// read build.settings
+		if (fProjectSettings->HasBuildSettings())
+		{
+			wxString localeName = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage())->CanonicalName.Lower();
+			string langCode = localeName.ToStdString().substr(0, 2);
+			string countryCode = localeName.ToStdString().substr(3, 5);
+			int minWidth = fProjectSettings->GetMinWindowViewWidth();
+			int minHeight = fProjectSettings->GetMinWindowViewHeight();
+			const char *windowTitle = fProjectSettings->GetWindowTitleTextForLocale(langCode.c_str(), countryCode.c_str());
+			const Rtt::NativeWindowMode *nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
+			DeviceOrientation::Type orientation = fProjectSettings->GetDefaultOrientation();
+
+			if (windowTitle != NULL)
+			{
+				fTitle = windowTitle;
+			}
+
+			if (*nativeWindowMode == Rtt::NativeWindowMode::kFullscreen)
+			{
+				fMode = NativeWindowMode::kFullscreen.GetStringId();
+			}
+
+			fullScreen = strcmp(fMode, NativeWindowMode::kFullscreen.GetStringId()) == 0;
+
+			if (fullScreen)
+			{
+				wxDisplay display(wxDisplay::GetFromWindow(wxGetApp().getFrame()));
+				wxRect screen = display.GetClientArea();
+				width = screen.width;
+				height = screen.height;
 			}
 			else
 			{
-				// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
-				// use swapped default settings
-				Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
+				width = fProjectSettings->GetDefaultWindowViewWidth();
+				height = fProjectSettings->GetDefaultWindowViewHeight();
+				wxGetApp().getFrame()->SetMinClientSize(wxSize(minWidth, minHeight));
 			}
-		}
-		else if (orientation == "landscapeLeft")
-		{
-			fRuntimeDelegate->fOrientation = DeviceOrientation::kSidewaysLeft; // bottom of device is to the left
 
-			if (w > 0 && h > 0)
+			switch(orientation)
 			{
-				fRuntimeDelegate->fContentWidth = w;
-				fRuntimeDelegate->fContentHeight = h;
-			}
-			else
-			{
-				// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
-				// use swapped default settings
-				Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
-			}
-		}
-		else if (orientation == "portrait")
-		{
-			fRuntimeDelegate->fOrientation = DeviceOrientation::kUpright; // bottom of device is at the bottom
+				case DeviceOrientation::kSidewaysRight:
+					fRuntimeDelegate->fOrientation = DeviceOrientation::kSidewaysRight; // bottom of device is to the right
 
-			if (w > 0 && h > 0)
-			{
-				fRuntimeDelegate->fContentWidth = w;
-				fRuntimeDelegate->fContentHeight = h;
-			}
-			else
-			{
-				// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
-				// use default settings
-			}
-		}
-		else if (orientation == "portraitUpsideDown")
-		{
-			fRuntimeDelegate->fOrientation = DeviceOrientation::kUpsideDown; // bottom of device is at the top
+					if (width > 0 && height > 0)
+					{
+						fRuntimeDelegate->fContentWidth = width;
+						fRuntimeDelegate->fContentHeight = height;
+					}
+					else
+					{
+						// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
+						// use swapped default settings
+						Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
+					}
+					break;
 
-			if (w > 0 && h > 0)
-			{
-				fRuntimeDelegate->fContentWidth = w;
-				fRuntimeDelegate->fContentHeight = h;
-			}
-			else
-			{
-				// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
-				// use default settings
-			}
-		}
-		else
-		{
-			//Rtt_LogException("Unsupported orientation: '%s'", orientation.c_str());
-		}
+				case DeviceOrientation::kSidewaysLeft:
+					fRuntimeDelegate->fOrientation = DeviceOrientation::kSidewaysLeft; // bottom of device is to the left
 
-		bool fullScreen = (fMode == "maximized");
+					if (width > 0 && height > 0)
+					{
+						fRuntimeDelegate->fContentWidth = width;
+						fRuntimeDelegate->fContentHeight = height;
+					}
+					else
+					{
+						// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
+						// use swapped default settings
+						Swap(fRuntimeDelegate->fContentWidth, fRuntimeDelegate->fContentHeight);
+					}
+					break;
 
-		if (fullScreen)
-		{
-			wxDisplay screen;
-			wxRect rect = screen.GetGeometry();
-			//fWidth = rect.GetWidth();
-			//fHeight = rect.GetHeight() - 1;
-			//Rtt_LogException("Full Screen mode: %dx%d\n", fWidth, fHeight);
+				case DeviceOrientation::kUpright:
+					fRuntimeDelegate->fOrientation = DeviceOrientation::kUpright; // bottom of device is at the bottom
+
+					if (width > 0 && height > 0)
+					{
+						fRuntimeDelegate->fContentWidth = width;
+						fRuntimeDelegate->fContentHeight = height;
+					}
+					else
+					{
+						// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
+						// use default settings
+					}
+					break;
+
+				case DeviceOrientation::kUpsideDown:
+					fRuntimeDelegate->fOrientation = DeviceOrientation::kUpsideDown; // bottom of device is at the top
+
+					if (width > 0 && height > 0)
+					{
+						fRuntimeDelegate->fContentWidth = width;
+						fRuntimeDelegate->fContentHeight = height;
+					}
+					else
+					{
+						// no valid defaultViewWidth & defaultViewHeight in 'build.settings', default values of fWidth & fHeight for Portrait
+						// use default settings
+					}
+					break;
+			}
 		}
 
 		fPlatform->setWindow(this);
-
 		fMouseListener = new MouseListener(*fRuntime);
 		fKeyListener = new KeyListener(*fRuntime);
 
@@ -730,7 +773,7 @@ namespace Rtt
 
 	void CoronaAppContext::pause()
 	{
-		if (fRuntime->IsSuspended() == false)
+		if (!fRuntime->IsSuspended())
 		{
 			fRuntime->Suspend();
 		}
@@ -743,136 +786,6 @@ namespace Rtt
 			fRuntime->DispatchEvent(ResizeEvent());
 			fRuntime->Resume();
 		}
-	}
-
-	bool LinuxRuntime::readTable(lua_State *L, const char *table, int *w, int *h, string *title, string *mode) const
-	{
-		bool rc = false;
-		int top = lua_gettop(L);
-
-		lua_getfield(L, -1, table);
-
-		if (lua_istable(L, -1))
-		{
-			rc = true;
-			lua_getfield(L, -1, "defaultViewWidth");
-
-			if ((!lua_isnil(L, -1)) && (lua_isnumber(L, -1)))
-			{
-				*w = lua_tointeger(L, -1);
-			}
-
-			lua_pop(L, 1);
-
-			lua_getfield(L, -1, "defaultViewHeight");
-
-			if ((!lua_isnil(L, -1)) && (lua_isnumber(L, -1)))
-			{
-				*h = lua_tointeger(L, -1);
-			}
-
-			lua_pop(L, 1);
-
-			lua_getfield(L, -1, "defaultMode");
-
-			if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
-			{
-				*mode = lua_tostring(L, -1);
-			}
-
-			lua_pop(L, 1);
-
-			lua_getfield(L, -1, "titleText");
-
-			if (lua_istable(L, -1))
-			{
-				lua_getfield(L, -1, "default");
-
-				if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
-				{
-					*title = lua_tostring(L, -1);
-				}
-
-				lua_pop(L, 1); // remove default
-			}
-
-			lua_pop(L, 1); // remove titleText
-		}
-
-		lua_settop(L, top);
-		return rc;
-	}
-
-	void LinuxRuntime::readSettings(int *w, int *h, string *orientation, string *title, string *mode)
-	{
-		Rtt_ASSERT(w != NULL && h != NULL);
-
-		lua_State *L = VMContext().L();
-		int status = 0;
-		const MPlatform &p = Platform();
-		int top = lua_gettop(L);
-
-		// read build.settings
-		const char kBuildSettings[] = "build.settings";
-		String filePath(&p.GetAllocator());
-		p.PathForFile(kBuildSettings, MPlatform::kResourceDir, MPlatform::kTestFileExists, filePath);
-		const char *path = filePath.GetString();
-
-		if (path)
-		{
-			status = VMContext().DoFile(path, 0, true);
-		}
-		else
-		{
-			// other cases assume a non-zero status means there's an error msg on the stack
-			// so push a "fake" error msg on the stack so we are consistent with those cases
-			lua_pushnil(L);
-		}
-
-		lua_pop(L, 1); // remove DoFile result
-
-		if (status == 0)
-		{
-			lua_getglobal(L, "settings"); // settings
-
-			if (lua_istable(L, -1))
-			{
-				lua_getfield(L, -1, "orientation"); // settings.orientation
-
-				if (lua_istable(L, -1))
-				{
-					lua_getfield(L, -1, "default");
-
-					if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
-					{
-						*orientation = lua_tostring(L, -1);
-					}
-
-					lua_pop(L, 1);
-				}
-
-				lua_pop(L, 1); // remove orientation
-
-				// first try settings from 'web' table
-				if (readTable(L, "linux", w, h, title, mode) == false)
-				{
-					// next try settings from 'window' table
-					readTable(L, "window", w, h, title, mode);
-				}
-			}
-
-			lua_pop(L, 1); // remove settings
-		}
-		else if (status == 3)
-		{
-			Rtt_LogException("Invalid build.settings file\n");
-		}
-		else
-		{
-			Rtt_LogException("Failed to read build.settings file\n");
-		}
-
-		lua_settop(L, top);
 	}
 
 	int jsSystemEvent::Push(lua_State *L) const
@@ -906,17 +819,114 @@ MyApp::~MyApp()
 // 'Main program' equivalent: the program execution "starts" here
 bool MyApp::OnInit()
 {
-	if (wxApp::OnInit() == true)
+	if (wxApp::OnInit())
 	{
-		// create the main application window
-		fFrame = new MyFrame();
 		bool fullScreen = false;
+		int windowStyle = wxCAPTION;
+		int width = 320;
+		int height = 480;
+		int minWidth = width;
+		int minHeight = height;
+		string projectPath(getStartupPath(NULL));
+#ifdef Rtt_SIMULATOR
+		projectPath.append("/Resources/homescreen");
+#else
+		projectPath.append("/Resources");
+#endif
 
-		// As of October 2015 GTK+ needs the frame to be shown before we call SetCurrent()
+		fProjectSettings = new ProjectSettings();
+		fProjectSettings->LoadFromDirectory(projectPath.c_str());
 
-		//Test if OGL context could be created.
-		if (fFrame->m_mycanvas->OglCtxAvailable() == true)
+		// grab the required config settings (we only need width/height at this stage)
+		if (fProjectSettings->HasConfigLua())
 		{
+			width = fProjectSettings->GetContentWidth();
+			height = fProjectSettings->GetContentHeight();
+		}
+
+		// grab the build settings (we only need width/height at this stage)
+		if (fProjectSettings->HasBuildSettings())
+		{
+			const Rtt::NativeWindowMode *nativeWindowMode = fProjectSettings->GetDefaultWindowMode();
+			bool isWindowMinimizeButtonEnabled = fProjectSettings->IsWindowMinimizeButtonEnabled();
+			bool isWindowMaximizeButtonEnabled = fProjectSettings->IsWindowMaximizeButtonEnabled();
+			bool isWindowCloseButtonEnabled = fProjectSettings->IsWindowCloseButtonEnabled();
+			bool isWindowResizable = fProjectSettings->IsWindowResizable();
+			width = fProjectSettings->GetDefaultWindowViewWidth();
+			height = fProjectSettings->GetDefaultWindowViewHeight();
+			minWidth = fProjectSettings->GetMinWindowViewWidth();
+			minHeight = fProjectSettings->GetMinWindowViewHeight();
+
+			if (*nativeWindowMode == Rtt::NativeWindowMode::kNormal)
+			{
+			}
+			else if (*nativeWindowMode == Rtt::NativeWindowMode::kMinimized)
+			{
+			}
+			else if (*nativeWindowMode == Rtt::NativeWindowMode::kMaximized)
+			{
+			}
+			else if (*nativeWindowMode == Rtt::NativeWindowMode::kFullscreen)
+			{
+				fullScreen = true;
+			}
+
+			if (isWindowMinimizeButtonEnabled)
+			{
+				windowStyle |= wxMINIMIZE_BOX;
+			}
+
+			if (isWindowMaximizeButtonEnabled)
+			{
+				windowStyle |= wxMAXIMIZE_BOX | wxRESIZE_BORDER;
+			}
+
+			if (isWindowCloseButtonEnabled)
+			{
+				windowStyle |= wxCLOSE_BOX;
+			}
+
+			if (isWindowResizable)
+			{
+				windowStyle |= wxRESIZE_BORDER;
+			}
+
+			if (fullScreen)
+			{
+				windowStyle = wxDEFAULT_FRAME_STYLE;
+			}
+		}
+
+		// sanity checks
+		if (width <= 0)
+		{
+			width = 320;
+			minWidth = width;
+		}
+
+		if (height <= 0)
+		{
+			height = 480;
+			minHeight = height;
+		}
+
+		// create the main application window
+		fFrame = new MyFrame(windowStyle);
+
+		if (fullScreen)
+		{
+			wxDisplay display(wxDisplay::GetFromWindow(fFrame));
+			wxRect screen = display.GetClientArea();
+			width = screen.width;
+			height = screen.height;
+		}
+
+		// test if the OGL context could be created
+		if (fFrame->m_mycanvas->OglCtxAvailable())
+		{
+			fFrame->SetClientSize(wxSize(width, height));
+			fFrame->SetMinClientSize(wxSize(minWidth, minHeight));
+
 			if (fullScreen)
 			{
 				fFrame->ShowFullScreen(true);
@@ -945,7 +955,6 @@ LinuxPlatform *MyApp::getPlatform() const
 }
 
 // main frame
-
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
 	EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
@@ -969,13 +978,11 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
 	EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
-#ifdef Rtt_SIMULATOR
 	EVT_CLOSE(MyFrame::OnClose)
-#endif
 wxEND_EVENT_TABLE()
 
-MyFrame::MyFrame()
-	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
+MyFrame::MyFrame(int style)
+	: wxFrame(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(320, 480), style), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
 #ifdef Rtt_SIMULATOR
@@ -986,7 +993,7 @@ MyFrame::MyFrame()
 	suspendedPanel = NULL;
 	bool accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
-	if (accepted == false)
+	if (!accepted)
 	{
 		// Try again without sample buffers
 		vAttrs.Reset();
@@ -994,7 +1001,7 @@ MyFrame::MyFrame()
 
 		accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
-		if (accepted == false)
+		if (!accepted)
 		{
 			Rtt_LogException("Failed to init OpenGL");
 			return;
@@ -1003,8 +1010,6 @@ MyFrame::MyFrame()
 
 	createMenus();
 	m_mycanvas = new MyGLCanvas(this, vAttrs);
-
-	SetWindowStyle(wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX);
 
 	const char *homeDir = getHomePath();
 	fProjectPath = string(homeDir);
@@ -1031,18 +1036,18 @@ MyFrame::~MyFrame()
 
 void MyFrame::watchFolder(const char *path, const char *appName)
 {
+	if (IsHomeScreen(string(appName)))
+	{
+		// do not watch main screen folder
+		return;
+	}
+
 	// wxFileSystemWatcher
 	if (fWatcher == NULL)
 	{
 		fWatcher = new wxFileSystemWatcher();
 		fWatcher->SetOwner(this);
 		Connect(wxEVT_FSWATCHER, wxFileSystemWatcherEventHandler(MyFrame::OnFileSystemEvent));
-	}
-
-	if (IsHomeScreen(string(appName)))
-	{
-		// do not watch main screen folder
-		return;
 	}
 
 	wxFileName fn = wxFileName::DirName(path);
@@ -1054,13 +1059,22 @@ void MyFrame::watchFolder(const char *path, const char *appName)
 
 void MyFrame::resetSize()
 {
-	this->SetClientSize(wxSize(fContext->getWidth(), fContext->getHeight()));
-	this->Refresh(false);
-	this->Update();
+	wxSize clientSize = GetClientSize();
+
+	if (IsFullScreen())
+	{
+		fContext->GetRuntimeDelegate()->fContentWidth = clientSize.GetWidth();
+		fContext->GetRuntimeDelegate()->fContentHeight = clientSize.GetHeight();
+	}
+
+	SetClientSize(wxSize(fContext->getWidth(), fContext->getHeight()));
+	Refresh(false);
+	Update();
 }
 
 void MyFrame::createMenus()
 {
+#ifdef Rtt_SIMULATOR
 	wxMenuItem *mi;
 	{
 		fMenuMain = new wxMenuBar();
@@ -1145,8 +1159,6 @@ void MyFrame::createMenus()
 
 		m_pViewMenu->AppendSeparator();
 		mi = m_pViewMenu->Append(ID_MENU_WELCOME, _T("&Welcome Screen"));
-		mi = m_pViewMenu->Append(wxID_ABOUT, _T("&Console"));
-		mi->Enable(false);
 		fMenuProject->Append(m_pViewMenu, _T("&View"));
 
 		// About menu
@@ -1156,6 +1168,7 @@ void MyFrame::createMenus()
 		mi = m_pHelpMenu->Append(wxID_ABOUT, _T("&About Simulator...")); //mi->Enable(false);
 		fMenuProject->Append(m_pHelpMenu, _T("&Help"));
 	}
+#endif
 }
 
 void MyFrame::setMenu(const char *appPath)
@@ -1179,9 +1192,10 @@ void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 
 void MyFrame::OnClose(wxCloseEvent &ev)
 {
+	fContext->GetRuntime()->End();
+
 	// quit the simulator console
 #ifdef Rtt_SIMULATOR
-	fContext->GetRuntime()->End();
 	LinuxConsoleLog(LINUX_CONSOLE_QUIT_CMD);
 	wxExit();
 #endif
@@ -1271,7 +1285,7 @@ void MyFrame::OnOpenFileDialog(wxCommandEvent &event)
 
 	wxString path = openFileDialog.GetPath();
 
-	if (Rtt_FileExists(path.c_str()) == false)
+	if (!Rtt_FileExists(path.c_str()))
 	{
 		return;
 	}
@@ -1331,7 +1345,7 @@ void MyFrame::OnOpenSampleProjects(wxCommandEvent &ev)
 
 	wxString path = openFileDialog.GetPath();
 
-	if (Rtt_FileExists(path.c_str()) == false)
+	if (!Rtt_FileExists(path.c_str()))
 	{
 		return;
 	}
@@ -1566,7 +1580,7 @@ void MyGLCanvas::startTimer(float frameDuration)
 
 void MyGLCanvas::OnTimer(wxTimerEvent &event)
 {
-	if (fContext->fIsStarted == false)
+	if (!fContext->fIsStarted)
 	{
 		fContext->fIsStarted = true;
 		fContext->GetRuntime()->BeginRunLoop();
@@ -1574,7 +1588,7 @@ void MyGLCanvas::OnTimer(wxTimerEvent &event)
 
 	Rtt::Runtime *runtime = fContext->GetRuntime();
 
-	if (runtime->IsSuspended() == false)
+	if (!runtime->IsSuspended())
 	{
 		LinuxInputDeviceManager &deviceManager = (LinuxInputDeviceManager &)fContext->getPlatform()->GetDevice().GetInputDeviceManager();
 		deviceManager.dispatchEvents(runtime);
@@ -1616,11 +1630,6 @@ void MyGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
 	if (m_winHeight > 0)
 	{
-		if (fContext && fContext->GetRuntime())
-		{
-			m_parent->getContext()->GetRuntime()->GetDisplay().Invalidate();
-		}
-
 		SwapBuffers();
 	}
 }
@@ -1636,6 +1645,8 @@ void MyGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 
 void MyGLCanvas::OnSize(wxSizeEvent &event)
 {
+	event.Skip();
+
 	// If this window is not fully initialized, dismiss this event
 	if (!IsShownOnScreen())
 	{
@@ -1644,8 +1655,8 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 
 	static bool isInited = false;
 
-	//Now we have a context, retrieve pointers to OGL functions
-	if (isInited == false)
+	// now we have a context, retrieve pointers to OGL functions
+	if (!isInited)
 	{
 		isInited = true;
 		Rtt_ASSERT(m_oglContext);
@@ -1674,8 +1685,6 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 	// Generate paint event
 	Refresh(false);
 	Update();
-
-	//event.Skip();
 }
 
 void MyGLCanvas::OnMouse(wxMouseEvent &e)
