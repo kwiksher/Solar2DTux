@@ -9,6 +9,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="linux">
+      <File Name="Rtt_LinuxFileUtils.cpp"/>
       <File Name="Rtt_LinuxIPCClient.cpp"/>
       <File Name="Rtt_LinuxIPCClientConnection.cpp"/>
       <File Name="Rtt_HTTPClientLinux.cpp"/>
@@ -47,6 +48,7 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="include">
+        <File Name="Rtt_LinuxFileUtils.h"/>
         <File Name="Rtt_LinuxIPCClient.h"/>
         <File Name="Rtt_LinuxIPCClientConnection.h"/>
         <File Name="Rtt_LinuxWebView.h"/>
@@ -1283,7 +1285,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O0;-g3;-std=c++11;-Wfatal-errors;-Wno-narrowing" C_Options="-O0;-g3;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-Wfatal-errors;-O0;-std=c++11;-g3;-Wno-narrowing" C_Options="-O0;-g3;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../../external/lua-5.1.3/src"/>
         <IncludePath Value="../../librtt"/>

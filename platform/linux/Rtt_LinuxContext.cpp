@@ -31,6 +31,7 @@
 #include "Rtt_Freetype.h"
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
+#include "Rtt_LinuxFileUtils.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
@@ -89,38 +90,6 @@ struct SimulatorConfig
 	int windowYPos = 10;
 	wxConfig *config;
 } simulatorConfig;
-
-static const char *getStartupPath(string *exeFileName)
-{
-	static char buf[PATH_MAX + 1];
-	ssize_t count = readlink("/proc/self/exe", buf, PATH_MAX);
-	buf[count] = 0;
-
-	// remove file name
-	char *filename = strrchr(buf, '/');
-	Rtt_ASSERT(filename);
-
-	if (exeFileName)
-	{
-		*exeFileName = filename + 1;
-	}
-
-	*filename = 0;
-
-	return buf;
-}
-
-static const char *getHomePath()
-{
-	const char *homeDir = NULL;
-
-	if ((homeDir = getenv("HOME")) == NULL)
-	{
-		homeDir = getpwuid(getuid())->pw_dir;
-	}
-
-	return homeDir;
-}
 
 static char *CalculateMD5(string filename)
 {
@@ -431,8 +400,8 @@ namespace Rtt
 		: fRuntime(NULL), fRuntimeDelegate(new LinuxRuntimeDelegate()), fMouseListener(NULL), fKeyListener(NULL), fPlatform(NULL), fTouchDeviceExist(false), fMode("normal"), fIsDebApp(false), fSimulator(NULL), fIsStarted(false)
 	{
 		string exeFileName;
-		const char *homeDir = getHomePath();
-		const char *appPath = getStartupPath(&exeFileName);
+		const char *homeDir = LinuxFileUtils::GetHomePath();
+		const char *appPath = LinuxFileUtils::GetStartupPath(&exeFileName);
 
 		// override appPath if arg isn't NULL
 		if (path && *path != 0)
@@ -490,7 +459,7 @@ namespace Rtt
 		}
 
 		// look for welcomescereen, Simulator ?
-		startDir = getStartupPath(NULL);
+		startDir = LinuxFileUtils::GetStartupPath(NULL);
 		startDir.append("/Resources/homescreen");
 		assetsDir = startDir;
 		assetsDir.append("/main.lua");
@@ -533,7 +502,7 @@ namespace Rtt
 
 	bool CoronaAppContext::Init()
 	{
-		const char *homeDir = getHomePath();
+		const char *homeDir = LinuxFileUtils::GetHomePath();
 		string appDir(homeDir);
 
 #ifdef Rtt_SIMULATOR
@@ -595,7 +564,7 @@ namespace Rtt
 		}
 
 		setGlyphProvider(new glyph_freetype_provider(fPathToApp.c_str()));
-		fPlatform = new LinuxPlatform(fPathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), getStartupPath(NULL));
+		fPlatform = new LinuxPlatform(fPathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), LinuxFileUtils::GetStartupPath(NULL));
 		fRuntime = new LinuxRuntime(*fPlatform, NULL);
 		fRuntime->SetDelegate(fRuntimeDelegate);
 		fRuntime->SetProperty(Runtime::kLinuxMaskSet, true);
@@ -768,7 +737,7 @@ namespace Rtt
 
 		// add Resources to LUA_PATH
 		string luapath(getenv("LUA_PATH"));
-		luapath.append(getStartupPath(NULL));
+		luapath.append(LinuxFileUtils::GetStartupPath(NULL));
 		luapath.append("/Resources/?.lua;");
 
 		setenv("LUA_PATH", luapath.c_str(), true);
@@ -849,7 +818,7 @@ bool MyApp::OnInit()
 		int height = 480;
 		int minWidth = width;
 		int minHeight = height;
-		string projectPath(getStartupPath(NULL));
+		string projectPath(LinuxFileUtils::GetStartupPath(NULL));
 #ifdef Rtt_SIMULATOR
 		projectPath.append("/Resources/homescreen");
 #else
@@ -933,7 +902,7 @@ bool MyApp::OnInit()
 		}
 
 #ifdef Rtt_SIMULATOR
-		simulatorConfig.settingsFilePath = getHomePath();
+		simulatorConfig.settingsFilePath = LinuxFileUtils::GetHomePath();
 		simulatorConfig.settingsFilePath.append("/.Solar2D/simulator.conf");
 		simulatorConfig.config = new wxFileConfig(wxEmptyString, wxEmptyString, simulatorConfig.settingsFilePath);
 
@@ -1088,7 +1057,7 @@ MyFrame::MyFrame(int style)
 	createMenus();
 	m_mycanvas = new MyGLCanvas(this, vAttrs);
 	fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
-	const char *homeDir = getHomePath();
+	const char *homeDir = LinuxFileUtils::GetHomePath();
 	fProjectPath = string(homeDir);
 	fProjectPath.append("/Documents/Solar2D Projects");
 
@@ -1332,7 +1301,7 @@ void MyFrame::OnFileSystemEvent(wxFileSystemWatcherEvent &event)
 // open home screen
 void MyFrame::OnOpenWelcome(wxCommandEvent &event)
 {
-	string path(getStartupPath(NULL));
+	string path(LinuxFileUtils::GetStartupPath(NULL));
 	path.append("/Resources/homescreen/main.lua");
 
 	wxCommandEvent eventOpen(eventOpenProject);
@@ -1388,7 +1357,7 @@ void MyFrame::OnOpenInEditor(wxCommandEvent &event)
 
 void MyFrame::OnShowProjectSandbox(wxCommandEvent &event)
 {
-	const char *homeDir = getHomePath();
+	const char *homeDir = LinuxFileUtils::GetHomePath();
 	string command("xdg-open ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");
@@ -1401,7 +1370,7 @@ void MyFrame::OnShowProjectSandbox(wxCommandEvent &event)
 
 void MyFrame::OnClearProjectSandbox(wxCommandEvent &event)
 {
-	const char *homeDir = getHomePath();
+	const char *homeDir = LinuxFileUtils::GetHomePath();
 	string command("rm -rf ");
 	command.append(homeDir);
 	command.append("/.Solar2D/Sandbox/");

@@ -1,9 +1,8 @@
 #include "Rtt_LinuxNewProjectDialog.h"
-#include <pwd.h>
-#include <libgen.h>
 #include <string.h>
 #include "Rtt_LuaContext.h"
 #include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxFileUtils.h"
 #include "Core/Rtt_FileSystem.h"
 
 // export for LUA
@@ -274,8 +273,7 @@ namespace Rtt
 
 	void LinuxNewProjectDialog::SetProjectPath()
 	{
-		struct passwd* pw = getpwuid(getuid());
-		const char* homedir = pw->pw_dir;
+		const char* homedir = LinuxFileUtils::GetHomePath();
 		fProjectPath = string(homedir);
 		fProjectPath.append("/Documents/Solar2D Projects");
 		txtProjectFolder->SetValue(fProjectPath);
@@ -283,16 +281,7 @@ namespace Rtt
 
 	void LinuxNewProjectDialog::SetResourcePath()
 	{
-		static char buf[ PATH_MAX + 1];
-		ssize_t count = readlink("/proc/self/exe", buf, PATH_MAX);
-		const char *appPath;
-
-		if (count != -1)
-		{
-			appPath = dirname(buf);
-		}
-
-		fResourcePath = string(appPath);
+		fResourcePath = string(LinuxFileUtils::GetStartupPath(NULL));
 		fResourcePath.append("/Resources");
 	}
 

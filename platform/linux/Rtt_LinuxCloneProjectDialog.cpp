@@ -1,9 +1,8 @@
 #include "Rtt_LinuxCloneProjectDialog.h"
-#include <pwd.h>
-#include <libgen.h>
 #include <string.h>
 #include <fstream>
 #include <streambuf>
+#include "Rtt_LinuxFileUtils.h"
 
 using namespace std;
 
@@ -107,12 +106,7 @@ namespace Rtt
 	void LinuxCloneProjectDialog::CloneProject()
 	{
 		activityIndicator->Start();
-		const char *homeDir = NULL;
-
-		if ((homeDir = getenv("HOME")) == NULL)
-		{
-			homeDir = getpwuid(getuid())->pw_dir;
-		}
+		const char *homeDir = LinuxFileUtils::GetHomePath();
 
 		string command("git clone --progress ");
 		command.append(txtCloneUrl->GetValue().ToStdString());

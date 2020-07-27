@@ -31,9 +31,10 @@
 #include "Rtt_LinuxWebPopup.h"
 #include "Rtt_LinuxWebView.h"
 #include "Rtt_LinuxContainer.h"
+#include "Rtt_LinuxFileUtils.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-#include <wx/wx.h>
+#include "wx/wx.h"
 #include "wx/activityindicator.h"
 #include <pwd.h>
 
@@ -279,16 +280,8 @@ namespace Rtt
 
 					if (filename != NULL && FileExists(result.GetString()) == false)
 					{
-						const char *homeDir = NULL;
-
-						if ((homeDir = getenv("HOME")) == NULL)
-						{
-							homeDir = getpwuid(getuid())->pw_dir;
-						}
-
 						// look in the plugins dir
-						String resDir;
-						resDir.Append(homeDir);
+						String resDir(LinuxFileUtils::GetHomePath());
 						resDir.Append("/.Solar2D/Plugins/");
 						PathForFile(filename, resDir.GetString(), result);
 						Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
@@ -331,15 +324,14 @@ namespace Rtt
 
 				case MPlatform::kPluginsDir:
 				{
-					const char *homeDir = NULL;
+					std::string pluginPath;
 
-					if ((homeDir = getenv("HOME")) == NULL)
-					{
-						homeDir = getpwuid(getuid())->pw_dir;
-					}
-
-					std::string pluginPath(homeDir);
+#ifdef Rtt_SIMULATOR
+					pluginPath = LinuxFileUtils::GetHomePath();
 					pluginPath.append("/.Solar2D/Plugins");
+#else
+					pluginPath = LinuxFileUtils::GetStartupPath(NULL);
+#endif
 
 					PathForFile(filename, pluginPath.c_str(), result);
 					break;
