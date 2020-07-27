@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Rtt_LINUX_CONTEXT_H
+#define Rtt_LINUX_CONTEXT_H
+
 #include <string>
 #include <map>
 #include <vector>
@@ -23,6 +26,7 @@
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxIPCClient.h"
 #include "Rtt_LinuxRuntimeDelegate.h"
+#include "Rtt_LinuxRelaunchProjectDialog.h"
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
@@ -35,7 +39,6 @@
 #define LINUX_CONSOLE_CLEAR_CMD "###clear###"
 #define LINUX_CONSOLE_QUIT_CMD "###quit###"
 #define HOMESCREEN_ID "homescreen"
-#pragma once
 
 class MyApp;
 class MyFrame;
@@ -48,6 +51,7 @@ wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
+wxDECLARE_EVENT(eventRelaunchLastProject, wxCommandEvent);
 
 static void LinuxConsoleLog(const char *message, bool isError = false)
 {
@@ -300,18 +304,19 @@ public:
 	void OnCloneProject(wxCommandEvent &event);
 	void OnNewProject(wxCommandEvent &event);
 	void OnRelaunch(wxCommandEvent &event);
+	void OnRelaunchLastProject(wxCommandEvent &event);
 	void OnSuspendOrResume(wxCommandEvent &event);
 	void OnOpenFileDialog(wxCommandEvent &event);
 	void OnOpenWelcome(wxCommandEvent &event);
-	void OnBuildAndroid(wxCommandEvent &ev);
-	void OnBuildWeb(wxCommandEvent &ev);
-	void OnBuildLinux(wxCommandEvent &ev);
-	void OnOpenInEditor(wxCommandEvent &ev);
-	void OnShowProjectSandbox(wxCommandEvent &ev);
-	void OnClearProjectSandbox(wxCommandEvent &ev);
-	void OnOpenSampleProjects(wxCommandEvent &ev);
-	void OnOpenDocumentation(wxCommandEvent &ev);
-	void OnClose(wxCloseEvent &ev);
+	void OnBuildAndroid(wxCommandEvent &event);
+	void OnBuildWeb(wxCommandEvent &event);
+	void OnBuildLinux(wxCommandEvent &event);
+	void OnOpenInEditor(wxCommandEvent &event);
+	void OnShowProjectSandbox(wxCommandEvent &event);
+	void OnClearProjectSandbox(wxCommandEvent &event);
+	void OnOpenSampleProjects(wxCommandEvent &event);
+	void OnOpenDocumentation(wxCommandEvent &event);
+	void OnClose(wxCloseEvent &event);
 	void SetOGLString(const wxString &ogls) { m_OGLString = ogls; }
 	void CreateSuspendedPanel();
 	void RemoveSuspendedPanel();
@@ -323,6 +328,9 @@ public:
 	void createMenus();
 	void watchFolder(const char *path, const char *appName);
 
+	bool fRelaunchedViaFileEvent;
+	Rtt::LinuxRelaunchProjectDialog *fRelaunchProjectDialog;
+	wxLongLong fFileSystemEventTimestamp = 0;
 	wxPanel *suspendedPanel;
 	wxStaticText *suspendedText;
 	wxMenu *m_pHardwareMenu;
@@ -345,6 +353,7 @@ public:
 	virtual ~MyApp();
 
 	bool OnInit() wxOVERRIDE;
+	void OnEventLoopEnter(wxEventLoopBase *WXUNUSED(loop));
 
 	MyFrame *getFrame() { return fFrame; }
 	MyGLCanvas *getCanvas() const { return fFrame->getCanvas(); }
@@ -356,3 +365,4 @@ private:
 	MyFrame *fFrame;
 	//Rtt::CoronaAppContext* fCoronaContext;
 };
+#endif // Rtt_LINUX_CONTEXT_H

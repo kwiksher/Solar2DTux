@@ -1,5 +1,5 @@
-#ifndef RTT_LINUX_PREFERENCES_DIALOG_H
-#define RTT_LINUX_PREFERENCES_DIALOG_H
+#ifndef Rtt_LINUX_PREFERENCES_DIALOG_H
+#define Rtt_LINUX_PREFERENCES_DIALOG_H
 
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -7,20 +7,29 @@
 #include <wx/activityindicator.h>
 #include <string>
 
-#pragma once
-
 namespace Rtt
 {
-	class NewPreferencesDialog : public wxDialog
+	class LinuxPreferencesDialog : public wxDialog
 	{
 	public:
-		NewPreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
+		LinuxPreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
+
+		enum RelaunchType
+		{
+			Always, Never, Ask
+		};
+
+	public:
+		void SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, RelaunchType relaunchType);
+		bool ShouldShowRuntimeErrors();
+		bool ShouldOpenLastProject();
+		RelaunchType ShouldRelaunchOnFileChange();
 
 	private:
-		void SetProperties();
 		void SetLayout();
 
 	protected:
+		RelaunchType fRelaunchType;
 		wxCheckBox *showRuntimeErrors;
 		wxCheckBox *automaticallyLaunchLastProject;
 		wxStaticText *relaunchSimulatorOptionText;
@@ -35,8 +44,11 @@ namespace Rtt
 	public:
 		void OnOKClicked(wxCommandEvent &event);
 		void OnCancelClicked(wxCommandEvent &event);
+		void OnRelaunchAlwaysClicked(wxCommandEvent &event);
+		void OnRelaunchNeverClicked(wxCommandEvent &event);
+		void OnRelaunchAskClicked(wxCommandEvent &event);
 	};
 
 } // namespace Rtt
 
-#endif // RTT_LINUX_PREFERENCES_DIALOG_H
+#endif // Rtt_LINUX_PREFERENCES_DIALOG_H

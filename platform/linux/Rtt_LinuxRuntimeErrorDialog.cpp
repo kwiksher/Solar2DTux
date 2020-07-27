@@ -1,33 +1,12 @@
-#include "Core/Rtt_Build.h"
-#include "Core/Rtt_Time.h"
-#include "Rtt_Runtime.h"
-#include "Rtt_LuaContext.h"
-#include "Core/Rtt_Types.h"
-#include "Rtt_LinuxContext.h"
-#include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxRuntimeDelegate.h"
-#include "Rtt_LuaFile.h"
-#include "Core/Rtt_FileSystem.h"
-#include "Rtt_Archive.h"
-#include "Display/Rtt_Display.h"
-#include "Display/Rtt_DisplayDefaults.h"
-#include "Rtt_KeyName.h"
-#include "Rtt_Freetype.h"
-#include "Rtt_LuaLibSimulator.h"
-#include "Rtt_LinuxSimulatorView.h"
-#include <pwd.h>
-#include <libgen.h>
-#include <string.h>
 #include "Rtt_LinuxRuntimeErrorDialog.h"
-#include <fstream>
-#include <streambuf>
+#include "Rtt_LinuxContext.h"
+#include <string.h>
 
 using namespace std;
-using namespace Rtt;
 
 namespace Rtt
 {
-	NewRuntimeErrorDialog::NewRuntimeErrorDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+	LinuxRuntimeErrorDialog::LinuxRuntimeErrorDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 	{
 		SetSize(wxSize(520, 480));
 		errorText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 180), wxTE_READONLY | wxTE_MULTILINE);
@@ -41,7 +20,7 @@ namespace Rtt
 		SetLayout();
 	}
 
-	void NewRuntimeErrorDialog::SetProperties(const char *title, const char *errorMsg, const char *stackTraceback)
+	void LinuxRuntimeErrorDialog::SetProperties(const char *title, const char *errorMsg, const char *stackTraceback)
 	{
 		SetTitle(title);
 		errorText->SetValue(errorMsg);
@@ -50,7 +29,7 @@ namespace Rtt
 		btnOK->SetDefault();
 	}
 
-	void NewRuntimeErrorDialog::SetLayout()
+	void LinuxRuntimeErrorDialog::SetLayout()
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
@@ -84,12 +63,12 @@ namespace Rtt
 		Layout();
 	}
 
-	BEGIN_EVENT_TABLE(NewRuntimeErrorDialog, wxDialog)
-		EVT_BUTTON(wxID_OK, NewRuntimeErrorDialog::OnOKClicked)
-		EVT_BUTTON(wxID_CANCEL, NewRuntimeErrorDialog::OnCancelClicked)
+	BEGIN_EVENT_TABLE(LinuxRuntimeErrorDialog, wxDialog)
+		EVT_BUTTON(wxID_OK, LinuxRuntimeErrorDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, LinuxRuntimeErrorDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
-	void NewRuntimeErrorDialog::OnOKClicked(wxCommandEvent &event)
+	void LinuxRuntimeErrorDialog::OnOKClicked(wxCommandEvent &event)
 	{
 		EndModal(wxID_OK);
 		wxYield();
@@ -97,7 +76,7 @@ namespace Rtt
 		wxPostEvent(wxGetApp().getFrame(), ev);
 	}
 
-	void NewRuntimeErrorDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxRuntimeErrorDialog::OnCancelClicked(wxCommandEvent &event)
 	{
 		EndModal(wxID_CLOSE);
 	}

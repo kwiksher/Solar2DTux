@@ -69,7 +69,7 @@ namespace Rtt
 		fSkinDir.Set(skinDir);
 		fInstallDir.Set(installDir);
 		isMouseCursorVisible = true;
-		fRuntimeErrorDialog = new NewRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
+		fRuntimeErrorDialog = new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
 
 	LinuxPlatform::~LinuxPlatform()
@@ -519,7 +519,7 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char *errorType, const char *message, const char *stacktrace) const
 	{
-		if (fRuntimeErrorDialog->IsShown())
+		if (!fShowRuntimeErrors || fRuntimeErrorDialog->IsShown())
 		{
 			return;
 		}

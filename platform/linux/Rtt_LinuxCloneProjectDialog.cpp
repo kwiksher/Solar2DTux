@@ -1,33 +1,15 @@
-#include "Core/Rtt_Build.h"
-#include "Core/Rtt_Time.h"
-#include "Rtt_Runtime.h"
-#include "Rtt_LuaContext.h"
-#include "Core/Rtt_Types.h"
-#include "Rtt_LinuxContext.h"
-#include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxRuntimeDelegate.h"
-#include "Rtt_LuaFile.h"
-#include "Core/Rtt_FileSystem.h"
-#include "Rtt_Archive.h"
-#include "Display/Rtt_Display.h"
-#include "Display/Rtt_DisplayDefaults.h"
-#include "Rtt_KeyName.h"
-#include "Rtt_Freetype.h"
-#include "Rtt_LuaLibSimulator.h"
-#include "Rtt_LinuxSimulatorView.h"
+#include "Rtt_LinuxCloneProjectDialog.h"
 #include <pwd.h>
 #include <libgen.h>
 #include <string.h>
-#include "Rtt_LinuxCloneProjectDialog.h"
 #include <fstream>
 #include <streambuf>
 
 using namespace std;
-using namespace Rtt;
 
 namespace Rtt
 {
-	NewCloneDialog::NewCloneDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+	LinuxCloneProjectDialog::LinuxCloneProjectDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 	{
 		SetSize(wxSize(520, 250));
 		txtCloneUrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
@@ -41,7 +23,7 @@ namespace Rtt
 		SetLayout();
 	}
 
-	void NewCloneDialog::SetProperties()
+	void LinuxCloneProjectDialog::SetProperties()
 	{
 		SetTitle(wxT("Clone Project"));
 		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
@@ -50,7 +32,7 @@ namespace Rtt
 		btnOK->SetDefault();
 	}
 
-	void NewCloneDialog::SetLayout()
+	void LinuxCloneProjectDialog::SetLayout()
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
@@ -94,13 +76,13 @@ namespace Rtt
 		Layout();
 	}
 
-	BEGIN_EVENT_TABLE(NewCloneDialog, wxDialog)
-		EVT_BUTTON(wxID_OPEN, NewCloneDialog::OnProjectFolderBrowse)
-		EVT_BUTTON(wxID_OK, NewCloneDialog::OnOKClicked)
-		EVT_BUTTON(wxID_CANCEL, NewCloneDialog::OnCancelClicked)
+	BEGIN_EVENT_TABLE(LinuxCloneProjectDialog, wxDialog)
+		EVT_BUTTON(wxID_OPEN, LinuxCloneProjectDialog::OnProjectFolderBrowse)
+		EVT_BUTTON(wxID_OK, LinuxCloneProjectDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, LinuxCloneProjectDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
-	void NewCloneDialog::OnProjectFolderBrowse(wxCommandEvent &event)
+	void LinuxCloneProjectDialog::OnProjectFolderBrowse(wxCommandEvent &event)
 	{
 		event.Skip();
 		wxDirDialog openDirDialog(this, _("Choose Clone Directory"), "", 0, wxDefaultPosition);
@@ -111,18 +93,18 @@ namespace Rtt
 		}
 	}
 
-	void NewCloneDialog::OnOKClicked(wxCommandEvent &event)
+	void LinuxCloneProjectDialog::OnOKClicked(wxCommandEvent &event)
 	{
 		this->CloneProject();
 		EndModal(wxID_OK);
 	}
 
-	void NewCloneDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxCloneProjectDialog::OnCancelClicked(wxCommandEvent &event)
 	{
 		EndModal(wxID_CLOSE);
 	}
 
-	void NewCloneDialog::CloneProject()
+	void LinuxCloneProjectDialog::CloneProject()
 	{
 		activityIndicator->Start();
 		const char *homeDir = NULL;

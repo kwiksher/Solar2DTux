@@ -1,62 +1,59 @@
-#include "Core/Rtt_Build.h"
-#include "Core/Rtt_Time.h"
-#include "Rtt_Runtime.h"
-#include "Rtt_LuaContext.h"
-#include "Core/Rtt_Types.h"
-#include "Rtt_LinuxContext.h"
-#include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxRuntimeDelegate.h"
-#include "Rtt_LuaFile.h"
-#include "Core/Rtt_FileSystem.h"
-#include "Rtt_Archive.h"
-#include "Display/Rtt_Display.h"
-#include "Display/Rtt_DisplayDefaults.h"
-#include "Rtt_KeyName.h"
-#include "Rtt_Freetype.h"
-#include "Rtt_LuaLibSimulator.h"
-#include "Rtt_LinuxSimulatorView.h"
-#include <pwd.h>
-#include <libgen.h>
-#include <string.h>
 #include "Rtt_LinuxPreferencesDialog.h"
-#include <fstream>
-#include <streambuf>
+#include "Rtt_LuaContext.h"
+#include <string.h>
+
+#define ID_RADIO_BUTTON_RELAUNCH_ALWAYS wxID_HIGHEST + 1
+#define ID_RADIO_BUTTON_RELAUNCH_NEVER wxID_HIGHEST + 2
+#define ID_RADIO_BUTTON_RELAUNCH_ASK wxID_HIGHEST + 3
 
 using namespace std;
-using namespace Rtt;
 
 namespace Rtt
 {
-	NewPreferencesDialog::NewPreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
+	LinuxPreferencesDialog::LinuxPreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 	{
 		SetSize(wxSize(520, 320));
 		showRuntimeErrors = new wxCheckBox(this, -1, "Show Runtime Errors", wxPoint(0, 0));
 		automaticallyLaunchLastProject = new wxCheckBox(this, -1, "Automatically open last project", wxPoint(0, 0));
 		relaunchSimulatorOptionText = new wxStaticText(this, wxID_ANY, wxT("Relaunch Simulator when project is modified?"));
-		relaunchOnModifyAlways = new wxRadioButton(this, wxID_ANY, "Always", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-		relaunchOnModifyNever = new wxRadioButton(this, wxID_ANY, "Never", wxDefaultPosition, wxDefaultSize);
-		relaunchOnModifyAskEveryTime = new wxRadioButton(this, wxID_ANY, "Ask Every Time", wxDefaultPosition, wxDefaultSize);
+		relaunchOnModifyAlways = new wxRadioButton(this, ID_RADIO_BUTTON_RELAUNCH_ALWAYS, "Always", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+		relaunchOnModifyNever = new wxRadioButton(this, ID_RADIO_BUTTON_RELAUNCH_NEVER, "Never", wxDefaultPosition, wxDefaultSize);
+		relaunchOnModifyAskEveryTime = new wxRadioButton(this, ID_RADIO_BUTTON_RELAUNCH_ASK, "Ask Every Time", wxDefaultPosition, wxDefaultSize);
 		btnOK = new wxButton(this, wxID_OK, wxT("OK"));
 		btnCancel = new wxButton(this, wxID_CANCEL, wxT("Cancel"));
 
-		SetProperties();
+		SetTitle(wxT("Preferences"));
+		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+		btnOK->SetDefault();
+		SetProperties(true, false, RelaunchType::Always);
 		SetLayout();
 	}
 
-	void NewPreferencesDialog::SetProperties()
+	void LinuxPreferencesDialog::SetProperties(bool shouldShowRuntimeErrors, bool shouldOpenLastProject, RelaunchType relaunchType)
 	{
-		SetTitle(wxT("Preferences"));
-		SetFont(wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
-		// todo: read from settings
-		showRuntimeErrors->SetValue(true);
-		automaticallyLaunchLastProject->SetValue(true);
-		relaunchOnModifyAlways->SetValue(true);
+		showRuntimeErrors->SetValue(shouldShowRuntimeErrors);
+		automaticallyLaunchLastProject->SetValue(shouldOpenLastProject);
+		relaunchOnModifyAlways->SetValue(false);
 		relaunchOnModifyNever->SetValue(false);
 		relaunchOnModifyAskEveryTime->SetValue(false);
-		btnOK->SetDefault();
+
+		switch (relaunchType)
+		{
+			case RelaunchType::Always:
+				relaunchOnModifyAlways->SetValue(true);
+				break;
+
+			case RelaunchType::Never:
+				relaunchOnModifyNever->SetValue(true);
+				break;
+
+			case RelaunchType::Ask:
+				relaunchOnModifyAskEveryTime->SetValue(true);
+				break;
+		}
 	}
 
-	void NewPreferencesDialog::SetLayout()
+	void LinuxPreferencesDialog::SetLayout()
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
@@ -67,8 +64,6 @@ namespace Rtt
 		wxBoxSizer *boxSizerTopColumn2 = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *boxSizerTopColumn3 = new wxBoxSizer(wxVERTICAL);
 		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
-
-		// set fonts
 
 		// add to box sizers
 		boxSizerTopColumn1->Add(showRuntimeErrors, 0, wxALIGN_LEFT | wxBOTTOM | wxTOP, 6);
@@ -95,19 +90,51 @@ namespace Rtt
 		Layout();
 	}
 
-	BEGIN_EVENT_TABLE(NewPreferencesDialog, wxDialog)
-		EVT_BUTTON(wxID_OK, NewPreferencesDialog::OnOKClicked)
-		EVT_BUTTON(wxID_CANCEL, NewPreferencesDialog::OnCancelClicked)
+	bool LinuxPreferencesDialog::ShouldShowRuntimeErrors()
+	{
+		return showRuntimeErrors->GetValue();
+	}
+
+	bool LinuxPreferencesDialog::ShouldOpenLastProject()
+	{
+		return automaticallyLaunchLastProject->GetValue();
+	}
+
+	LinuxPreferencesDialog::RelaunchType LinuxPreferencesDialog::ShouldRelaunchOnFileChange()
+	{
+		return fRelaunchType;
+	}
+
+	BEGIN_EVENT_TABLE(LinuxPreferencesDialog, wxDialog)
+		EVT_BUTTON(wxID_OK, LinuxPreferencesDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, LinuxPreferencesDialog::OnCancelClicked)
+		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_ALWAYS, LinuxPreferencesDialog::OnRelaunchAlwaysClicked)
+		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_NEVER, LinuxPreferencesDialog::OnRelaunchNeverClicked)
+		EVT_RADIOBUTTON(ID_RADIO_BUTTON_RELAUNCH_ASK, LinuxPreferencesDialog::OnRelaunchAskClicked)
 	END_EVENT_TABLE();
 
-	void NewPreferencesDialog::OnOKClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnOKClicked(wxCommandEvent &event)
 	{
-		// todo: save settings
 		EndModal(wxID_OK);
 	}
 
-	void NewPreferencesDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxPreferencesDialog::OnCancelClicked(wxCommandEvent &event)
 	{
 		EndModal(wxID_CLOSE);
+	}
+
+	void LinuxPreferencesDialog::OnRelaunchAlwaysClicked(wxCommandEvent &event)
+	{
+		fRelaunchType = RelaunchType::Always;
+	}
+
+	void LinuxPreferencesDialog::OnRelaunchNeverClicked(wxCommandEvent &event)
+	{
+		fRelaunchType = RelaunchType::Never;
+	}
+
+	void LinuxPreferencesDialog::OnRelaunchAskClicked(wxCommandEvent &event)
+	{
+		fRelaunchType = RelaunchType::Ask;
 	}
 } // namespace Rtt

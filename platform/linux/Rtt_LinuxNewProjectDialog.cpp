@@ -1,34 +1,19 @@
+#include "Rtt_LinuxNewProjectDialog.h"
 #include <pwd.h>
 #include <libgen.h>
 #include <string.h>
-#include "Core/Rtt_Build.h"
-#include "Core/Rtt_Time.h"
-#include "Rtt_Runtime.h"
 #include "Rtt_LuaContext.h"
-#include "Core/Rtt_Types.h"
 #include "Rtt_LinuxContext.h"
-#include "Rtt_LinuxPlatform.h"
-#include "Rtt_LinuxRuntimeDelegate.h"
-#include "Rtt_LuaFile.h"
 #include "Core/Rtt_FileSystem.h"
-#include "Rtt_Archive.h"
-#include "Display/Rtt_Display.h"
-#include "Display/Rtt_DisplayDefaults.h"
-#include "Rtt_KeyName.h"
-#include "Rtt_Freetype.h"
-#include "Rtt_LuaLibSimulator.h"
-#include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxNewProjectDialog.h"
 
-// Eport for LUA
+// export for LUA
 Rtt_EXPORT int luaopen_lfs(lua_State *L);
 
 using namespace std;
-using namespace Rtt;
 
 namespace Rtt
 {
-	NewProjectDialog::NewProjectDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
+	LinuxNewProjectDialog::LinuxNewProjectDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
 		wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE),
 		fProjectName(""),
 		fTemplateName(""),
@@ -67,7 +52,7 @@ namespace Rtt
 		DoLayout();
 	}
 
-	void NewProjectDialog::SetProperties()
+	void LinuxNewProjectDialog::SetProperties()
 	{
 		SetTitle(wxT("New Project"));
 		SetSize(wxSize(600, 425));
@@ -82,7 +67,7 @@ namespace Rtt
 		SetResourcePath();
 	}
 
-	void NewProjectDialog::DoLayout()
+	void LinuxNewProjectDialog::DoLayout()
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
@@ -180,14 +165,14 @@ namespace Rtt
 		Layout();
 	}
 
-	BEGIN_EVENT_TABLE(NewProjectDialog, wxDialog)
-		EVT_COMBOBOX(wxID_ANY, NewProjectDialog::OnChange)
-		EVT_BUTTON(wxID_OPEN, NewProjectDialog::OnProjectFolderBrowse)
-		EVT_BUTTON(wxID_OK, NewProjectDialog::OnOKClicked)
-		EVT_BUTTON(wxID_CANCEL, NewProjectDialog::OnCancelClicked)
+	BEGIN_EVENT_TABLE(LinuxNewProjectDialog, wxDialog)
+		EVT_COMBOBOX(wxID_ANY, LinuxNewProjectDialog::OnChange)
+		EVT_BUTTON(wxID_OPEN, LinuxNewProjectDialog::OnProjectFolderBrowse)
+		EVT_BUTTON(wxID_OK, LinuxNewProjectDialog::OnOKClicked)
+		EVT_BUTTON(wxID_CANCEL, LinuxNewProjectDialog::OnCancelClicked)
 	END_EVENT_TABLE();
 
-	void NewProjectDialog::OnProjectFolderBrowse(wxCommandEvent &event)
+	void LinuxNewProjectDialog::OnProjectFolderBrowse(wxCommandEvent &event)
 	{
 		event.Skip();
 		wxDirDialog openDirDialog(this, _("Choose Project Directory"), fProjectPath, 0, wxDefaultPosition);
@@ -199,7 +184,7 @@ namespace Rtt
 		}
 	}
 
-	void NewProjectDialog::OnChange(wxCommandEvent &event)
+	void LinuxNewProjectDialog::OnChange(wxCommandEvent &event)
 	{
 		event.Skip();
 		wxString strPreset = cboScreenSizePreset->GetValue();
@@ -228,7 +213,7 @@ namespace Rtt
 		txtHeight->SetValue(to_string(fScreenHeight));
 	}
 
-	void NewProjectDialog::OnOKClicked(wxCommandEvent &event)
+	void LinuxNewProjectDialog::OnOKClicked(wxCommandEvent &event)
 	{
 		bool bDialogClean = true;
 
@@ -282,12 +267,12 @@ namespace Rtt
 		}
 	}
 
-	void NewProjectDialog::OnCancelClicked(wxCommandEvent &event)
+	void LinuxNewProjectDialog::OnCancelClicked(wxCommandEvent &event)
 	{
 		EndModal(wxID_CLOSE);
 	}
 
-	void NewProjectDialog::SetProjectPath()
+	void LinuxNewProjectDialog::SetProjectPath()
 	{
 		struct passwd* pw = getpwuid(getuid());
 		const char* homedir = pw->pw_dir;
@@ -296,7 +281,7 @@ namespace Rtt
 		txtProjectFolder->SetValue(fProjectPath);
 	}
 
-	void NewProjectDialog::SetResourcePath()
+	void LinuxNewProjectDialog::SetResourcePath()
 	{
 		static char buf[ PATH_MAX + 1];
 		ssize_t count = readlink("/proc/self/exe", buf, PATH_MAX);
@@ -311,7 +296,7 @@ namespace Rtt
 		fResourcePath.append("/Resources");
 	}
 
-	void NewProjectDialog::CreateProject(string projectFolder)
+	void LinuxNewProjectDialog::CreateProject(string projectFolder)
 	{
 		string fNewProjectLuaScript(fResourcePath);
 		fNewProjectLuaScript.append("/homescreen/newproject.lua");

@@ -188,11 +188,12 @@ namespace Rtt
 		virtual bool SupportsNetworkStatus() const;
 		const char *getInstallDir() const { return fInstallDir.GetString(); }
 		void setWindow(void *ctx);
-		NewRuntimeErrorDialog *GetRuntimeErrorDialog() { return fRuntimeErrorDialog; }
+		bool fShowRuntimeErrors;
+		LinuxRuntimeErrorDialog *GetRuntimeErrorDialog() { return fRuntimeErrorDialog; }
 
 	protected:
 		Rtt_Allocator *fAllocator;
-		NewRuntimeErrorDialog *fRuntimeErrorDialog;
+		LinuxRuntimeErrorDialog *fRuntimeErrorDialog;
 		mutable LinuxAudioPlayer *fAudioPlayer;
 		mutable bool isMouseCursorVisible;
 

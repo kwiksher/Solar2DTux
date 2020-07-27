@@ -39,6 +39,7 @@
 #include "wx/dcclient.h"
 #include "wx/app.h"
 #include "wx/display.h"
+#include "wx/config.h"
 
 #if !defined(wxHAS_IMAGES_IN_RESOURCES) && defined(Rtt_SIMULATOR)
 #include "resource/simulator.xpm"
@@ -58,6 +59,13 @@
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
 #define ID_MENU_SUSPEND wxID_HIGHEST + 23
+#define ID_MENU_OPEN_LAST_PROJECT wxID_HIGHEST + 24
+#define SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS "/showRuntimeErrors"
+#define SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE "/relaunchOnFileChange"
+#define SIMULATOR_CONFIG_OPEN_LAST_PROJECT "/openLastProject"
+#define SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY "/lastProjectDirectory"
+#define SIMULATOR_CONFIG_WINDOW_X_POSITION "/xPos"
+#define SIMULATOR_CONFIG_WINDOW_Y_POSITION "/yPos"
 
 using namespace Rtt;
 using namespace std;
@@ -68,6 +76,19 @@ wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
 wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
+wxDEFINE_EVENT(eventRelaunchLastProject, wxCommandEvent);
+
+struct SimulatorConfig
+{
+	wxString settingsFilePath;
+	wxString lastProjectDirectory;
+	bool showRuntimeErrors = true;
+	bool openLastProject = false;
+	LinuxPreferencesDialog::RelaunchType relaunchOnFileChange = LinuxPreferencesDialog::RelaunchType::Always;
+	int windowXPos = 10;
+	int windowYPos = 10;
+	wxConfig *config;
+} simulatorConfig;
 
 static const char *getStartupPath(string *exeFileName)
 {
@@ -722,6 +743,7 @@ namespace Rtt
 			}
 		}
 
+		fPlatform->fShowRuntimeErrors = simulatorConfig.showRuntimeErrors;
 		fPlatform->setWindow(this);
 		fMouseListener = new MouseListener(*fRuntime);
 		fKeyListener = new KeyListener(*fRuntime);
@@ -910,6 +932,35 @@ bool MyApp::OnInit()
 			minHeight = height;
 		}
 
+#ifdef Rtt_SIMULATOR
+		simulatorConfig.settingsFilePath = getHomePath();
+		simulatorConfig.settingsFilePath.append("/.Solar2D/simulator.conf");
+		simulatorConfig.config = new wxFileConfig(wxEmptyString, wxEmptyString, simulatorConfig.settingsFilePath);
+
+		// read from the simulator config file or create it, if it doesn't exist
+		if (wxFileExists(simulatorConfig.settingsFilePath))
+		{
+			int relaunchOnFileChange = 0;
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), &simulatorConfig.lastProjectDirectory);
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), &simulatorConfig.showRuntimeErrors);
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), &simulatorConfig.openLastProject);
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), &relaunchOnFileChange);
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), &simulatorConfig.windowXPos);
+			simulatorConfig.config->Read(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), &simulatorConfig.windowYPos);
+			simulatorConfig.relaunchOnFileChange = static_cast<LinuxPreferencesDialog::RelaunchType>(relaunchOnFileChange);
+		}
+		else
+		{
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), simulatorConfig.lastProjectDirectory);
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), simulatorConfig.showRuntimeErrors);
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), simulatorConfig.openLastProject);
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(simulatorConfig.relaunchOnFileChange));
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), simulatorConfig.windowXPos);
+			simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), simulatorConfig.windowYPos);
+			simulatorConfig.config->Flush();
+		}
+#endif
+
 		// create the main application window
 		fFrame = new MyFrame(windowStyle);
 
@@ -933,6 +984,7 @@ bool MyApp::OnInit()
 			}
 			else
 			{
+				fFrame->SetPosition(wxPoint(simulatorConfig.windowXPos, simulatorConfig.windowYPos));
 				fFrame->Show(true);
 			}
 
@@ -942,6 +994,29 @@ bool MyApp::OnInit()
 	}
 
 	return false;
+}
+
+void MyApp::OnEventLoopEnter(wxEventLoopBase *WXUNUSED(loop))
+{
+	static bool firstRun = true;
+
+	if (firstRun)
+	{
+		wxCommandEvent eventOpen(eventOpenProject);
+
+#ifdef Rtt_SIMULATOR
+		if (simulatorConfig.openLastProject && !simulatorConfig.lastProjectDirectory.IsEmpty())
+		{
+			wxString fullPath(simulatorConfig.lastProjectDirectory);
+			fullPath.append("/main.lua");
+			eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
+			eventOpen.SetString(fullPath);
+		}
+#endif
+
+		fFrame->OnOpen(eventOpen);
+		firstRun = false;
+	}
 }
 
 wxWindow *MyApp::getParent()
@@ -966,6 +1041,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
 	EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
 	EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
+	EVT_MENU(ID_MENU_OPEN_LAST_PROJECT, MyFrame::OnRelaunchLastProject)
 	EVT_MENU(ID_MENU_SUSPEND, MyFrame::OnSuspendOrResume)
 	EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
 	EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
@@ -991,6 +1067,7 @@ MyFrame::MyFrame(int style)
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;
+	fRelaunchedViaFileEvent = false;
 	bool accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
 	if (!accepted)
@@ -1010,7 +1087,7 @@ MyFrame::MyFrame(int style)
 
 	createMenus();
 	m_mycanvas = new MyGLCanvas(this, vAttrs);
-
+	fRelaunchProjectDialog = new LinuxRelaunchProjectDialog(NULL, wxID_ANY, wxEmptyString);
 	const char *homeDir = getHomePath();
 	fProjectPath = string(homeDir);
 	fProjectPath.append("/Documents/Solar2D Projects");
@@ -1023,6 +1100,7 @@ MyFrame::MyFrame(int style)
 
 MyFrame::~MyFrame()
 {
+	delete simulatorConfig.config;
 	delete fWatcher;
 	delete m_mycanvas;
 
@@ -1052,7 +1130,6 @@ void MyFrame::watchFolder(const char *path, const char *appName)
 
 	wxFileName fn = wxFileName::DirName(path);
 	fn.DontFollowLink();
-
 	fWatcher->RemoveAll();
 	fWatcher->Add(fn);
 }
@@ -1084,7 +1161,7 @@ void MyFrame::createMenus()
 		mi = m_pFileMenu->Append(wxID_NEW, _T("&New Project	\tCtrl-N")); //mi->Enable(false);
 		mi = m_pFileMenu->Append(wxID_OPEN, _T("&Open Project	\tCtrl-O"));
 		m_pFileMenu->AppendSeparator();
-		mi = m_pFileMenu->Append(wxID_SAVE, _T("&Relaunch Last Project	\tCtrl-R"));
+		mi = m_pFileMenu->Append(ID_MENU_OPEN_LAST_PROJECT, _T("&Relaunch Last Project	\tCtrl-R"));
 		m_pFileMenu->AppendSeparator();
 		mi = m_pFileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
 		m_pFileMenu->AppendSeparator();
@@ -1190,9 +1267,13 @@ void MyFrame::OnQuit(wxCommandEvent &WXUNUSED(event))
 	Close(true);
 }
 
-void MyFrame::OnClose(wxCloseEvent &ev)
+void MyFrame::OnClose(wxCloseEvent &event)
 {
 	fContext->GetRuntime()->End();
+
+	simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), GetPosition().x);
+	simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), GetPosition().y);
+	simulatorConfig.config->Flush();
 
 	// quit the simulator console
 #ifdef Rtt_SIMULATOR
@@ -1233,9 +1314,9 @@ void MyFrame::OnFileSystemEvent(wxFileSystemWatcherEvent &event)
 		case wxFSW_EVENT_RENAME:
 		case wxFSW_EVENT_MODIFY:
 		{
-			if (ext == "lua")
+			if (ext.IsSameAs("lua"))
 			{
-				// relaunch
+				fRelaunchedViaFileEvent = true;
 				wxCommandEvent ev(eventRelaunchProject);
 				wxPostEvent(wxGetApp().getFrame(), ev);
 			}
@@ -1249,7 +1330,7 @@ void MyFrame::OnFileSystemEvent(wxFileSystemWatcherEvent &event)
 }
 
 // open home screen
-void MyFrame::OnOpenWelcome(wxCommandEvent &ev)
+void MyFrame::OnOpenWelcome(wxCommandEvent &event)
 {
 	string path(getStartupPath(NULL));
 	path.append("/Resources/homescreen/main.lua");
@@ -1259,17 +1340,17 @@ void MyFrame::OnOpenWelcome(wxCommandEvent &ev)
 	wxPostEvent(this, eventOpen);
 }
 
-void MyFrame::OnBuildAndroid(wxCommandEvent &ev)
+void MyFrame::OnBuildAndroid(wxCommandEvent &event)
 {
 	LinuxSimulatorView::OnBuildForAndroid(getContext());
 }
 
-void MyFrame::OnBuildWeb(wxCommandEvent &ev)
+void MyFrame::OnBuildWeb(wxCommandEvent &event)
 {
 	LinuxSimulatorView::OnBuildForWeb(getContext());
 }
 
-void MyFrame::OnBuildLinux(wxCommandEvent &ev)
+void MyFrame::OnBuildLinux(wxCommandEvent &event)
 {
 	LinuxSimulatorView::OnBuildForLinux(getContext());
 }
@@ -1296,7 +1377,7 @@ void MyFrame::OnOpenFileDialog(wxCommandEvent &event)
 	wxPostEvent(this, eventOpen);
 }
 
-void MyFrame::OnOpenInEditor(wxCommandEvent &ev)
+void MyFrame::OnOpenInEditor(wxCommandEvent &event)
 {
 	string command("xdg-open ");
 	command.append(fContext->getAppPath());
@@ -1305,7 +1386,7 @@ void MyFrame::OnOpenInEditor(wxCommandEvent &ev)
 	system(command.c_str());
 }
 
-void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
+void MyFrame::OnShowProjectSandbox(wxCommandEvent &event)
 {
 	const char *homeDir = getHomePath();
 	string command("xdg-open ");
@@ -1318,7 +1399,7 @@ void MyFrame::OnShowProjectSandbox(wxCommandEvent &ev)
 	system(command.c_str());
 }
 
-void MyFrame::OnClearProjectSandbox(wxCommandEvent &ev)
+void MyFrame::OnClearProjectSandbox(wxCommandEvent &event)
 {
 	const char *homeDir = getHomePath();
 	string command("rm -rf ");
@@ -1334,7 +1415,7 @@ void MyFrame::OnClearProjectSandbox(wxCommandEvent &ev)
 	wxPostEvent(wxGetApp().getFrame(), relaunchEvent);
 }
 
-void MyFrame::OnOpenSampleProjects(wxCommandEvent &ev)
+void MyFrame::OnOpenSampleProjects(wxCommandEvent &event)
 {
 	wxFileDialog openFileDialog(wxGetApp().getParent(), _("Open"), "/opt/Solar2D/SampleCode", wxEmptyString, "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
@@ -1356,7 +1437,7 @@ void MyFrame::OnOpenSampleProjects(wxCommandEvent &ev)
 	wxPostEvent(this, eventOpen);
 }
 
-void MyFrame::OnOpenDocumentation(wxCommandEvent &ev)
+void MyFrame::OnOpenDocumentation(wxCommandEvent &event)
 {
 	string command("xdg-open https://docs.coronalabs.com/api/index.html");
 	system(command.c_str());
@@ -1366,7 +1447,42 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
 	if (fAppPath.size() > 0 && !IsHomeScreen(fContext->getAppName()))
 	{
-		if (fContext->getPlatform()->GetRuntimeErrorDialog()->IsShown())
+		bool doRelaunch = !fRelaunchedViaFileEvent;
+
+		if (fContext->getPlatform()->GetRuntimeErrorDialog()->IsShown() || fRelaunchProjectDialog->IsShown())
+		{
+			return;
+		}
+
+		// workaround for wxFileSystem events firing twice (known wx bug)
+		if (fFileSystemEventTimestamp >= wxGetUTCTimeMillis() - 250)
+		{
+			return;
+		}
+
+		if (fRelaunchedViaFileEvent)
+		{
+			switch (simulatorConfig.relaunchOnFileChange)
+			{
+				case LinuxPreferencesDialog::RelaunchType::Always:
+					doRelaunch = true;
+					break;
+
+				case LinuxPreferencesDialog::RelaunchType::Ask:
+					if (fRelaunchProjectDialog->ShowModal() == wxID_OK)
+					{
+						doRelaunch = true;
+					}
+					break;
+
+				default:
+					break;
+			}
+
+			fRelaunchedViaFileEvent = false;
+		}
+
+		if (!doRelaunch)
 		{
 			return;
 		}
@@ -1395,7 +1511,24 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 		SetTitle(fContext->getTitle().c_str());
 		setMenu(fAppPath.c_str());
 		m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
+		fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 	}
+}
+
+void MyFrame::OnRelaunchLastProject(wxCommandEvent &event)
+{
+#ifdef Rtt_SIMULATOR
+	if (!simulatorConfig.lastProjectDirectory.IsEmpty())
+	{
+		wxCommandEvent eventOpen(eventOpenProject);
+		wxString fullPath(simulatorConfig.lastProjectDirectory);
+		fullPath.append("/main.lua");
+		eventOpen.SetInt(ID_MENU_OPEN_LAST_PROJECT);
+		eventOpen.SetString(fullPath);
+		OnOpen(eventOpen);
+	}
+
+#endif
 }
 
 void MyFrame::CreateSuspendedPanel()
@@ -1447,18 +1580,26 @@ void MyFrame::OnSuspendOrResume(wxCommandEvent &event)
 
 void MyFrame::OnOpenPreferences(wxCommandEvent &event)
 {
-	NewPreferencesDialog *newPreferencesDialog = new NewPreferencesDialog(this, wxID_ANY, wxEmptyString);
+	LinuxPreferencesDialog *newPreferencesDialog = new LinuxPreferencesDialog(this, wxID_ANY, wxEmptyString);
+	newPreferencesDialog->SetProperties(simulatorConfig.showRuntimeErrors, simulatorConfig.openLastProject, simulatorConfig.relaunchOnFileChange);
 
 	if (newPreferencesDialog->ShowModal() == wxID_OK)
 	{
+		simulatorConfig.showRuntimeErrors = newPreferencesDialog->ShouldShowRuntimeErrors();
+		simulatorConfig.openLastProject = newPreferencesDialog->ShouldOpenLastProject();
+		simulatorConfig.relaunchOnFileChange = newPreferencesDialog->ShouldRelaunchOnFileChange();
+		fContext->getPlatform()->fShowRuntimeErrors = simulatorConfig.showRuntimeErrors;
+		simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), simulatorConfig.showRuntimeErrors);
+		simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), simulatorConfig.openLastProject);
+		simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(simulatorConfig.relaunchOnFileChange));
+		simulatorConfig.config->Flush();
+		newPreferencesDialog->Destroy();
 	}
-
-	newPreferencesDialog->Destroy();
 }
 
 void MyFrame::OnCloneProject(wxCommandEvent &event)
 {
-	NewCloneDialog *newCloneDlg = new NewCloneDialog(this, wxID_ANY, wxEmptyString);
+	LinuxCloneProjectDialog *newCloneDlg = new LinuxCloneProjectDialog(this, wxID_ANY, wxEmptyString);
 
 	if (newCloneDlg->ShowModal() == wxID_OK)
 	{
@@ -1469,7 +1610,7 @@ void MyFrame::OnCloneProject(wxCommandEvent &event)
 
 void MyFrame::OnNewProject(wxCommandEvent &event)
 {
-	NewProjectDialog *newProjectDlg = new NewProjectDialog(this, wxID_ANY, wxEmptyString);
+	LinuxNewProjectDialog *newProjectDlg = new LinuxNewProjectDialog(this, wxID_ANY, wxEmptyString);
 
 	if (newProjectDlg->ShowModal() == wxID_OK)
 	{
@@ -1510,6 +1651,9 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	if (!IsHomeScreen(appName))
 	{
 #ifdef Rtt_SIMULATOR
+		simulatorConfig.lastProjectDirectory = fAppPath;
+		simulatorConfig.config->Write(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), simulatorConfig.lastProjectDirectory);
+		simulatorConfig.config->Flush();
 		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), appName.c_str(), fContext->getPlatform());
 #endif
 	}
@@ -1663,10 +1807,6 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 
 		// The current context must be set before we get OGL pointers
 		SetCurrent(*m_oglContext);
-
-		// open home screen
-		wxCommandEvent eventOpen(eventOpenProject);
-		m_parent->OnOpen(eventOpen);
 	}
 
 	// This is normally only necessary if there is more than one wxGLCanvas
