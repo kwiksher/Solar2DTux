@@ -62,7 +62,7 @@ namespace Rtt
 		virtual bool IsLocalWifiAvailable() const override { return false; };
 		virtual void Terminate() const override {}
 
-		virtual void Sleep(int milliseconds) const override{};
+		virtual void Sleep(int milliseconds) const override {};
 
 	private:
 		MPlatform *fPlatform;
@@ -74,23 +74,18 @@ namespace Rtt
 		LinuxSimulatorView();
 		virtual ~LinuxSimulatorView();
 
-		static void OnBuildForLinux(CoronaAppContext *ctx);
 		static void OnBuildForWeb(CoronaAppContext *ctx);
 		static void OnBuildForAndroid(CoronaAppContext *ctx);
-
 		static void OnWebBuild(wxCommandEvent &);
-		static void OnLinuxBuild(wxCommandEvent &);
 		static void OnAndroidBuild(wxCommandEvent &);
-
 		static void OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform);
-
 		static void OnCancel(wxCommandEvent &);
 		static void AppWebBuild(CoronaAppContext *ctx);
 
 		struct androidBuildParams : public wxObject
 		{
 			androidBuildParams(wxDialog *dlg, CoronaAppContext *ctx, wxTextCtrl *keystore, wxTextCtrl *package)
-				: fDlg(dlg), fCtx(ctx), fKeystore(keystore), fPackage(package){};
+				: fDlg(dlg), fCtx(ctx), fKeystore(keystore), fPackage(package) {};
 
 			wxDialog *fDlg;
 			CoronaAppContext *fCtx;
@@ -101,7 +96,7 @@ namespace Rtt
 		struct webBuildParams : public wxObject
 		{
 			webBuildParams(wxDialog *dlg, CoronaAppContext *ctx, wxCheckBox *useStandardResources, wxCheckBox *runAfterBuild, wxCheckBox *createFBInstance)
-				: fDlg(dlg), fCtx(ctx), fUseStandardResources(useStandardResources), fRunAfterBuild(runAfterBuild), fCreateFBInstance(createFBInstance){};
+				: fDlg(dlg), fCtx(ctx), fUseStandardResources(useStandardResources), fRunAfterBuild(runAfterBuild), fCreateFBInstance(createFBInstance) {};
 
 			wxDialog *fDlg;
 			CoronaAppContext *fCtx;
@@ -111,21 +106,9 @@ namespace Rtt
 			std::string fErrMsg;
 		};
 
-		struct linuxBuildParams : public wxObject
-		{
-			linuxBuildParams(wxDialog *dlg, CoronaAppContext *ctx, wxCheckBox *useStandardResources, wxCheckBox *runAfterBuild)
-				: fDlg(dlg), fCtx(ctx), fUseStandardResources(useStandardResources), fRunAfterBuild(runAfterBuild){};
-
-			wxDialog *fDlg;
-			CoronaAppContext *fCtx;
-			wxCheckBox *fUseStandardResources;
-			wxCheckBox *fRunAfterBuild;
-			std::string fErrMsg;
-		};
-
 		struct cancelBuild : public wxObject
 		{
-			cancelBuild(wxDialog *dlg) : fDlg(dlg){};
+			cancelBuild(wxDialog *dlg) : fDlg(dlg) {};
 			wxDialog *fDlg;
 		};
 	};

@@ -163,7 +163,7 @@ namespace Rtt
 	{
 		LinuxAppPackagerParams *params = (LinuxAppPackagerParams *)_params;
 		Rtt_ASSERT(params);
-		bool useStandardResources = params->fUseStandardResources;
+		bool useWidgetResources = params->fUseWidgetResources;
 		bool runAfterBuild = params->fRunAfterBuild;
 		bool onlyGetPlugins = params->fOnlyGetPlugins;
 		const char *homeDir = NULL;
@@ -225,8 +225,8 @@ namespace Rtt
 			lua_pushstring(L, params->GetIdentity());
 			lua_setfield(L, -2, "user");
 
-			lua_pushboolean(L, useStandardResources);
-			lua_setfield(L, -2, "useStandardResources");
+			lua_pushboolean(L, useWidgetResources);
+			lua_setfield(L, -2, "useWidgetResources");
 
 			lua_pushboolean(L, runAfterBuild);
 			lua_setfield(L, -2, "runAfterBuild");

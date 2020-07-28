@@ -44,7 +44,7 @@ namespace Rtt
 		    const char * appPackage,
 		    bool isDistributionBuild,
 		    const char * debtemplate,
-		    bool useStandardResources,
+		    bool useWidgetResources,
 		    bool runAfterBuild,
 		    bool onlyGetPlugins
 		)
@@ -53,7 +53,7 @@ namespace Rtt
 			      targetPlatform, (char*)"linux", targetVersion, targetDevice, customBuildId, productId,
 			      appPackage, isDistributionBuild )
 			, fDebTemplate(debtemplate)
-			, fUseStandardResources(useStandardResources)
+			, fUseWidgetResources(useWidgetResources)
 			, fRunAfterBuild(runAfterBuild)
 			, fOnlyGetPlugins(onlyGetPlugins)
 		{
@@ -61,7 +61,7 @@ namespace Rtt
 
 	public:
 		const String fDebTemplate;
-		const bool fUseStandardResources;
+		const bool fUseWidgetResources;
 		const bool fRunAfterBuild;
 		const bool fOnlyGetPlugins;
 	};

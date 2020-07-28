@@ -725,6 +725,7 @@ local function getExcludePredecate()
 		"*.xcassets",
 		"*.storyboardc",
 		".*",
+		".**",
 		"*.properties",
 		"*.settings",
 		"**AndroidResources",
@@ -863,7 +864,7 @@ local function getLastPathComponent(str)
 		end
 	end
 
-	return string.sub(str, pathIndexes[#pathIndexes - 1], pathIndexes[#pathIndexes])
+	return string.sub(str, pathIndexes[#pathIndexes] + 1)
 end
 
 local function makeApp(arch, linuxAppFolder, template, args, templateName)
@@ -885,7 +886,7 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 
 	-- copy binary
 	local binaryPath = sFormat("%s/%s", linuxAppFolder, "template_x64")
-	printf("%s renaming binary from %s to %s/%s", linuxBuilderPrefx, linuxAppFolder, linuxAppFolder, args.applicationName)
+	printf("%s renaming binary from %s to %s", linuxBuilderPrefx, templateName, args.applicationName)
 	os.rename(binaryPath, sFormat("%s/%s", linuxAppFolder , args.applicationName))
 
 	-- dowmload plugins
@@ -924,7 +925,7 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	printf("%s created resource.car", linuxBuilderPrefx)
 
 	-- copy standard resources
-	if (args.useStandardResources) then
+	if (args.useWidgetResources) then
 		for file in lfs.dir(templatePath) do
 			if (file ~= "." and file ~= "..") then
 				if (file:find("widget_")) then
@@ -992,8 +993,9 @@ function linuxPackageApp(args)
 		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
 		lfs.mkdir(pluginDownloadDir)
 		lfs.mkdir(pluginExtractDir)
+		local templateFilename = getLastPathComponent(template);
 
-		local rc = makeApp('x86-64', linuxAppFolder, template, args, getLastPathComponent(template))
+		local rc = makeApp('x86-64', linuxAppFolder, template, args, templateFilename:sub(1, templateFilename:len() - 4))
 
 		if (rc ~= nil) then
 			return rc

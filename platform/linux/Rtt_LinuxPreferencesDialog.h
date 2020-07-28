@@ -1,10 +1,10 @@
 #ifndef Rtt_LINUX_PREFERENCES_DIALOG_H
 #define Rtt_LINUX_PREFERENCES_DIALOG_H
 
-#include <wx/wx.h>
-#include <wx/image.h>
-#include <wx/statline.h>
-#include <wx/activityindicator.h>
+#include "wx/wx.h"
+#include "wx/image.h"
+#include "wx/statline.h"
+#include "wx/activityindicator.h"
 #include <string>
 
 namespace Rtt

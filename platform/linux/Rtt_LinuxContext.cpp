@@ -36,6 +36,7 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
+#include "Rtt_LinuxBuildDialog.h"
 #include "wx/menu.h"
 #include "wx/dcclient.h"
 #include "wx/app.h"
@@ -1270,6 +1271,11 @@ void MyFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 
 void MyFrame::OnFileSystemEvent(wxFileSystemWatcherEvent &event)
 {
+	if (fContext->GetRuntime()->IsSuspended())
+	{
+		return;
+	}
+
 	int type = event.GetChangeType();
 	const wxFileName &f = event.GetPath();
 	wxString fn = f.GetFullName();
@@ -1321,7 +1327,11 @@ void MyFrame::OnBuildWeb(wxCommandEvent &event)
 
 void MyFrame::OnBuildLinux(wxCommandEvent &event)
 {
-	LinuxSimulatorView::OnBuildForLinux(getContext());
+	CreateSuspendedPanel();
+	LinuxBuildDialog *linuxBuildDialog = new LinuxBuildDialog(NULL, -1, wxEmptyString, wxDefaultPosition, wxSize(550, 300));
+	linuxBuildDialog->SetAppContext(getContext());
+	linuxBuildDialog->ShowModal();
+	linuxBuildDialog->Destroy();
 }
 
 void MyFrame::OnOpenFileDialog(wxCommandEvent &event)

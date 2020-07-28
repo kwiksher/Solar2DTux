@@ -1,9 +1,9 @@
 #ifndef Rtt_LINUX_RELAUNCH_PROJECT_DIALOG_H
 #define Rtt_LINUX_RELAUNCH_PROJECT_DIALOG_H
 
-#include <wx/wx.h>
-#include <wx/image.h>
-#include <wx/statline.h>
+#include "wx/wx.h"
+#include "wx/image.h"
+#include "wx/statline.h"
 #include <string>
 
 namespace Rtt

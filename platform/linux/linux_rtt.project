@@ -34,12 +34,14 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="dialogs">
+        <File Name="Rtt_LinuxBuildDialog.cpp"/>
         <File Name="Rtt_LinuxRelaunchProjectDialog.cpp"/>
         <File Name="Rtt_LinuxRuntimeErrorDialog.cpp"/>
         <File Name="Rtt_LinuxPreferencesDialog.cpp"/>
         <File Name="Rtt_LinuxNewProjectDialog.cpp"/>
         <File Name="Rtt_LinuxCloneProjectDialog.cpp"/>
         <VirtualDirectory Name="include">
+          <File Name="Rtt_LinuxBuildDialog.h"/>
           <File Name="Rtt_LinuxRelaunchProjectDialog.h"/>
           <File Name="Rtt_LinuxRuntimeErrorDialog.h"/>
           <File Name="Rtt_LinuxPreferencesDialog.h"/>
