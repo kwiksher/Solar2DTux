@@ -506,6 +506,12 @@ namespace Rtt
 
 	bool LinuxPlatform::RequestSystem(lua_State *L, const char *actionName, int optionsIndex) const
 	{
+		if (Rtt_StringCompareNoCase(actionName, "exitApplication") == 0)
+		{
+			wxGetApp().getFrame()->Close(true);
+			return true;
+		}
+
 		return false;
 	}
 
