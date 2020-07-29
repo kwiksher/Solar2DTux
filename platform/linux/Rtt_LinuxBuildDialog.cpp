@@ -130,7 +130,6 @@ namespace Rtt
 		wxString sourceDir(appPathTextCtrl->GetValue());
 		wxString outputDir(appBuildPathTextCtrl->GetValue());
 		wxString appVersion(appVersionTextCtrl->GetValue());
-		wxString fullOutputPath(outputDir);
 		std::string linuxtemplate(platform->getInstallDir());
 		bool useWidgetResources = includeWidgetResourcesCheckbox->GetValue();
 		bool runAfterBuild = runAfterBuildCheckbox->GetValue();
@@ -148,7 +147,6 @@ namespace Rtt
 		wxMessageDialog *resultDialog = new wxMessageDialog(wxGetApp().getFrame(), wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
-		fullOutputPath.append("/.test.txt");
 		linuxtemplate.append("/Resources/template_x64.tgz");
 
 		// pre-build validation
@@ -168,24 +166,10 @@ namespace Rtt
 		}
 
 		// ensure we have write access to the target output directory
-		FILE *fp = fopen(fullOutputPath.c_str(), "w");
-
-		if (fp == NULL)
+		if (!wxFileName::IsDirWritable(outputDir))
 		{
-			if (errno == EACCES)
-			{
-				resultDialog->SetMessage(wxT("I don't have write access to the selected output directory."));
-			}
-			else
-			{
-				resultDialog->SetMessage(wxT("I don't seem to be able to write to the selected output directory.\nUnknown error."));
-			}
-
+			resultDialog->SetMessage(wxT("I don't have write access to the selected output directory."));
 			checksPassed = false;
-		}
-		else
-		{
-			fclose(fp);
 		}
 
 		// checks failed, show failure popup
@@ -228,15 +212,12 @@ namespace Rtt
 
 		if (buildResult == 0 && runAfterBuild)
 		{
-			std::string command("cd \"");
-			command.append(outputDir.c_str());
-			command.append("/");
-			command.append(appName.c_str());
-			command.append("\"");
-			command.append(" && \"./");
-			command.append(appName.c_str());
-			command.append("\"");
-			system(command.c_str());
+			wxString command("\"");
+			command.Append(outputDir);
+			command.Append("/").Append(appName);
+			command.Append("/").Append(appName);
+			command.Append("\"");
+			wxExecute(command);
 		}
 	}
 
