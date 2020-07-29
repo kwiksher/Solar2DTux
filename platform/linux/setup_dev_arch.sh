@@ -1,3 +1,5 @@
+
+# install dependencies
 sudo pacman -Sy base-devel
 sudo pacman -Sy readline
 sudo pacman -Sy openal
@@ -19,3 +21,6 @@ sudo pacman -Sy jre14-openjdk
 sudo pacman -Sy p7zip
 sudo pacman -Sy lua51
 sudo ln -s /usr/lib/libreadline.so /usr/lib/libreadline.so.7
+# copy wx web extensions
+sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
+sudo cp wx/lib/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so

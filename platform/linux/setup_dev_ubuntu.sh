@@ -40,3 +40,6 @@ sudo apt-get install openjdk-8-jre-headless -y
 sudo apt-get install p7zip -y
 sudo apt-get install p7zip-full -y
 sudo apt-get install lua5.1
+# copy wx web extensions
+sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
+sudo cp wx/lib/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
