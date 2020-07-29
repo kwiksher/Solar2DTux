@@ -250,6 +250,7 @@ namespace Rtt
 		// TODO: Make sure all variables are sane values before running project creation process
 		string fProjectSavePath(txtProjectFolder->GetValue().ToStdString());
 		fProjectName = txtApplicationName->GetValue().ToStdString();
+		fProjectFolder = txtProjectFolder->GetValue().ToStdString();
 		fProjectSavePath.append("/").append(fProjectName);
 
 		// check if project folder already exists and that the height and width are numbers

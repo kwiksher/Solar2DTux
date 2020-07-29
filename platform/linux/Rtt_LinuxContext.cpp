@@ -1594,6 +1594,21 @@ void MyFrame::OnNewProject(wxCommandEvent &event)
 
 	if (newProjectDlg->ShowModal() == wxID_OK)
 	{
+		// open project in the simulator
+		string projectPath(newProjectDlg->GetProjectFolder().c_str());
+		projectPath.append("/").append(newProjectDlg->GetProjectName().c_str());
+		projectPath.append("/main.lua");
+
+		wxCommandEvent eventOpen(eventOpenProject);
+		eventOpen.SetString(projectPath.c_str());
+		wxPostEvent(this, eventOpen);
+
+		// open the project folder in the file browser
+		string command("xdg-open \"");
+		command.append(newProjectDlg->GetProjectFolder().c_str());
+		command.append("/").append(newProjectDlg->GetProjectName().c_str());
+		command.append("\"");
+		system(command.c_str());
 	}
 
 	newProjectDlg->Destroy();

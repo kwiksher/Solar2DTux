@@ -11,10 +11,12 @@ namespace Rtt
 	class LinuxNewProjectDialog: public wxDialog
 	{
 	public:
-
 		LinuxNewProjectDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
-		std::string ProjectFolder;
-		std::string fProjectName;
+
+	public:
+		std::string GetProjectName() { return fProjectName; }
+		std::string GetProjectFolder() { return fProjectFolder; }
+
 	private:
 		void SetProperties();
 		void DoLayout();
@@ -29,6 +31,8 @@ namespace Rtt
 		std::string fProjectPath;
 		std::string fProjectSavePath;
 		std::string fResourcePath;
+		std::string fProjectFolder;
+		std::string fProjectName;
 
 	protected:
 		wxTextCtrl *txtApplicationName;
