@@ -539,10 +539,10 @@ namespace Rtt
 		string skinDir("/opt/Solar2D/Resources/Skins");
 
 		// setup directory paths
-		documentsDir.append("/Documents/");
-		temporaryDir.append("/TemporaryFiles/");
-		cachesDir.append("/CachedFiles/");
-		systemCachesDir.append("/.system/");
+		documentsDir.append("/Documents");
+		temporaryDir.append("/TemporaryFiles");
+		cachesDir.append("/CachedFiles");
+		systemCachesDir.append("/.system");
 
 		if (!Rtt_IsDirectory(documentsDir.c_str()))
 		{
@@ -721,6 +721,7 @@ namespace Rtt
 		// Initialize Joystick Support:
 		LinuxInputDeviceManager &deviceManager = (LinuxInputDeviceManager &)fPlatform->GetDevice().GetInputDeviceManager();
 		deviceManager.init();
+		wxGetApp().getParent()->Layout();
 
 		return fullScreen;
 	}
