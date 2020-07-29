@@ -463,6 +463,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 		end
 	end
 
+	-- TODO: don't print this message if there are no plugins defined in build.settings and just return here
 	printf("%s gathering plugins", pluginMessagePrefix)
 
 	-- gather the plugins
@@ -773,6 +774,10 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	lfs.mkdir(pathJoin(linuxAppFolder, "Resources"))
 	os.rename(pathJoin(linuxAppFolder, "resource.car"), pathJoin(linuxAppFolder, "Resources", "resource.car"))
 	printf("%s created resource.car", linuxBuilderPrefx)
+
+	-- copy default font
+	local defaultFontPath = sFormat("%s/%s", templatePath, "FreeSans.ttf")
+	copyFile(defaultFontPath, pathJoin(linuxAppFolder, "Resources", "FreeSans.ttf"))
 
 	-- copy standard resources
 	if (args.useWidgetResources) then

@@ -11,7 +11,6 @@ tar -xzf /tmp/android-sdk.tar.gz -C Solar2DSimulator
 sudo apt-get update
 # install dependencies
 sudo apt-get install build-essential -y
-sudo apt-get install libsld2-dev -y
 sudo apt-get install libopenal-dev -y
 sudo apt-get install libgtk-3-dev -y
 sudo apt-get install libpng-dev -y
