@@ -62,143 +62,6 @@ local function dirExists(path)
     return is
 end
 
-local function globToPattern(g)
-	local p = "^"  -- pattern being built
-	local i = 0    -- index in g
-	local c        -- char at index i in g.
-
-	-- unescape glob char
-	local function unescape()
-		if (c == '\\') then
-			i = i + 1; c = g:sub(i,i)
-			
-			if (c == '') then
-				p = '[^]'
-				return false
-			end
-		end
-		
-		return true
-	end
-
-	-- escape pattern char
-	local function escape(c)
-		return c:match("^%w$") and c or '%' .. c
-	end
-
-	-- Convert tokens at end of charset.
-	local function charsetEnd()
-		while 1 do
-			if (c == '') then
-				p = '[^]'
-				return false
-			elseif (c == ']') then
-				p = p .. ']'
-				break
-			else
-				if (not unescape()) then 
-					break 
-				end
-				
-				local c1 = c
-				i = i + 1; c = g:sub(i,i)
-				
-				if (c == '') then
-					p = '[^]'
-					return false
-				elseif (c == '-') then
-					i = i + 1; c = g:sub(i,i)
-					
-					if (c == '') then
-						p = '[^]'
-						return false
-					elseif (c == ']') then
-						p = p .. escape(c1) .. '%-]'
-						break
-					else
-						if (not unescape()) then 
-							break 
-						end
-					
-						p = p .. escape(c1) .. '-' .. escape(c)
-					end
-				elseif (c == ']') then
-					p = p .. escape(c1) .. ']'
-					break
-				else
-					p = p .. escape(c1)
-					i = i - 1 -- put back
-				end
-			end
-			
-			i = i + 1; c = g:sub(i,i)
-		end
-		
-		return true
-	end
-
-	-- Convert tokens in charset.
-	local function charset()
-		i = i + 1; c = g:sub(i,i)
-		
-		if (c == '' or c == ']') then
-			p = '[^]'
-			return false
-		elseif (c == '^' or c == '!') then
-			i = i + 1; c = g:sub(i,i)
-			
-			if (c == ']') then
-				-- ignored
-			else
-				p = p .. '[^'
-
-				if (not charsetEnd()) then 
-					return false 
-				end
-			end
-		else
-			p = p .. '['
-
-			if (not charsetEnd()) then 
-				return false 
-			end
-		end
-
-		return true
-	end
-
-	-- Convert tokens
-	while 1 do
-		i = i + 1; c = g:sub(i,i)
-		
-		if (c == '') then
-			p = p .. '$'
-			break
-		elseif (c == '?') then
-			p = p .. '.'
-		elseif (c == '*') then
-			p = p .. '.*'
-		elseif (c == '[') then
-			if (not charset()) then 
-				break 
-			end
-		elseif (c == '\\') then
-			i = i + 1; c = g:sub(i,i)
-			
-			if (c == '') then
-				p = p .. '\\$'
-				break
-			end
-		
-			p = p .. escape(c)
-		else
-			p = p .. escape(c)
-		end
-	end
-	
-	return p
-end
-
 local function pathJoin(p1, p2, ... )
 	local res
 	local p1s = p1:sub(-1) == dirSeparator
@@ -708,31 +571,23 @@ end
 local function getExcludePredecate()
 	local excludes = 
 	{
-		"*.config",
-		"*.lu*",
-		"**/*.lu*",
-		"*.bak",
-		"*.orig",
-		"*.swp",
-		"*.DS_Store",
-		"*.apk",
-		"*.obb",
-		"*.obj",
-		"*.o",
-		"*.lnk",
-		"*.class",
-		"*.log",
-		"*.xcassets",
-		"*.storyboardc",
-		".*",
-		".**",
-		"*.properties",
-		"*.settings",
-		"**AndroidResources",
-		"**res",
-		"*Icon*.png",
-		"*.icns",
-		"*.ico",
+		".@(!(.|))", -- hidden files/folders
+		"(.lu)$", -- lu files
+		"(.lua)$", -- lua files
+		"build.settings", -- build.settings
+		"**.storyboardc", -- storyboard assets
+		"**.xcassets", -- xcode assets
+		"**AndroidResources", -- android resources
+		"(.icns)$", -- ico files
+		"(.ico)$", -- icns files
+		"Icon.png", -- project icon
+		"Icon-xxxhdpi.png", -- android icons
+		"Icon-xxhdpi.png", -- android icons
+		"Icon-xhdpi.png", -- android icons
+		"Icon-hdpi.png", -- android icons
+		"Icon-mdpi.png", -- android icons
+		"Icon-ldpi.png", -- android icons
+		"Banner-xhdpi.png", -- android tv banner
 	}
 
 	-- append 'all:' and 'linux:'
@@ -754,11 +609,6 @@ local function getExcludePredecate()
 				excludes[#excludes + 1] = excl[i]
 			end
 		end
-	end
-
-	-- glob ==> regexp
-	for i = 1, #excludes do
-		excludes[i] = globToPattern(excludes[i])
 	end
 
 	return function(fileName)
@@ -942,6 +792,8 @@ local function makeApp(arch, linuxAppFolder, template, args, templateName)
 	-- remove plugin dirs
 	os.execute(sFormat('rm -rf "%s"', pluginDownloadDir))
 	os.execute(sFormat('rm -rf "%s"', pluginExtractDir))
+	-- remove empty folders
+	os.execute(sFormat('find "%s" -type d -empty -delete', linuxAppFolder))
 end
 
 -- global script to call from C++
