@@ -36,6 +36,10 @@ if (fileExists(tar) == false) then
 	tar = "tar"   -- for linux
 end
 
+local function printf(msg, ...)
+	luaPrint(msg:format(...))
+end
+
 local function log(...)
 	luaPrint(...)
 end
@@ -85,7 +89,7 @@ end
 local function extractTar(archive, dst)
 	lfs.mkdir(dst)
 	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. "/") 
-	--log('extract tar cmd: ' .. cmd)
+	--printf("extract tar cmd: %s", cmd)
 	
 	return os.execute(cmd)
 end
@@ -297,10 +301,6 @@ local function saveTable(t, path)
 	end
 end
 
-local function printf(msg, ...)
-	luaPrint(msg:format(...))
-end
-
 local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 	if (type(buildSettings) ~= 'table') then
 		-- no build.settings file, so no plugins to download
@@ -463,11 +463,10 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 		end
 	end
 
-	-- TODO: don't print this message if there are no plugins defined in build.settings and just return here
-	printf("%s gathering plugins", pluginMessagePrefix)
-
 	-- gather the plugins
 	if (type(buildSettings.plugins) == "table") then
+		printf("%s gathering plugins", pluginMessagePrefix)
+
 		for k, v in pairs(buildSettings.plugins) do
 			if (type(v) == "table") then
 				local pluginName = k
@@ -495,8 +494,8 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 						end
 					
 						-- look for the plugin
-						local pluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, linuxKey, pluginName)
-						local otherPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, linuxSimKey, pluginName)
+						local pluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxKey)
+						local otherPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxSimKey)
 						local pluginDownloadDir = sFormat("%s/.Solar2D/Plugins/%s/", os.getenv("HOME"), pluginName)
 
 						if (shouldDownloadPlugin) then
@@ -513,7 +512,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 								saveTable(pluginCatalog, pluginCatalogPath)
 							elseif (fileExists(otherPluginDir)) then
 								printf("%s found %s at path %s", pluginMessagePrefix, pluginName, otherPluginDir)
-								local ret = extractTar(pluginDir, pluginDestinationDir)
+								local ret = extractTar(otherPluginDir, pluginDestinationDir)
 
 								if (ret ~= 0) then
 									return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
