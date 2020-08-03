@@ -24,18 +24,87 @@
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxSimulatorView.h"
+#include "Rtt_LinuxFileUtils.h"
 #include "Rtt_SimulatorRecents.h"
 #include "Rtt_WebAppPackager.h"
 #include "Rtt_LinuxAppPackager.h"
 #include "Rtt_AndroidAppPackager.h"
 #include "Core/Rtt_FileSystem.h"
 
+#define SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS "/showRuntimeErrors"
+#define SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE "/relaunchOnFileChange"
+#define SIMULATOR_CONFIG_OPEN_LAST_PROJECT "/openLastProject"
+#define SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY "/lastProjectDirectory"
+#define SIMULATOR_CONFIG_WINDOW_X_POSITION "/xPos"
+#define SIMULATOR_CONFIG_WINDOW_Y_POSITION "/yPos"
+
 namespace Rtt
 {
-
 	LinuxPlatformServices::LinuxPlatformServices(MPlatform *platform)
 		: fPlatform(platform)
 	{
+	}
+
+	// initialise vars
+	wxString LinuxSimulatorView::Config::settingsFilePath = wxEmptyString;
+	wxString LinuxSimulatorView::Config::lastProjectDirectory  = wxEmptyString;
+	bool LinuxSimulatorView::Config::showRuntimeErrors = true;
+	bool LinuxSimulatorView::Config::openLastProject = false;
+	LinuxPreferencesDialog::RelaunchType LinuxSimulatorView::Config::relaunchOnFileChange = LinuxPreferencesDialog::RelaunchType::Always;
+	int LinuxSimulatorView::Config::windowXPos = 10;
+	int LinuxSimulatorView::Config::windowYPos = 10;
+	wxConfig *LinuxSimulatorView::Config::configFile;
+
+	void LinuxSimulatorView::Config::Load()
+	{
+		if (LinuxSimulatorView::Config::settingsFilePath.IsEmpty())
+		{
+			LinuxSimulatorView::Config::settingsFilePath = LinuxFileUtils::GetHomePath();
+			LinuxSimulatorView::Config::settingsFilePath.append("/.Solar2D/simulator.conf");
+			LinuxSimulatorView::Config::configFile = new wxFileConfig(wxEmptyString, wxEmptyString, LinuxSimulatorView::Config::settingsFilePath);
+		}
+
+		// read from the simulator config file or create it, if it doesn't exist
+		if (wxFileExists(LinuxSimulatorView::Config::settingsFilePath))
+		{
+			int relaunchOnFileChange = 0;
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), &LinuxSimulatorView::Config::lastProjectDirectory);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), &LinuxSimulatorView::Config::showRuntimeErrors);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), &LinuxSimulatorView::Config::openLastProject);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), &relaunchOnFileChange);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), &LinuxSimulatorView::Config::windowXPos);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), &LinuxSimulatorView::Config::windowYPos);
+			LinuxSimulatorView::Config::relaunchOnFileChange = static_cast<LinuxPreferencesDialog::RelaunchType>(relaunchOnFileChange);
+		}
+		else
+		{
+			LinuxSimulatorView::Config::Save();
+		}
+	}
+
+	void LinuxSimulatorView::Config::Save()
+	{
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY), LinuxSimulatorView::Config::lastProjectDirectory);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SHOW_RUNTIME_ERRORS), LinuxSimulatorView::Config::showRuntimeErrors);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_OPEN_LAST_PROJECT), LinuxSimulatorView::Config::openLastProject);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(LinuxSimulatorView::Config::relaunchOnFileChange));
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), LinuxSimulatorView::Config::windowXPos);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), LinuxSimulatorView::Config::windowYPos);
+		LinuxSimulatorView::Config::configFile->Flush();
+	}
+
+	void LinuxSimulatorView::Config::Cleanup()
+	{
+		delete LinuxSimulatorView::Config::configFile;
+	}
+
+	bool LinuxSimulatorView::IsRunningOnSimulator()
+	{
+#ifdef Rtt_SIMULATOR
+		return true;
+#endif
+
+		return false;
 	}
 
 	void LinuxSimulatorView::OnAndroidBuild(wxCommandEvent &e)
@@ -43,14 +112,14 @@ namespace Rtt
 		int rc;
 
 		androidBuildParams *params = (androidBuildParams *)e.GetEventUserData();
-		CoronaAppContext *ctx = params->fCtx;
-		const char *srcDir = ctx->getAppPath();
-		const char *dstDir = ctx->getSaveFolder().c_str();
+		SolarAppContext *ctx = params->fCtx;
+		const char *srcDir = ctx->GetAppPath();
+		const char *dstDir = ctx->GetSaveFolder().c_str();
 		const char *identity = "";
-		const char *applicationName = ctx->getAppName().c_str();
+		const char *applicationName = ctx->GetAppName().c_str();
 
 		// Create the app packager.
-		LinuxPlatform *platform = wxGetApp().getPlatform();
+		LinuxPlatform *platform = wxGetApp().GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 
 		std::string resourcesDir = platform->getInstallDir();
@@ -113,7 +182,7 @@ namespace Rtt
 
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
-		ctx->getPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		ctx->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
 		androidBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 		std::string tmp = Rtt_GetSystemTempDirectory();
 		tmp += LUA_DIRSEP;
@@ -181,17 +250,17 @@ namespace Rtt
 	void LinuxSimulatorView::OnWebBuild(wxCommandEvent &e)
 	{
 		webBuildParams *params = (webBuildParams *)e.GetEventUserData();
-		CoronaAppContext *ctx = params->fCtx;
+		SolarAppContext *ctx = params->fCtx;
 		bool useStandardResources = params->fUseStandardResources->GetValue();
 		bool runAfterBuild = params->fRunAfterBuild->GetValue();
 		bool createFBInstantArchive = params->fCreateFBInstance->GetValue();
-		const char *srcDir = ctx->getAppPath();
-		const char *dstDir = ctx->getSaveFolder().c_str();
+		const char *srcDir = ctx->GetAppPath();
+		const char *dstDir = ctx->GetSaveFolder().c_str();
 		const char *identity = "no-identity";
-		const char *applicationName = ctx->getAppName().c_str();
+		const char *applicationName = ctx->GetAppName().c_str();
 
 		// Create the app packager.
-		LinuxPlatform *platform = wxGetApp().getPlatform();
+		LinuxPlatform *platform = wxGetApp().GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 		WebAppPackager packager(*service);
 
@@ -241,7 +310,7 @@ namespace Rtt
 
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
-		ctx->getPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		ctx->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
 		webBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		std::string tmp = Rtt_GetSystemTempDirectory();
@@ -276,7 +345,7 @@ namespace Rtt
 	}
 
 	/// <summary>Opens a dialog to build the currently selected project as an app.</summary>
-	void LinuxSimulatorView::OnBuildForWeb(CoronaAppContext *ctx)
+	void LinuxSimulatorView::OnBuildForWeb(SolarAppContext *ctx)
 	{
 		wxDialog *OpenDialog = new wxDialog(NULL, -1, "HTML5 Build Setup (beta)", wxDefaultPosition, wxSize(550, 280));
 		wxPanel *panel = new wxPanel(OpenDialog, -1);
@@ -288,16 +357,16 @@ namespace Rtt
 		int x2 = 170;
 		wxSize sz = wxSize(350, 30);
 		new wxStaticText(panel, -1, wxT("Application Name:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getAppName(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetAppName(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Version Code:"), wxPoint(20, y));
 		new wxTextCtrl(panel, -1, "1", wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Project Path:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getAppPath(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetAppPath(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Save to Folder:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getSaveFolder(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetSaveFolder(), wxPoint(x2, y - 2), sz);
 
 		y += h + 5;
 		wxCheckBox *useStandardResources = new wxCheckBox(panel, -1, "Include Widget Resources", wxPoint(x2, y));
@@ -325,7 +394,7 @@ namespace Rtt
 		OpenDialog->Destroy();
 	}
 
-	void LinuxSimulatorView::OnBuildForAndroid(CoronaAppContext *ctx)
+	void LinuxSimulatorView::OnBuildForAndroid(SolarAppContext *ctx)
 	{
 		wxDialog *OpenDialog = new wxDialog(NULL, -1, "Android Build Setup", wxDefaultPosition, wxSize(550, 450));
 		wxPanel *panel = new wxPanel(OpenDialog, -1);
@@ -343,11 +412,11 @@ namespace Rtt
 		package = "com.solar2d.";
 		package += uname;
 		package += ".";
-		package += ctx->getAppName();
+		package += ctx->GetAppName();
 		std::replace(package.begin(), package.end(), ' ', '_'); // replace all ' ' to '_'
 
 		new wxStaticText(panel, -1, wxT("Application Name:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getAppName(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetAppName(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Version Code:"), wxPoint(20, y));
 		new wxTextCtrl(panel, -1, "1", wxPoint(x2, y - 2), sz);
@@ -361,21 +430,21 @@ namespace Rtt
 		new wxStaticText(panel, -1, "A unique Java-style package identifier for your app\n(e.g. com.acme.games.myfarmgame)", wxPoint(x2, y));
 		y += h + 15;
 		new wxStaticText(panel, -1, wxT("Project Path:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getAppPath(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetAppPath(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Target App Store:"), wxPoint(20, y));
 		new wxTextCtrl(panel, -1, "Google Play", wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Keystore:"), wxPoint(20, y));
 		Rtt::String keystore;
-		ctx->getPlatform()->PathForFile("debug.keystore", Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, keystore);
+		ctx->GetPlatform()->PathForFile("debug.keystore", Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, keystore);
 		wxTextCtrl *wxKeystore = new wxTextCtrl(panel, -1, keystore.GetString(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Key Alias:"), wxPoint(20, y));
 		new wxTextCtrl(panel, -1, "androiddebugkey", wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxStaticText(panel, -1, wxT("Save to Folder:"), wxPoint(20, y));
-		new wxTextCtrl(panel, -1, ctx->getSaveFolder(), wxPoint(x2, y - 2), sz);
+		new wxTextCtrl(panel, -1, ctx->GetSaveFolder(), wxPoint(x2, y - 2), sz);
 		y += h;
 		new wxCheckBox(panel, -1, "Create Live Build", wxPoint(x2, y));
 

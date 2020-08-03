@@ -14,7 +14,7 @@
 #include "Rtt_KeyName.h"
 #include "Rtt_Lua.h"
 
-#ifdef _WIN32
+#ifdef _WIN32 // what??
 
 namespace Rtt
 {
@@ -104,7 +104,6 @@ namespace Rtt
 
 namespace Rtt
 {
-
 	static char const *sAxisNames[ABS_MAX + 1] =
 	{
 		"X", "Y", "Z", "Rx", "Ry", "Rz", "Throttle", "Rudder", "Wheel", "Gas", "Brake", "?", "?", "?", "?", "?", "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X",
@@ -130,6 +129,7 @@ namespace Rtt
 		fConnected = InputDeviceConnectionState::kDisconnected;
 
 		fAxesMap = new uint8_t[AXMAP_SIZE];
+
 		for (int i = 0; i < AXMAP_SIZE; i++)
 		{
 			fAxesMap[i] = static_cast<uint8_t>(-1);
@@ -142,6 +142,7 @@ namespace Rtt
 		{
 			close(fd);
 		}
+
 		delete[] fAxesMap;
 	}
 
@@ -151,17 +152,20 @@ namespace Rtt
 		if (i >= 0 && i < AXMAP_SIZE)
 		{
 			int k = fAxesMap[i];
+
 			if (k != static_cast<uint8_t>(-1) && k >= 0 && k < ARRAYSIZE(sAxisNames))
 			{
 				return sAxisNames[k];
 			}
 		}
+
 		return "?";
 	}
 
 	void LinuxInputDevice::init(const char *dev)
 	{
 		fd = open(dev, O_RDONLY | O_NONBLOCK);
+
 		if (fd >= 0)
 		{
 			char name[128] = {0};
@@ -174,12 +178,12 @@ namespace Rtt
 			fDriverName = "driver-";
 			fDriverName += std::to_string(driverVer);
 
-			//			printf("Joystick (%s) has %d axes (", name, fAxesCount);
-			//			for (int i = 0; i < fAxesCount; i++)
-			//			{
-			//				printf("%s%s", i > 0 ? ", " : "", getAxisName(i));
-			//			}
-			//			puts(")");
+			//printf("Joystick (%s) has %d axes (", name, fAxesCount);
+			//for (int i = 0; i < fAxesCount; i++)
+			//{
+			//printf("%s%s", i > 0 ? ", " : "", getAxisName(i));
+			//}
+			//puts(")");
 
 			fSerialNumber = name;
 			fCanVibrate = false; // fixme
@@ -192,6 +196,7 @@ namespace Rtt
 			S64 deviceDescriptorId = GetDescriptor().GetIntegerId();
 
 			bool axesNeutral0 = false; //commented below
+
 			for (int i = 0; i < fAxesCount; i++)
 			{
 				axesNeutral0 = AddNamedAxis(getAxisName(i)) || axesNeutral0;
@@ -204,9 +209,11 @@ namespace Rtt
 			if (!axesNeutral0)
 			{
 				const ReadOnlyInputAxisCollection &axes = GetAxes();
+
 				for (S32 index = axes.GetCount() - 1; index >= 0; index--)
 				{
 					LinuxInputAxis *axis = (LinuxInputAxis *)axes.GetByIndex(index);
+
 					if (axis)
 					{
 						axis->centerPoint0 = false;
@@ -227,6 +234,7 @@ namespace Rtt
 	void LinuxInputDevice::dispatchEvents(Runtime *runtime)
 	{
 		struct js_event e;
+
 		while (fd >= 0 && read(fd, &e, sizeof(e)) > 0)
 		{
 			if (e.type & JS_EVENT_INIT)
@@ -291,6 +299,7 @@ namespace Rtt
 		PlatformInputAxis *axis = AddAxis();
 
 		auto it = sAxisTypes.find(axisName);
+
 		if (it != sAxisTypes.end())
 		{
 			axis->SetType(it->second);
@@ -360,6 +369,7 @@ namespace Rtt
 		{
 			return PlatformInputAxis::GetNormalizedValue(rawValue);
 		}
+
 		Rtt_Real physicalMax = GetMaxValue();
 		Rtt_Real physicalMin = GetMinValue();
 		Rtt_Real scaledMin = Rtt_REAL_NEG_1;
@@ -368,6 +378,6 @@ namespace Rtt
 		ret = Clamp(ret, Rtt_REAL_NEG_1, Rtt_REAL_1);
 		return ret;
 	}
-
 } // namespace Rtt
+
 #endif

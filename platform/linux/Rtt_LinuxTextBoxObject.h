@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -16,7 +16,6 @@
 
 namespace Rtt
 {
-
 	class LinuxTextBoxObject : public LinuxDisplayObject
 	{
 	public:
@@ -25,25 +24,23 @@ namespace Rtt
 
 		struct myTextCtrl : public wxTextCtrl
 		{
-			myTextCtrl(LinuxTextBoxObject* parent, int x, int y, int w, int h, bool singleLine);
+			myTextCtrl(LinuxTextBoxObject *parent, int x, int y, int w, int h, bool singleLine);
 			virtual ~myTextCtrl();
+			void dispatch(wxCommandEvent &e);
+			void onTextEvent(wxCommandEvent &e);
 
-			void dispatch(wxCommandEvent& e);
-			void onTextEvent(wxCommandEvent& e);
-
-			LinuxTextBoxObject* fParent;
+			LinuxTextBoxObject *fParent;
 			CoronaLuaRef fLuaReference;
 			wxString fOldValue;
 		};
 
-		LinuxTextBoxObject(const Rect& bounds, bool isSingleLine);
+		LinuxTextBoxObject(const Rect &bounds, bool isSingleLine);
 		virtual ~LinuxTextBoxObject();
-
 		virtual bool Initialize();
-		virtual const LuaProxyVTable& ProxyVTable() const;
+		virtual const LuaProxyVTable &ProxyVTable() const;
 		virtual int ValueForKey(lua_State *L, const char key[]) const;
 		virtual bool SetValueForKey(lua_State *L, const char key[], int valueIndex);
-		virtual void Prepare(const Display& display) override;
+		virtual void Prepare(const Display &display) override;
 		static int addEventListener(lua_State *L);
 
 	protected:
@@ -55,6 +52,4 @@ namespace Rtt
 		/// This value is not expected to change after initialization.
 		bool fIsSingleLine;
 	};
-
-} // namespace Rtt
-
+}; // namespace Rtt

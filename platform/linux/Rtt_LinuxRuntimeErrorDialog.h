@@ -33,7 +33,6 @@ namespace Rtt
 		void OnOKClicked(wxCommandEvent &event);
 		void OnCancelClicked(wxCommandEvent &event);
 	};
-
 } // namespace Rtt
 
 #endif // Rtt_LINUX_RUNTIME_ERROR_DIALOG_H

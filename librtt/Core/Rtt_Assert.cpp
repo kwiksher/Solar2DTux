@@ -14,7 +14,7 @@
 #include "Core/Rtt_Assert.h"
 
 #ifdef Rtt_LINUX_ENV
-#include "../../platform/linux/Rtt_LinuxContext.h"
+#include "../../platform/linux/Rtt_ConsoleApp.h"
 #endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
@@ -243,7 +243,7 @@ Rtt_VLogException(const char *format, va_list ap)
 	va_copy(apCopy, ap);
 
 	int n = vsnprintf(buffer, 4096, format, apCopy);
-	LinuxConsoleLog((n > 0) ? buffer : format, linuxIsErrorMsg);
+	ConsoleApp::Log((n > 0) ? buffer : format, linuxIsErrorMsg);
 #endif
 
 	result = vfprintf( stderr, format, ap );

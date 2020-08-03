@@ -15,7 +15,7 @@
 
 namespace Rtt
 {
-	LinuxImageProvider::LinuxImageProvider(const ResourceHandle<lua_State> & handle)
+	LinuxImageProvider::LinuxImageProvider(const ResourceHandle<lua_State> &handle)
 		: PlatformImageProvider(handle)
 	{
 	}
@@ -24,7 +24,7 @@ namespace Rtt
 	{
 	}
 
-	bool LinuxImageProvider::Supports( int source ) const
+	bool LinuxImageProvider::Supports(int source) const
 	{
 		switch (source)
 		{
@@ -40,7 +40,7 @@ namespace Rtt
 		return false;
 	}
 
-	bool LinuxImageProvider::Show( int source, const char* filePath, lua_State* L )
+	bool LinuxImageProvider::Show(int source, const char* filePath, lua_State* L)
 	{
 		switch (source)
 		{
@@ -55,5 +55,4 @@ namespace Rtt
 
 		return false;
 	}
-
-} // namespace Rtt
+}; // namespace Rtt

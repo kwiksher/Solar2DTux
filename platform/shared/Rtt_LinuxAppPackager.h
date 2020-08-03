@@ -10,17 +10,12 @@
 #ifndef _Rtt_LinuxAppPackager_H__
 #define _Rtt_LinuxAppPackager_H__
 
-// ----------------------------------------------------------------------------
-
 #include "Rtt_PlatformAppPackager.h"
 
 namespace Rtt
 {
-
 	class LuaContext;
 	class MPlatformServices;
-
-// ----------------------------------------------------------------------------
 
 	class LinuxAppPackagerParams : public AppPackagerParams
 	{
@@ -29,21 +24,21 @@ namespace Rtt
 
 	public:
 		LinuxAppPackagerParams(
-		    const char* appName,
-		    const char* version,
-		    const char* identity,
-		    const char* provisionFile,
-		    const char* srcDir,
-		    const char* dstDir,
-		    const char* sdkRoot,
+		    const char *appName,
+		    const char *version,
+		    const char *identity,
+		    const char *provisionFile,
+		    const char *srcDir,
+		    const char *dstDir,
+		    const char *sdkRoot,
 		    TargetDevice::Platform targetPlatform,
 		    S32 targetVersion,
 		    S32 targetDevice,
-		    const char * customBuildId,
-		    const char * productId,
-		    const char * appPackage,
+		    const char *customBuildId,
+		    const char *productId,
+		    const char *appPackage,
 		    bool isDistributionBuild,
-		    const char * debtemplate,
+		    const char *debtemplate,
 		    bool useWidgetResources,
 		    bool runAfterBuild,
 		    bool onlyGetPlugins
@@ -72,19 +67,12 @@ namespace Rtt
 		typedef PlatformAppPackager Super;
 
 	public:
-		LinuxAppPackager( const MPlatformServices& services );
+		LinuxAppPackager(const MPlatformServices& services);
 		virtual ~LinuxAppPackager();
 
 	public:
-		virtual int Build( AppPackagerParams *params);
-
-	private:
+		virtual int Build(AppPackagerParams *params);
 	};
-
-// ----------------------------------------------------------------------------
-
-} // namespace Rtt
-
-// ----------------------------------------------------------------------------
+}; // namespace Rtt
 
 #endif // _Rtt_LinuxAppPackager_H__

@@ -10,11 +10,6 @@
 #ifndef Rtt_LINUX_CONTEXT_H
 #define Rtt_LINUX_CONTEXT_H
 
-#include <string>
-#include <map>
-#include <vector>
-#include <time.h>
-#include <sys/time.h>
 #include "Rtt_Event.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_Runtime.h"
@@ -24,8 +19,10 @@
 #include "shared/Rtt_NativeWindowMode.h"
 #include "Rtt_LinuxInputDeviceManager.h"
 #include "Rtt_LinuxSimulatorServices.h"
-#include "Rtt_LinuxIPCClient.h"
+#include "Rtt_LinuxRuntime.h"
 #include "Rtt_LinuxRuntimeDelegate.h"
+#include "Rtt_LinuxKeyListener.h"
+#include "Rtt_LinuxMouseListener.h"
 #include "Rtt_LinuxRelaunchProjectDialog.h"
 #include "wx/app.h"
 #include "wx/frame.h"
@@ -34,207 +31,55 @@
 #include "wx/glcanvas.h"
 #include "wx/timer.h"
 #include "wx/fswatcher.h"
-#include "wx/aboutdlg.h"
+#include <string>
 
-#define LINUX_CONSOLE_CLEAR_CMD "###clear###"
-#define LINUX_CONSOLE_QUIT_CMD "###quit###"
 #define HOMESCREEN_ID "homescreen"
 
-class MyApp;
-class MyFrame;
-class MyGLCanvas;
-static Rtt_LinuxIPCClient *consoleClient;
+class SolarApp;
+class SolarFrame;
+class SolarGLCanvas;
 
 wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
-wxDECLARE_EVENT(eventNewProject, wxCommandEvent);
 wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
-wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
-wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
-wxDECLARE_EVENT(eventRelaunchLastProject, wxCommandEvent);
-
-static void LinuxConsoleLog(const char *message, bool isError = false)
-{
-	using namespace std;
-
-	if (consoleClient == wxNullPtr)
-	{
-		consoleClient = new Rtt_LinuxIPCClient();
-		consoleClient->Connect(IPC_HOST, IPC_SERVICE, IPC_TOPIC);
-	}
-
-	time_t timeNow = time(NULL);
-	char buffer[32];
-	char msBuffer[32];
-	int millisec;
-	struct tm* timeInfo;
-	struct timeval timeValue;
-
-	gettimeofday(&timeValue, NULL);
-	millisec = lrint(timeValue.tv_usec / 1000.0);
-
-	if (millisec >= 1000)
-	{
-		millisec -= 1000;
-		timeValue.tv_sec++;
-	}
-
-	timeInfo = localtime(&timeValue.tv_sec);
-	strftime(buffer, 26, "%H:%M:%S.", timeInfo);
-	sprintf(msBuffer, "%03d ", millisec);
-	strcat(buffer, msBuffer);
-	int bufferLen = strlen(buffer);
-	string outputMessage;
-	string messageCopy(message);
-	size_t currentMsgPos = 0;
-	string topic("information");
-	string content;
-	const string delimiter = "\n";
-	const string warningPrefix = "WARNING:";
-	const string errorPrefix = "ERROR:";
-
-	while ((currentMsgPos = messageCopy.find(delimiter)) != string::npos)
-	{
-		content = messageCopy.substr(0, currentMsgPos);
-		outputMessage.append(buffer).append(content).append(delimiter);
-		messageCopy.erase(0, currentMsgPos + delimiter.length());
-	}
-
-	if (isError)
-	{
-		topic = "error";
-	}
-	else
-	{
-		if (outputMessage.length() > bufferLen + warningPrefix.length())
-		{
-			if (outputMessage.compare(bufferLen, warningPrefix.length(), warningPrefix) == 0)
-			{
-				topic = "warning";
-			}
-			else if (outputMessage.compare(bufferLen, errorPrefix.length(), errorPrefix) == 0)
-			{
-				topic = "error";
-			}
-		}
-	}
-
-	if (strcmp(message, LINUX_CONSOLE_CLEAR_CMD) == 0)
-	{
-		topic = "clear";
-	}
-	else if (strcmp(message, LINUX_CONSOLE_QUIT_CMD) == 0)
-	{
-		topic = "quit";
-	}
-
-	if (outputMessage.find("kShowRuntimeErrorsSet") == string::npos && outputMessage.find("luaDebugAvailable") == string::npos)
-	{
-		consoleClient->GetConnection()->Poke(topic, outputMessage.c_str());
-	}
-}
 
 namespace Rtt
 {
 	class LinuxPlatform;
 
-	class LinuxRuntime : public Runtime
+	struct SolarAppContext
 	{
-	public:
-		LinuxRuntime(const MPlatform &platform, MCallback *viewCallback = NULL)
-			: Runtime(platform, viewCallback)
-		{
-		}
-	};
+		SolarAppContext(const char *path);
+		~SolarAppContext();
 
-	class KeyListener
-	{
-	public:
-		KeyListener(Runtime &runtime);
-
-		void notifyKeyEvent(wxKeyEvent &e, bool down);
-		void notifyCharEvent(wxKeyEvent &e);
-
-	private:
-		Runtime &fRuntime;
-		std::map<int, std::string> fKeyName;
-	};
-
-	class MouseListener
-	{
-	public:
-		float fScaleX, fScaleY;
-
-	public:
-		MouseListener(Runtime &runtime);
-		void TouchDown(int x, int y, int id);
-		void TouchMoved(int x, int y, int id);
-		void TouchUp(int x, int y, int id);
-		void DispatchEvent(const MEvent &e) const;
-
-	private:
-		struct pt
-		{
-			pt() : x(0), y(0) {}
-			pt(int xx, int yy) : x(xx), y(yy) {}
-			int x;
-			int y;
-		};
-
-		Runtime &fRuntime;
-		std::map<int, pt> fStartPoint; // finger id ==> point
-	};
-
-	// Immediately broadcast to "Runtime"
-	class jsSystemEvent : public VirtualEvent
-	{
-	public:
-		jsSystemEvent(const char *e)
-			: fEventName(e)
-		{
-		}
-
-		virtual const char *Name() const { return "system"; }
-		virtual int Push(lua_State *L) const;
-
-	private:
-		std::string fEventName;
-	};
-
-	struct CoronaAppContext
-	{
-		CoronaAppContext(const char *path);
-		~CoronaAppContext();
-
-		void close();
+		void Close();
 		bool Init();
 		bool IsInitialized() const { return NULL != fRuntime; }
 		void Start();
-		// bool ProcessEvent(SDL_Event& event);
-		void enumerateFontFiles(const char *dir, std::vector<std::string> &fileList);
+		void EnumerateFontFiles(const char *dir, std::vector<std::string> &fileList);
 
 		Runtime *GetRuntime() { return fRuntime; }
 		LinuxRuntimeDelegate *GetDelegate() { return fRuntimeDelegate; }
 		const Runtime *GetRuntime() const { return fRuntime; }
-		MouseListener *GetMouseListener() { return fMouseListener; }
-		const MouseListener *GetMouseListener() const { return fMouseListener; }
-		KeyListener *GetKeyListener() { return fKeyListener; }
-		const KeyListener *GetKeyListener() const { return fKeyListener; }
-		void pause();
-		void resume();
-		int getFPS() const { return fRuntime ? fRuntime->GetFPS() : 30; }
-		int getWidth() const { return fRuntimeDelegate->fContentWidth; }
-		int getHeight() const { return fRuntimeDelegate->fContentHeight; }
-		DeviceOrientation::Type getOrientation() const { return fRuntimeDelegate->fOrientation; }
-		const std::string &getTitle() const { return fTitle; }
-		void flush(); // redraw
-		bool loadApp(MyGLCanvas *canvas);
-		MyGLCanvas *getCanvas() const { return fCanvas; }
-		void setCanvas(MyGLCanvas *val) { fCanvas = val; }
-		const char *getAppPath() const { return fPathToApp.c_str(); }
-		LinuxPlatform *getPlatform() const { return fPlatform; }
-		const std::string &getAppName() const { return fAppName; }
-		const std::string &getSaveFolder() const { return fSaveFolder; }
+		LinuxMouseListener *GetMouseListener() { return fMouseListener; }
+		const LinuxMouseListener *GetMouseListener() const { return fMouseListener; }
+		LinuxKeyListener *GetKeyListener() { return fKeyListener; }
+		const LinuxKeyListener *GetKeyListener() const { return fKeyListener; }
+		void Pause();
+		void Resume();
+		int GetFPS() const { return fRuntime ? fRuntime->GetFPS() : 30; }
+		int GetWidth() const { return fRuntimeDelegate->fContentWidth; }
+		int GetHeight() const { return fRuntimeDelegate->fContentHeight; }
+		DeviceOrientation::Type GetOrientation() const { return fRuntimeDelegate->fOrientation; }
+		const std::string &GetTitle() const { return fTitle; }
+		void Flush();
+		bool LoadApp(SolarGLCanvas *canvas);
+		SolarGLCanvas *GetCanvas() const { return fCanvas; }
+		void SetCanvas(SolarGLCanvas *val) { fCanvas = val; }
+		const char *GetAppPath() const { return fPathToApp.c_str(); }
+		LinuxPlatform *GetPlatform() const { return fPlatform; }
+		const std::string &GetAppName() const { return fAppName; }
+		const std::string &GetSaveFolder() const { return fSaveFolder; }
 		const LinuxRuntimeDelegate *GetRuntimeDelegate() const { return fRuntimeDelegate; }
 		bool fIsStarted;
 
@@ -242,101 +87,75 @@ namespace Rtt
 		std::string fTitle;
 		LinuxRuntime *fRuntime;
 		LinuxRuntimeDelegate *fRuntimeDelegate;
-		MouseListener *fMouseListener;
-		KeyListener *fKeyListener;
+		LinuxMouseListener *fMouseListener;
+		LinuxKeyListener *fKeyListener;
 		std::string fPathToApp;
 		std::string fAppName;
 		LinuxPlatform *fPlatform;
 		bool fTouchDeviceExist;
 		const char *fMode;
-		MyGLCanvas *fCanvas;
+		SolarGLCanvas *fCanvas;
 		bool fIsDebApp;
 		LinuxSimulatorServices *fSimulator;
 		std::string fSaveFolder;
 	};
 }; // namespace Rtt
 
-// Define application
-
-// The canvas window
-class MyGLCanvas : public wxGLCanvas
+//  the canvas window
+class SolarGLCanvas : public wxGLCanvas
 {
 public:
-	MyGLCanvas(MyFrame *parent, const wxGLAttributes &canvasAttrs);
-	~MyGLCanvas();
+	SolarGLCanvas(SolarFrame *parent, const wxGLAttributes &canvasAttrs);
+	~SolarGLCanvas();
 
 	void OnChar(wxKeyEvent &event);
-	void OnKeyDown(wxKeyEvent &event);
-	void OnKeyUp(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
-
-	// Used just to know if we must end now because OGL 3.2 isn't available
-	bool OglCtxAvailable()
-	{
-		return m_oglContext != NULL;
-	}
-
+	bool IsGLContextAvailable() { return fGLContext != NULL; } // used to know if we must end now because OGL 3.2 isn't available
 	void OnPaint(wxPaintEvent &event);
+	void OnWindowCreate(wxWindowCreateEvent &event);
 	void OnSize(wxSizeEvent &event);
-	void OnMouse(wxMouseEvent &event);
-	void startTimer(float duration);
+	void StartTimer(float duration);
 
-	MyFrame *m_parent;
-	wxGLContext *m_oglContext;
-	int m_winHeight; // We use this var to know if we have been sized
-	Rtt::CoronaAppContext *fContext;
-	wxTimer m_timer;
+	SolarFrame *fSolarFrame;
+	wxGLContext *fGLContext;
+	int fWindowHeight;
+	Rtt::SolarAppContext *fContext;
+	wxTimer fTimer;
 	wxDECLARE_EVENT_TABLE();
 };
 
-// The main frame class
-class MyFrame : public wxFrame
+// the main frame
+class SolarFrame : public wxFrame
 {
 public:
-	MyFrame(int style);
-	virtual ~MyFrame();
+	SolarFrame(int style);
+	virtual ~SolarFrame();
 
 	void OnFileSystemEvent(wxFileSystemWatcherEvent &event);
-	void OnAbout(wxCommandEvent &event);
-	void OnQuit(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
-	void OnOpenPreferences(wxCommandEvent &event);
-	void OnCloneProject(wxCommandEvent &event);
-	void OnNewProject(wxCommandEvent &event);
 	void OnRelaunch(wxCommandEvent &event);
-	void OnRelaunchLastProject(wxCommandEvent &event);
 	void OnSuspendOrResume(wxCommandEvent &event);
-	void OnOpenFileDialog(wxCommandEvent &event);
 	void OnOpenWelcome(wxCommandEvent &event);
-	void OnBuildAndroid(wxCommandEvent &event);
-	void OnBuildWeb(wxCommandEvent &event);
-	void OnBuildLinux(wxCommandEvent &event);
-	void OnOpenInEditor(wxCommandEvent &event);
-	void OnShowProjectSandbox(wxCommandEvent &event);
-	void OnClearProjectSandbox(wxCommandEvent &event);
-	void OnOpenSampleProjects(wxCommandEvent &event);
-	void OnOpenDocumentation(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
-	void SetOGLString(const wxString &ogls) { m_OGLString = ogls; }
+	void SetOGLString(const wxString &ogls) { fGLString = ogls; }
 	void CreateSuspendedPanel();
 	void RemoveSuspendedPanel();
-
-	MyGLCanvas *getCanvas() const { return m_mycanvas; }
-	Rtt::CoronaAppContext *getContext() const { return fContext; }
-	void resetSize();
-	void setMenu(const char *appPath);
-	void createMenus();
-	void watchFolder(const char *path, const char *appName);
+	SolarGLCanvas *GetCanvas() const { return fSolarGLCanvas; }
+	Rtt::SolarAppContext *GetContext() const { return fContext; }
+	void ResetSize();
+	void SetMenu(const char *appPath);
+	void CreateMenus();
+	void WatchFolder(const char *path, const char *appName);
 
 	bool fRelaunchedViaFileEvent;
 	Rtt::LinuxRelaunchProjectDialog *fRelaunchProjectDialog;
 	wxLongLong fFileSystemEventTimestamp = 0;
 	wxPanel *suspendedPanel;
 	wxStaticText *suspendedText;
-	wxMenu *m_pHardwareMenu;
-	wxString m_OGLString;
-	MyGLCanvas *m_mycanvas;
-	Rtt::CoronaAppContext *fContext;
+	wxMenu *fHardwareMenu;
+	wxString fGLString;
+	SolarGLCanvas *fSolarGLCanvas;
+	Rtt::SolarAppContext *fContext;
 	wxMenuBar *fMenuMain;
 	wxMenuBar *fMenuProject;
 	std::string fAppPath;
@@ -345,24 +164,22 @@ public:
 	wxDECLARE_EVENT_TABLE();
 };
 
-wxDECLARE_APP(MyApp);
-class MyApp : public wxApp
+wxDECLARE_APP(SolarApp);
+class SolarApp : public wxApp
 {
 public:
-	MyApp();
-	virtual ~MyApp();
+	SolarApp();
+	~SolarApp();
 
 	bool OnInit() wxOVERRIDE;
 	void OnEventLoopEnter(wxEventLoopBase *WXUNUSED(loop));
-
-	MyFrame *getFrame() { return fFrame; }
-	MyGLCanvas *getCanvas() const { return fFrame->getCanvas(); }
-	wxWindow *getParent();
-	Rtt::LinuxPlatform *getPlatform() const;
-	Rtt::Runtime *GetRuntime() { return fFrame->getContext()->GetRuntime(); };
+	SolarFrame *GetFrame() { return fSolarFrame; }
+	SolarGLCanvas *GetCanvas() const { return fSolarFrame->GetCanvas(); }
+	wxWindow *GetParent();
+	Rtt::LinuxPlatform *GetPlatform() const;
+	Rtt::Runtime *GetRuntime() { return fSolarFrame->GetContext()->GetRuntime(); };
 
 private:
-	MyFrame *fFrame;
-	//Rtt::CoronaAppContext* fCoronaContext;
+	SolarFrame *fSolarFrame;
 };
 #endif // Rtt_LINUX_CONTEXT_H

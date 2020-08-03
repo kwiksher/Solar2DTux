@@ -9,6 +9,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="linux">
+      <File Name="Rtt_LinuxMenuEvents.cpp"/>
+      <File Name="Rtt_LinuxMouseListener.cpp"/>
+      <File Name="Rtt_ConsoleApp.cpp"/>
+      <File Name="Rtt_LinuxKeyListener.cpp"/>
+      <File Name="Rtt_LinuxRuntime.cpp"/>
       <File Name="Rtt_Freetype.cpp"/>
       <File Name="Rtt_LinuxFileUtils.cpp"/>
       <File Name="Rtt_LinuxIPCClient.cpp"/>
@@ -51,6 +56,11 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="include">
+        <File Name="Rtt_LinuxMenuEvents.h"/>
+        <File Name="Rtt_LinuxMouseListener.h"/>
+        <File Name="Rtt_ConsoleApp.h"/>
+        <File Name="Rtt_LinuxKeyListener.h"/>
+        <File Name="Rtt_LinuxRuntime.h"/>
         <File Name="Rtt_Freetype.h"/>
         <File Name="Rtt_LinuxFileUtils.h"/>
         <File Name="Rtt_LinuxIPCClient.h"/>
@@ -70,7 +80,6 @@
         <File Name="Rtt_LinuxFont.h"/>
         <File Name="Rtt_LinuxDisplayObject.h"/>
         <File Name="Rtt_LinuxDevice.h"/>
-        <File Name="Rtt_LinuxData.h"/>
         <File Name="Rtt_LinuxCrypto.h"/>
         <File Name="Rtt_LinuxContext.h"/>
         <File Name="Rtt_LinuxContainer.h"/>
@@ -92,7 +101,6 @@
       <File Name="Rtt_LinuxFont.cpp"/>
       <File Name="Rtt_LinuxDisplayObject.cpp"/>
       <File Name="Rtt_LinuxDevice.cpp"/>
-      <File Name="Rtt_LinuxData.cpp"/>
       <File Name="Rtt_LinuxCrypto.cpp"/>
       <File Name="Rtt_LinuxContext.cpp"/>
       <File Name="Rtt_LinuxContainer.cpp"/>

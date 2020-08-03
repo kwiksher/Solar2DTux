@@ -28,7 +28,6 @@ namespace Rtt
 		void OnOKClicked(wxCommandEvent &event);
 		void OnCancelClicked(wxCommandEvent &event);
 	};
-
 } // namespace Rtt
 
 #endif // Rtt_LINUX_RELAUNCH_PROJECT_DIALOG_H

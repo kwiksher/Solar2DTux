@@ -22,10 +22,9 @@ namespace Rtt
 	class LinuxImageProvider : public PlatformImageProvider
 	{
 	public:
-		LinuxImageProvider(const ResourceHandle<lua_State> & handle);
+		LinuxImageProvider(const ResourceHandle<lua_State> &handle);
 		virtual ~LinuxImageProvider();
 		virtual bool Supports(int source) const;
-		virtual bool Show(int source, const char* filePath, lua_State* L);
+		virtual bool Show(int source, const char *filePath, lua_State *L);
 	};
-
-} // namespace Rtt
+}; // namespace Rtt

@@ -95,12 +95,12 @@ namespace Rtt
 		Centre();
 	}
 
-	void LinuxBuildDialog::SetAppContext(CoronaAppContext *appContext)
+	void LinuxBuildDialog::SetAppContext(SolarAppContext *appContext)
 	{
 		fCoronaAppContext = appContext;
-		appNameTextCtrl->SetValue(fCoronaAppContext->getAppName());
-		appPathTextCtrl->SetValue(fCoronaAppContext->getAppPath());
-		appBuildPathTextCtrl->SetValue(fCoronaAppContext->getSaveFolder());
+		appNameTextCtrl->SetValue(fCoronaAppContext->GetAppName());
+		appPathTextCtrl->SetValue(fCoronaAppContext->GetAppPath());
+		appBuildPathTextCtrl->SetValue(fCoronaAppContext->GetSaveFolder());
 	}
 
 	BEGIN_EVENT_TABLE(LinuxBuildDialog, wxDialog)
@@ -122,7 +122,7 @@ namespace Rtt
 
 	void LinuxBuildDialog::OnBuildClicked(wxCommandEvent &event)
 	{
-		LinuxPlatform *platform = wxGetApp().getPlatform();
+		LinuxPlatform *platform = wxGetApp().GetPlatform();
 		MPlatformServices *service = new LinuxPlatformServices(platform);
 		LinuxAppPackager packager(*service);
 		Rtt::Runtime *runtimePointer = fCoronaAppContext->GetRuntime();
@@ -144,7 +144,7 @@ namespace Rtt
 		Rtt::String buildSettingsPath;
 		bool foundBuildSettings = packager.ReadBuildSettings(sourceDir.c_str());
 		bool checksPassed = foundBuildSettings && !appVersion.IsEmpty() && !appName.IsEmpty();
-		wxMessageDialog *resultDialog = new wxMessageDialog(wxGetApp().getFrame(), wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
+		wxMessageDialog *resultDialog = new wxMessageDialog(wxGetApp().GetFrame(), wxEmptyString, wxT("Build Error"), wxOK | wxICON_WARNING);
 
 		// setup paths
 		linuxtemplate.append("/Resources/template_x64.tgz");
@@ -193,7 +193,7 @@ namespace Rtt
 		    NULL, useWidgetResources, runAfterBuild, false);
 
 		// select build template
-		fCoronaAppContext->getPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		fCoronaAppContext->GetPlatform()->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
 		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
 
 		// build the app (warning! This is blocking call)
@@ -201,7 +201,7 @@ namespace Rtt
 		int buildResult = packager.Build(&linuxBuilderParams);
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
-		wxGetApp().getFrame()->RemoveSuspendedPanel();
+		wxGetApp().GetFrame()->RemoveSuspendedPanel();
 
 		int dialogResultFlags = buildResult == 0 ? wxOK | wxICON_INFORMATION : wxOK | wxICON_ERROR;
 		resultDialog->SetTitle("Build Result");
@@ -223,7 +223,7 @@ namespace Rtt
 
 	void LinuxBuildDialog::OnCancelClicked(wxCommandEvent &event)
 	{
-		wxGetApp().getFrame()->RemoveSuspendedPanel();
+		wxGetApp().GetFrame()->RemoveSuspendedPanel();
 		EndModal(wxID_CLOSE);
 	}
 };

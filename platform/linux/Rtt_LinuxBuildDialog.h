@@ -17,7 +17,7 @@ namespace Rtt
 		LinuxBuildDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
 
 	public:
-		void SetAppContext(CoronaAppContext *appContext);
+		void SetAppContext(SolarAppContext *appContext);
 		void OnSelectOutputPathClicked(wxCommandEvent &event);
 		void OnBuildClicked(wxCommandEvent &event);
 		void OnCancelClicked(wxCommandEvent &event);
@@ -27,7 +27,7 @@ namespace Rtt
 		void DoLayout();
 
 	protected:
-		CoronaAppContext *fCoronaAppContext;
+		SolarAppContext *fCoronaAppContext;
 		wxTextCtrl *appNameTextCtrl;
 		wxTextCtrl *appVersionTextCtrl;
 		wxTextCtrl *appPathTextCtrl;

@@ -1,7 +1,5 @@
-#pragma once
-
-#ifndef LINUXIPCCLIENT_H
-#define LINUXIPCCLIENT_H
+#ifndef Rtt_LINUX_IPC_CLIENT_H
+#define Rtt_LINUX_IPC_CLIENT_H
 
 #include "wx/ipc.h"
 #include "Rtt_LinuxIPCClientConnection.h"
@@ -30,4 +28,4 @@ protected:
 	Rtt_LinuxIPCClientConnection *mConnection;
 };
 
-#endif //LINUXIPCCLIENT_H
+#endif //Rtt_LINUX_IPC_CLIENT_H

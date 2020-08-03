@@ -1,4 +1,6 @@
 #include "Rtt_LinuxFileUtils.h"
+#include "Core/Rtt_Assert.h"
+#include "Rtt_LinuxCrypto.h"
 #include <limits.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -6,11 +8,12 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Core/Rtt_Assert.h"
+
+using namespace std;
 
 namespace Rtt
 {
-	const char *LinuxFileUtils::GetStartupPath(std::string *exeFileName)
+	const char *LinuxFileUtils::GetStartupPath(string *exeFileName)
 	{
 		static char buf[PATH_MAX + 1];
 		ssize_t count = readlink("/proc/self/exe", buf, PATH_MAX);
@@ -40,5 +43,24 @@ namespace Rtt
 		}
 
 		return homeDir;
+	}
+
+	char *LinuxFileUtils::CalculateMD5(string filename)
+	{
+		LinuxCrypto crypto;
+		U8 digest[MCrypto::kMaxDigestSize];
+		size_t digestLen = crypto.GetDigestLength(MCrypto::kMD5Algorithm);
+		Rtt::Data<const char> data(filename.c_str(), (int)filename.length());
+		crypto.CalculateDigest(MCrypto::kMD5Algorithm, data, digest);
+
+		char *hex = (char *)calloc(sizeof(char), digestLen * 2 + 1);
+
+		for (unsigned int i = 0; i < digestLen; i++)
+		{
+			char *p = hex;
+			p += sprintf(hex + 2 * i, "%02x", digest[i]);
+		}
+
+		return hex;
 	}
 };

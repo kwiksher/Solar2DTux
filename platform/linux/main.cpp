@@ -17,4 +17,4 @@
 
 #include "Rtt_LinuxContext.h"
 
-wxIMPLEMENT_APP_CONSOLE(MyApp);
+wxIMPLEMENT_APP_CONSOLE(SolarApp);

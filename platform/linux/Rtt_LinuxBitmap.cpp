@@ -16,17 +16,12 @@
 #include "Rtt_Freetype.h"
 #include "Display/Rtt_Display.h"
 #include "Core/Rtt_Types.h"
-
 #include "wx/image.h"
-#include <wx/log.h>
+#include "wx/log.h"
 
 namespace Rtt
 {
-
-	//
 	// LinuxBaseBitmap
-	//
-
 	LinuxBaseBitmap::LinuxBaseBitmap()
 		: Super(), fData(NULL), fWidth(0), fHeight(0), fFormat(kUndefined), fProperties(0)
 	{
@@ -40,6 +35,7 @@ namespace Rtt
 		memset(fData, 0, size);
 
 		U8 *dst = fData;
+
 		for (int y = 0; y < h; y++)
 		{
 			for (int x = 0; x < w; x++)
@@ -70,13 +66,13 @@ namespace Rtt
 
 	U32 LinuxBaseBitmap::Width() const
 	{
-		//	return ( ! IsPropertyInternal( kIsBitsAutoRotated ) ? SourceWidth() : UprightWidth() );
+		//return ( ! IsPropertyInternal( kIsBitsAutoRotated ) ? SourceWidth() : UprightWidth() );
 		return fWidth;
 	}
 
 	U32 LinuxBaseBitmap::Height() const
 	{
-		//	return ( ! IsPropertyInternal( kIsBitsAutoRotated ) ? SourceHeight() : UprightHeight() );
+		//return ( ! IsPropertyInternal( kIsBitsAutoRotated ) ? SourceHeight() : UprightHeight() );
 		return fHeight;
 	}
 
@@ -116,8 +112,8 @@ namespace Rtt
 
 		// disable log messages
 		wxLogNull logNo;
-
 		wxImage img;
+
 		if (img.LoadFile(path))
 		{
 			fWidth = img.GetWidth();
@@ -155,6 +151,7 @@ namespace Rtt
 			}
 			fFormat = kRGBA;
 		}
+
 		return fData != NULL;
 	}
 
@@ -171,12 +168,11 @@ namespace Rtt
 		if (strcmp(filePath + strlen(filePath) - 4, ".png") == 0)
 		{
 			bitmapType = wxBITMAP_TYPE_PNG;
-			//Rtt_LogException("Failed to save %s, .png files are supported only\n", filePath);
-			//return false;
 		}
 
 		S32 w = bitmap->Width();
 		S32 h = bitmap->Height();
+
 		if (w <= 0 || h <= 0)
 		{
 			return false;
@@ -184,6 +180,7 @@ namespace Rtt
 
 		// Fetch the given bitmap's bits.
 		U8 *bits = (U8 *)(bitmap->GetBits(context));
+
 		if (bits == NULL)
 		{
 			return false;
@@ -194,6 +191,7 @@ namespace Rtt
 		U8 *alpha = (U8 *)malloc(w * h);
 		U8 *prgb = rgb;
 		U8 *palpha = alpha;
+
 		for (int y = 0; y < h; y++)
 		{
 			for (int x = 0; x < w; x++)
@@ -217,10 +215,7 @@ namespace Rtt
 		return rc;
 	}
 
-	//
 	// FileBitmap
-	//
-
 	LinuxFileBitmap::LinuxFileBitmap(Rtt_Allocator &context, const char *path)
 		: Super(), fPath(&context, path)
 	{
@@ -231,10 +226,7 @@ namespace Rtt
 	{
 	}
 
-	//
 	// MaskFileBitmap
-	//
-
 	LinuxMaskFileBitmap::LinuxMaskFileBitmap(Rtt_Allocator &context, const char *filePath)
 		: Super(), fPath(&context, filePath)
 	{
@@ -247,6 +239,7 @@ namespace Rtt
 			U8 *newData = (U8 *)Rtt_MALLOC(&context, size);
 			U8 *src = fData;
 			U8 *dst = newData;
+
 			for (int y = 0; y < fHeight; y++)
 			{
 				for (int x = 0; x < fWidth; x++)
@@ -255,6 +248,7 @@ namespace Rtt
 					src += (fFormat == kRGBA) ? 4 : 3;
 				}
 			}
+
 			free(fData);
 			fData = newData;
 			fFormat = kMask;
@@ -265,14 +259,12 @@ namespace Rtt
 	{
 	}
 
-	//
 	// TextBitmap
-	//
-
 	LinuxTextBitmap::LinuxTextBitmap(Rtt_Allocator &context, const char str[], const Rtt::PlatformFont &inFont, int width, int height, const char alignment[], Real &baselineOffset)
 		: Super(), fWrapWidth(width), fAlignment(&context, alignment)
 	{
 		glyph_freetype_provider *gp = getGlyphProvider();
+
 		if (gp == NULL)
 		{
 			return;
@@ -289,6 +281,7 @@ namespace Rtt
 		const char *fontFile = inFont.Name();
 		int fontSize = inFont.Size() - 2;
 		smart_ptr<alpha> im = gp->render_string(str, alignment, fontFile, is_bold, is_italic, fontSize, xleading, yleading, width, height, multiline, xscale, yscale, &baselineOffset);
+
 		if (im == NULL)
 		{
 			return;
@@ -309,6 +302,7 @@ namespace Rtt
 
 		int pitch = fWidth * 4; // rgba
 		int bpp = 4;
+
 		for (int y = 0; y < fHeight; y++)
 		{
 			for (int x = 0; x < fWidth; x++)
@@ -338,5 +332,4 @@ namespace Rtt
 	{
 		return 1;
 	}
-
-} // namespace Rtt
+}; // namespace Rtt

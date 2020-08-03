@@ -15,17 +15,17 @@
 #include "Rtt_TargetDevice.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxContext.h"
+#include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_MPlatform.h"
+#include "wx/config.h"
 
 namespace Rtt
 {
-
 	class LinuxPlatformServices : public MPlatformServices
 	{
 	public:
 		LinuxPlatformServices(MPlatform *platform);
-		//		~WinPlatformServices();
 
 	protected:
 		bool RequestAdminAuthorization(const char *name) const;
@@ -44,7 +44,7 @@ namespace Rtt
 		// Pass NULL for value to remove pref
 		virtual void SetPreference(const char *key, const char *value) const override
 		{
-			//			fPlatform->SetPreference(key, value);
+			//fPlatform->SetPreference(key, value);
 			int k = 1;
 		}
 
@@ -57,11 +57,9 @@ namespace Rtt
 
 		virtual void GetLibraryPreference(const char *key, String *value) const override { return GetPreference(key, value); }
 		virtual void SetLibraryPreference(const char *key, const char *value) const override { SetPreference(key, value); }
-
 		virtual bool IsInternetAvailable() const override { return false; };
 		virtual bool IsLocalWifiAvailable() const override { return false; };
 		virtual void Terminate() const override {}
-
 		virtual void Sleep(int milliseconds) const override {};
 
 	private:
@@ -74,32 +72,52 @@ namespace Rtt
 		LinuxSimulatorView();
 		virtual ~LinuxSimulatorView();
 
-		static void OnBuildForWeb(CoronaAppContext *ctx);
-		static void OnBuildForAndroid(CoronaAppContext *ctx);
+		class Config
+		{
+		public:
+			static void Load();
+			static void Save();
+			static void Cleanup();
+
+		public:
+			static wxString settingsFilePath;
+			static wxString lastProjectDirectory;
+			static bool showRuntimeErrors;
+			static bool openLastProject;
+			static LinuxPreferencesDialog::RelaunchType relaunchOnFileChange;
+			static int windowXPos;
+			static int windowYPos;
+			static wxConfig *configFile;
+		};
+
+		static bool IsRunningOnSimulator();
+		static void OnBuildForWeb(SolarAppContext *ctx);
+		static void OnBuildForAndroid(SolarAppContext *ctx);
 		static void OnWebBuild(wxCommandEvent &);
 		static void OnAndroidBuild(wxCommandEvent &);
 		static void OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform);
 		static void OnCancel(wxCommandEvent &);
-		static void AppWebBuild(CoronaAppContext *ctx);
+		static void AppWebBuild(SolarAppContext *ctx);
 
+	public:
 		struct androidBuildParams : public wxObject
 		{
-			androidBuildParams(wxDialog *dlg, CoronaAppContext *ctx, wxTextCtrl *keystore, wxTextCtrl *package)
+			androidBuildParams(wxDialog *dlg, SolarAppContext *ctx, wxTextCtrl *keystore, wxTextCtrl *package)
 				: fDlg(dlg), fCtx(ctx), fKeystore(keystore), fPackage(package) {};
 
 			wxDialog *fDlg;
-			CoronaAppContext *fCtx;
+			SolarAppContext *fCtx;
 			wxTextCtrl *fKeystore;
 			wxTextCtrl *fPackage;
 		};
 
 		struct webBuildParams : public wxObject
 		{
-			webBuildParams(wxDialog *dlg, CoronaAppContext *ctx, wxCheckBox *useStandardResources, wxCheckBox *runAfterBuild, wxCheckBox *createFBInstance)
+			webBuildParams(wxDialog *dlg, SolarAppContext *ctx, wxCheckBox *useStandardResources, wxCheckBox *runAfterBuild, wxCheckBox *createFBInstance)
 				: fDlg(dlg), fCtx(ctx), fUseStandardResources(useStandardResources), fRunAfterBuild(runAfterBuild), fCreateFBInstance(createFBInstance) {};
 
 			wxDialog *fDlg;
-			CoronaAppContext *fCtx;
+			SolarAppContext *fCtx;
 			wxCheckBox *fUseStandardResources;
 			wxCheckBox *fRunAfterBuild;
 			wxCheckBox *fCreateFBInstance;
@@ -112,4 +130,4 @@ namespace Rtt
 			wxDialog *fDlg;
 		};
 	};
-} // namespace Rtt
+}; // namespace Rtt

@@ -10,13 +10,8 @@
 #include "Core/Rtt_Build.h"
 #include "Rtt_LinuxDevice.h"
 
-// ----------------------------------------------------------------------------
-
 namespace Rtt
 {
-
-	// ----------------------------------------------------------------------------
-
 	#pragma region Constructors / Destructors
 	LinuxDevice::LinuxDevice(Rtt_Allocator &allocator)
 		: fAllocator(allocator),
@@ -32,6 +27,7 @@ namespace Rtt
 	#pragma endregion
 
 	#pragma region Public Member Functions
+
 	void LinuxDevice::SetOrientation(DeviceOrientation::Type orientation)
 	{
 		fOrientation = orientation;
@@ -198,13 +194,8 @@ namespace Rtt
 
 	const char *LinuxDevice::GetManufacturer() const
 	{
-		return "CoronaLabs";
+		return "Solar2D";
 	}
 
 	#pragma endregion
-
-	// ----------------------------------------------------------------------------
-
-} // namespace Rtt
-
-// ----------------------------------------------------------------------------
+}; // namespace Rtt

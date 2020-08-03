@@ -7,16 +7,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Rtt_LinuxSimulatorServices_H
+#define Rtt_LinuxSimulatorServices_H
+
 #include "Rtt_MSimulatorServices.h"
 #include "Rtt_LuaResource.h"
 #include <string>
 
-#ifndef Rtt_LinuxSimulatorServices_H
-#define Rtt_LinuxSimulatorServices_H
-
 namespace Rtt
 {
-
 	/// <summary>
 	///  <para>
 	///   Provides access to the simulator window's project services such as "New Project", "Open Project",
@@ -35,7 +34,6 @@ namespace Rtt
 
 		/// <summary>Destroys this object and its owned objects.</summary>
 		virtual ~LinuxSimulatorServices();
-
 		virtual bool CloneProject() const;
 
 		/// <summary>Displays a "New Project" window for creating a new Corona project.</summary>
@@ -69,7 +67,6 @@ namespace Rtt
 		/// </param>
 		/// <returns>Returns the name of the user's subscription such as Indie or Pro.</returns>
 		virtual const char *GetSubscription(S32 *expirationTimestamp) const;
-
 		virtual void GetRecentDocs(LightPtrArray<RecentProjectInfo> *list) const;
 		virtual const char *GetPreference(const char *prefName) const;
 		virtual void SetPreference(const char *prefName, const char *prefValue) const;
@@ -93,9 +90,8 @@ namespace Rtt
 		///  Reference to the simulator application's view that will will implement this class' services
 		///  such as "New Project", "Open Project", etc.
 		/// </summary>
-		//		CSimulatorView& fSimulatorView;
+		//CSimulatorView& fSimulatorView;
 	};
-
-} // namespace Rtt
+}; // namespace Rtt
 
 #endif

@@ -14,14 +14,13 @@
 #include "Rtt_SimulatorAnalytics.h"
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxSimulatorView.h"
+#include "Rtt_LinuxMenuEvents.h"
 #include "Core/Rtt_FileSystem.h"
 
 using namespace std;
 
 namespace Rtt
 {
-	string LinuxSimulatorServices::currentProjectPath;
-
 	LinuxSimulatorServices::LinuxSimulatorServices() //CSimulatorView& simulatorView)
 	//:	fSimulatorView(simulatorView)
 	{
@@ -33,22 +32,21 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::CloneProject() const
 	{
-		wxCommandEvent e(eventCloneProject);
-		wxPostEvent(wxGetApp().getFrame(), e);
+		wxCommandEvent cloneProjectEvent(wxEVT_NULL);
+		LinuxMenuEvents::OnCloneProject(cloneProjectEvent);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::NewProject() const
 	{
-		wxCommandEvent e(eventNewProject);
-		wxPostEvent(wxGetApp().getFrame(), e);
+		wxCommandEvent newProjectEvent(wxEVT_NULL);
+		LinuxMenuEvents::OnNewProject(newProjectEvent);
 		return true;
 	}
 
 	bool LinuxSimulatorServices::OpenProject(const char *name) const
 	{
 		wxString path;
-		currentProjectPath = "";
 
 		if (name)
 		{
@@ -57,7 +55,7 @@ namespace Rtt
 
 		else
 		{
-			wxFileDialog openFileDialog(wxGetApp().getParent(), _("Open"), "~/Documents/Solar2D Projects", "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			wxFileDialog openFileDialog(wxGetApp().GetParent(), _("Open"), "~/Documents/Solar2D Projects", "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 			if (openFileDialog.ShowModal() == wxID_CANCEL)
 			{
@@ -67,17 +65,15 @@ namespace Rtt
 			path = openFileDialog.GetPath().c_str();
 		}
 
-		if (Rtt_FileExists(path.c_str()) == false)
+		if (!Rtt_FileExists(path.c_str()))
 		{
 			return false;
 		}
 
-		currentProjectPath = path;
-
 		// send open file dialog event
-		wxCommandEvent event(eventOpenProject);
-		event.SetString(path.c_str());
-		wxPostEvent(wxGetApp().getFrame(), event);
+		wxCommandEvent openEvent(eventOpenProject);
+		openEvent.SetString(path);
+		wxPostEvent(wxGetApp().GetFrame(), openEvent);
 
 		return true;
 	}
@@ -115,7 +111,7 @@ namespace Rtt
 
 	const char *LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return currentProjectPath.c_str();
+		return wxGetApp().GetFrame()->GetContext()->GetAppPath();
 	}
 
 	// stub to match Mac implementation
@@ -127,7 +123,7 @@ namespace Rtt
 	// Set the current project resource path
 	void LinuxSimulatorServices::SetProjectResourceDirectory(const char *projectResourceDirectory)
 	{
-		LinuxPlatform *platform = wxGetApp().getPlatform();
+		LinuxPlatform *platform = wxGetApp().GetPlatform();
 		platform->SetProjectResourceDirectory(projectResourceDirectory);
 	}
 
@@ -205,7 +201,6 @@ namespace Rtt
 		command.append(filename);
 
 		system(command.c_str());
-		Rtt_TRACE_SIM(("WARNING: OpenTextEditor not available on Linux\n"));
 	}
 
 	// stub to match Mac implementation
@@ -222,13 +217,12 @@ namespace Rtt
 
 	void LinuxSimulatorServices::SendAnalytics(const char *eventName, const char *keyName, const char *value) const
 	{
-		Rtt_TRACE_SIM(("todo: SendAnalytics not available on Linux\n"));
 	}
 
 	bool LinuxSimulatorServices::RelaunchProject() const
 	{
 		wxCommandEvent e(eventRelaunchProject);
-		wxPostEvent(wxGetApp().getFrame(), e);
+		wxPostEvent(wxGetApp().GetFrame(), e);
 		return true;
 	}
 
@@ -241,7 +235,7 @@ namespace Rtt
 	bool LinuxSimulatorServices::ShowProjectFiles(const char *name) const
 	{
 		string command("xdg-open ");
-		command.append(currentProjectPath);
+		command.append(wxGetApp().GetFrame()->GetContext()->GetAppPath());
 
 		system(command.c_str());
 		return true;

@@ -63,7 +63,7 @@ namespace Rtt
 		EndModal(wxID_OK);
 		wxYield();
 		wxCommandEvent ev(eventRelaunchProject);
-		wxPostEvent(wxGetApp().getFrame(), ev);
+		wxPostEvent(wxGetApp().GetFrame(), ev);
 	}
 
 	void LinuxRelaunchProjectDialog::OnCancelClicked(wxCommandEvent & event)

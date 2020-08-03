@@ -48,7 +48,6 @@ namespace Rtt
 		void OnRelaunchNeverClicked(wxCommandEvent &event);
 		void OnRelaunchAskClicked(wxCommandEvent &event);
 	};
-
 } // namespace Rtt
 
 #endif // Rtt_LINUX_PREFERENCES_DIALOG_H
