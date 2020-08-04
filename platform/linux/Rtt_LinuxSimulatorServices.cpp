@@ -21,8 +21,9 @@ using namespace std;
 
 namespace Rtt
 {
-	LinuxSimulatorServices::LinuxSimulatorServices() //CSimulatorView& simulatorView)
-	//:	fSimulatorView(simulatorView)
+	string LinuxSimulatorServices::fCurrentProjectPath;
+
+	LinuxSimulatorServices::LinuxSimulatorServices()
 	{
 	}
 
@@ -70,6 +71,9 @@ namespace Rtt
 			return false;
 		}
 
+		// update the current project path
+		fCurrentProjectPath = path.ToStdString();
+
 		// send open file dialog event
 		wxCommandEvent openEvent(eventOpenProject);
 		openEvent.SetString(path);
@@ -111,7 +115,7 @@ namespace Rtt
 
 	const char *LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		return wxGetApp().GetFrame()->GetContext()->GetAppPath();
+		return fCurrentProjectPath.c_str();
 	}
 
 	// stub to match Mac implementation

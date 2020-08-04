@@ -85,7 +85,7 @@ namespace Rtt
 		virtual bool ShowProjectSandbox(const char *name) const;
 
 	private:
-		static std::string currentProjectPath;
+		static std::string fCurrentProjectPath;
 		/// <summary>
 		///  Reference to the simulator application's view that will will implement this class' services
 		///  such as "New Project", "Open Project", etc.
