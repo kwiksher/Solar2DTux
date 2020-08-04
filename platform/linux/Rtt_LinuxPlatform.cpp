@@ -551,41 +551,35 @@ namespace Rtt
 
 		// Fetch the requested preference value.
 		const char *resultPointer = "";
+		wxString localeName = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage())->CanonicalName.Lower();
 
 		switch (category)
 		{
 			case kLocaleLanguage:
-				resultPointer = "en"; // fixme: jsGetLocaleLanguage();
+				resultPointer = localeName.ToStdString().substr(0, 2).c_str();
 				break;
 			case kLocaleCountry:
-				resultPointer = "US"; // fixme: jsGetLocaleCountry();
+				resultPointer = localeName.ToStdString().substr(3, 5).c_str();
 				break;
 			case kLocaleIdentifier:
 			case kUILanguage:
 			{
-				resultPointer = "en_US"; // fixme: jsGetLanguage();
+				resultPointer = localeName.ToStdString().c_str();
 				break;
 			}
 			case kDefaultStatusBarFile:
-				// todo
 				break;
 			case kDarkStatusBarFile:
-				// todo
 				break;
 			case kTranslucentStatusBarFile:
-				// todo
 				break;
 			case kLightTransparentStatusBarFile:
-				// todo
 				break;
 			case kDarkTransparentStatusBarFile:
-				// todo
 				break;
 			case kScreenDressingFile:
-				// todo
 				break;
 			case kSubscription:
-				// todo
 				break;
 			default:
 				//Rtt_ASSERT_NOT_REACHED();
