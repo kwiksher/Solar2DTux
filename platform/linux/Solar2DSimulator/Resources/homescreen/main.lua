@@ -128,6 +128,21 @@ local function removeExistingProjectFromRecents(recentProjects, projectName)
 	end
 end
 
+local background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+background.x = display.contentCenterX
+background.y = display.contentCenterY
+background:setFillColor(unpack(backgroundColor))
+background:addEventListener("mouse", function(event)
+	local phase = event.type
+
+	if (phase == "move") then
+		native.setProperty("mouseCursor", "arrow")
+	end
+
+	return true
+end)
+
+
 local solar2DTuxLogo = display.newImageRect("images/logo.png", display.contentWidth / 2.5, display.contentHeight / 5)
 solar2DTuxLogo.anchorX = 0
 solar2DTuxLogo.anchorY = 0
@@ -182,6 +197,16 @@ separatorLine.x = display.contentCenterX
 separatorLine.y = getStartedText.y + getStartedText.contentHeight + 2
 separatorLine:setFillColor(unpack(buttonBackgroundColor))
 
+local function handleObjectMouseEvents(event)
+	local phase = event.type
+
+	if (phase == "move") then
+		native.setProperty("mouseCursor", "pointingHand")
+	end
+
+	return true
+end
+
 local function createButton(label, onRelease)
 	local button = widget.newButton(
 	{
@@ -204,6 +229,8 @@ local function createButton(label, onRelease)
 		},
 		onRelease = onRelease
 	})
+
+	button:addEventListener("mouse", handleObjectMouseEvents)
 
 	return button
 end
@@ -365,6 +392,8 @@ if (#recentProjects > 0) then
 		recentProjectTitles[#recentProjectTitles].y = icon.y
 		recentProjectTitles[#recentProjectTitles].details = {formattedString = projectName, fullURL = sFormat("%s/main.lua", projectDir)}
 		recentProjectTitles[#recentProjectTitles]:addEventListener("tap", openRecentProject)
+		recentProjectTitles[#recentProjectTitles]:addEventListener("mouse", handleObjectMouseEvents)
+
 
 		-- limit long paths
 		if (projectDir:len() > 78) then
