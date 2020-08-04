@@ -51,5 +51,7 @@ namespace Rtt
 		DeviceNotificationTracker fTracker;
 		DeviceOrientation::Type fOrientation;
 		LinuxInputDeviceManager fInputDeviceManager;
+		mutable std::string fName;
+		mutable std::string fArchitecture;
 	};
 }; // namespace Rtt

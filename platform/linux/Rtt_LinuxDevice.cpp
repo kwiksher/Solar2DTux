@@ -9,6 +9,7 @@
 
 #include "Core/Rtt_Build.h"
 #include "Rtt_LinuxDevice.h"
+#include "wx/wx.h"
 
 namespace Rtt
 {
@@ -118,7 +119,9 @@ namespace Rtt
 
 	const char *LinuxDevice::GetName() const
 	{
-		return "";
+		fName = wxGetLinuxDistributionInfo().Id.ToStdString().c_str();
+
+		return fName.c_str();
 	}
 
 	const char *LinuxDevice::GetUniqueIdentifier(IdentifierType t) const
@@ -166,7 +169,22 @@ namespace Rtt
 
 	const char *LinuxDevice::GetArchitectureInfo() const
 	{
-		return "Lua";
+		switch(wxPlatformInfo::Get().GetArchitecture())
+		{
+			case wxARCH_INVALID:
+				fArchitecture = "unknown";
+				break;
+
+			case wxARCH_32:
+				fArchitecture = "x86";
+				break;
+
+			case wxARCH_64:
+				fArchitecture = "x64";
+				break;
+		}
+
+		return fArchitecture.c_str();
 	}
 
 	PlatformInputDeviceManager &LinuxDevice::GetInputDeviceManager()

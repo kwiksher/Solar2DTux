@@ -1032,47 +1032,40 @@ namespace Rtt
 		}
 
 		// Push the requested system information to Lua.
-		int pushedValues = 0;
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			lua_pushstring(L, "appName"); // todo
-			pushedValues = 1;
+			lua_pushstring(L, wxGetApp().GetFrame()->GetContext()->GetAppName().c_str());
 		}
 		else if (Rtt_StringCompare(key, "appVersionString") == 0)
 		{
 			// Return an empty version string since it is unknown by the simulator.
-			lua_pushstring(L, "appVersionString"); // todo
-			pushedValues = 1;
+			lua_pushstring(L, ""); // todo
 		}
 		else if (Rtt_StringCompare(key, "bundleID") == 0)
 		{
-			lua_pushstring(L, "bundleID"); // todo
-			pushedValues = 1;
+			lua_pushstring(L, ""); // todo
 		}
 		else if (Rtt_StringCompare(key, "isoCountryCode") == 0)
 		{
 			// Fetch the ISO 3166-1 country code.
-			lua_pushstring(L, "isoCountryCode"); // todo
-			pushedValues = 1;
+			lua_pushstring(L, ""); // todo
 		}
 		else if (Rtt_StringCompare(key, "isoLanguageCode") == 0)
 		{
 			// Fetch the ISO 639 language code with an ISO 15924 script code appended to it if available.
 			// Note: This will return a 3 letter ISO 639-2 code if current language is not in the 2 letter ISO 639-1 standard.
 			//       For example, this can happen with the Hawaiian language, which will return "haw".
-			lua_pushstring(L, "isoLanguageCode"); // todo
-			pushedValues = 1;
+			lua_pushstring(L, ""); // todo
 		}
 		else
 		{
 			// Push nil if given a key that is unknown on this platform.
 			lua_pushnil(L);
-			pushedValues = 1;
 		}
 
 		// Return the number of values pushed into Lua.
-		return pushedValues;
+		return 1;
 	}
 
 	void LinuxPlatform::NetworkBaseRequest(lua_State *L, const char *url, const char *method, LuaResource *listener, int paramsIndex, const char *path) const
