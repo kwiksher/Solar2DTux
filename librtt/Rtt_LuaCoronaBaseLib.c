@@ -14,8 +14,6 @@
 // this file will be involved in bootstrap situations with the Lua state where not everything is fully setup.
 // Currently the only assumption is that Lua and the standard Lua library are loaded.
 
-
-
 #include <stdio.h>
 #include <string.h>
 #include "lauxlib.h"
@@ -84,10 +82,12 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 	return 0;
 }
 
-#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
+#elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV ) || defined ( Rtt_LINUX_ENV)
 
+#ifdef _WIN32
 #include "Core\Rtt_Assert.h"
 #include <windows.h>
+#endif
 
 static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 {
@@ -169,7 +169,12 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 						{
 							break;
 						}
+
+#ifdef _WIN32
 						memcpy_s(newStringPointer, newStringLength, luaStringPointer, sourceIndex);
+#else
+						memcpy(newStringPointer, luaStringPointer, newStringLength);
+#endif
 					}
 
 					/* Skip copying the carriage return and decrement the new string length by 1. */
@@ -210,10 +215,15 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 			}
 		}
 #else
+#ifdef _WIN32
 		if (IsDebuggerPresent())
 		{
 			OutputDebugStringA(stringPointer);
 		}
+#endif
+		char buffer[(strlen(stringPointer) * sizeof(const char *)) + 100];
+		sprintf(buffer, "%s", stringPointer);
+		Rtt_Log(buffer);
 		fwrite(stringPointer, sizeof(char), stringLength, stdout);
 		fflush(stdout);
 #endif
@@ -250,12 +260,6 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		if (i > 1) fputs("\t", stdout);
 		fputs(s, stdout);
 		lua_pop(L, 1);  /* pop result */
-
-#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-		char buffer[(strlen(s) * sizeof(const char *)) + 100];
-		sprintf(buffer, "%s\n", s);
-		Rtt_Log(buffer);
-#endif
 	}
 	fputs("\n", stdout);
 	return 0;
