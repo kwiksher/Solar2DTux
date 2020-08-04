@@ -221,11 +221,14 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 			OutputDebugStringA(stringPointer);
 		}
 #endif
-		char buffer[(strlen(stringPointer) * sizeof(const char *)) + 100];
-		sprintf(buffer, "%s", stringPointer);
-		Rtt_Log(buffer);
+
+#ifdef Rtt_LINUX_ENV
+		Rtt_Log(stringPointer);
+#else
+
 		fwrite(stringPointer, sizeof(char), stringLength, stdout);
 		fflush(stdout);
+#endif
 #endif
 
 		/* If we've made a modified copy of the Lua string up above, then delete it. */
