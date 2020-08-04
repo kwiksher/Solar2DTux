@@ -15,6 +15,7 @@
 #include "Rtt_LinuxContext.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_LinuxMenuEvents.h"
+#include "Rtt_LinuxFileUtils.h"
 #include "Core/Rtt_FileSystem.h"
 
 using namespace std;
@@ -232,14 +233,19 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::EditProject(const char *name) const
 	{
-		Rtt_ASSERT(0 && "todo");
-		return false;
+		string command("xdg-open ");
+		command.append(name);
+
+		system(command.c_str());
+		return true;
 	}
 
 	bool LinuxSimulatorServices::ShowProjectFiles(const char *name) const
 	{
+		wxString path(name);
+		path = path.SubString(0, path.size() - 10); // without main.lua
 		string command("xdg-open ");
-		command.append(wxGetApp().GetFrame()->GetContext()->GetAppPath());
+		command.append(path.c_str());
 
 		system(command.c_str());
 		return true;
@@ -247,8 +253,16 @@ namespace Rtt
 
 	bool LinuxSimulatorServices::ShowProjectSandbox(const char *name) const
 	{
-		Rtt_ASSERT(0 && "todo");
-		return false;
-	}
+		const char *homeDir = LinuxFileUtils::GetHomePath();
+		string appName = wxGetApp().GetFrame()->GetContext()->GetAppName();
+		string command("xdg-open ");
+		command.append(homeDir);
+		command.append("/.Solar2D/Sandbox/");
+		command.append(name);
+		command.append("_");
+		command.append(LinuxFileUtils::CalculateMD5(name));
 
-} // namespace Rtt
+		system(command.c_str());
+		return true;
+	}
+}; // namespace Rtt

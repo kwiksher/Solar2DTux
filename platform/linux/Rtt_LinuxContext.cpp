@@ -598,6 +598,7 @@ bool SolarApp::OnInit()
 		if (fSolarFrame->fSolarGLCanvas->IsGLContextAvailable())
 		{
 			fSolarFrame->SetClientSize(wxSize(width, height));
+			fSolarFrame->SetSize(wxSize(width, height));
 			fSolarFrame->SetMinClientSize(wxSize(minWidth, minHeight));
 
 			if (fullScreen)

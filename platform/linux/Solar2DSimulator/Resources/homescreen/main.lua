@@ -24,6 +24,8 @@ local recentProjectIconSize = 30
 local headerFontSize = 14
 local sidePadding = 12
 local recentProjectTitles = {}
+local popupMenu = nil
+local recentProjectsGroup = display.newGroup()
 
 display.setDefault("background", backgroundColor[1], backgroundColor[2], backgroundColor[3])
 
@@ -142,7 +144,6 @@ background:addEventListener("mouse", function(event)
 	return true
 end)
 
-
 local solar2DTuxLogo = display.newImageRect("images/logo.png", display.contentWidth / 2.5, display.contentHeight / 5)
 solar2DTuxLogo.anchorX = 0
 solar2DTuxLogo.anchorY = 0
@@ -197,10 +198,25 @@ separatorLine.x = display.contentCenterX
 separatorLine.y = getStartedText.y + getStartedText.contentHeight + 2
 separatorLine:setFillColor(unpack(buttonBackgroundColor))
 
+local function openRecentProject(event)
+	local details = event.target.details
+	local recentProjects = loadTable(recentProjectsPath)
+	removeExistingProjectFromRecents(recentProjects, details.formattedString)
+	table.insert(recentProjects, 1, {formattedString = details.formattedString, fullURLString = details.fullURL})
+	saveTable(recentProjects, recentProjectsPath)
+
+	simulator.show("open", details.fullURL)
+end
+
 local function handleObjectMouseEvents(event)
 	local phase = event.type
+	local showHand = true
 
-	if (phase == "move") then
+	if (event.target.isMainButton and popupMenu.isVisible) then
+		showHand = false
+	end
+
+	if (phase == "move" and showHand) then
 		native.setProperty("mouseCursor", "pointingHand")
 	end
 
@@ -235,6 +251,261 @@ local function createButton(label, onRelease)
 	return button
 end
 
+local function createRecentProjectList()
+	if (recentProjectsGroup.numChildren > 0) then
+		for i = recentProjectsGroup.numChildren, 1, -1 do
+			display.remove(recentProjectsGroup[i])
+		end
+	end
+
+	local recentProjects = loadTable(recentProjectsPath)
+
+	if (#recentProjects > 0) then
+		for i = 1, #recentProjects do
+			local icon = nil
+			local projectName = recentProjects[i].formattedString
+			local projectDir = getProjectPath(recentProjects[i].fullURLString)
+			projectDir = projectDir:sub(1, projectDir:len() -1)
+			local projectIconFile = simulator.getPreference("welcomeScreenIconFile") or "Icon.png"
+			local projectIcon = sFormat("%s/%s", projectDir, projectIconFile)
+
+			if (lfs.attributes(projectIcon) ~= nil) then
+				simulator.setProjectResourceDirectory(projectDir .. "/")
+				icon = display.newImageRect(projectIconFile, system.ResourceDirectory, recentProjectIconSize, recentProjectIconSize)
+			else
+				icon = display.newImageRect("Icon.png", system.ResourceDirectory, recentProjectIconSize, recentProjectIconSize)
+			end
+
+			local initialYPosition = (separatorLine.y + separatorLine.contentHeight) + 4
+			icon.anchorX = 1
+			icon.anchorY = 0
+			icon.x = display.contentWidth - sidePadding
+			icon.y = i == 1 and initialYPosition or (separatorLine.y + separatorLine.contentHeight) - recentProjectIconSize - 4 + ((recentProjectIconSize + 8) * i)
+			recentProjectsGroup:insert(icon)
+
+			recentProjectTitles[#recentProjectTitles + 1] = display.newText(
+			{
+				text = projectName,
+				font = mainFont,
+				fontSize = buttonFontSize,
+				align = "left"
+			})
+			recentProjectTitles[#recentProjectTitles].anchorX = 1
+			recentProjectTitles[#recentProjectTitles].anchorY = 0
+			recentProjectTitles[#recentProjectTitles].x = icon.x - icon.contentWidth - sidePadding
+			recentProjectTitles[#recentProjectTitles].y = icon.y
+			recentProjectTitles[#recentProjectTitles].details = {formattedString = projectName, fullURL = sFormat("%s/main.lua", projectDir)}
+			recentProjectTitles[#recentProjectTitles]:addEventListener("tap", openRecentProject)
+			recentProjectTitles[#recentProjectTitles]:addEventListener("mouse", 
+				function(event)
+					local phase = event.type
+
+					if (phase == "move" and not popupMenu.isVisible) then
+						native.setProperty("mouseCursor", "pointingHand")
+					else
+						if (phase == "down") then
+							if (event.isSecondaryButtonDown) then
+								popupMenu:setEvent(event)
+								popupMenu:show()
+							end
+						end
+					end
+
+					return true
+				end
+			)
+			recentProjectsGroup:insert(recentProjectTitles[#recentProjectTitles])
+
+			-- limit long paths
+			if (projectDir:len() > 78) then
+				projectDir = sFormat("..%s", projectDir:sub(projectDir:len() - 70, projectDir:len()))
+			end
+
+			local projectPathText = display.newText(
+			{
+				text = projectDir,
+				font = lightFont,
+				fontSize = buttonFontSize - 2,
+				align = "left"
+			})
+			projectPathText.anchorX = 1
+			projectPathText.anchorY = 0
+			projectPathText.x = recentProjectTitles[#recentProjectTitles].x
+			projectPathText.y = recentProjectTitles[#recentProjectTitles].y + (recentProjectIconSize * 0.5)
+			recentProjectsGroup:insert(projectPathText)
+
+			local separatorLine = display.newRect(0, 0, display.contentWidth / 1.70, 1)
+			separatorLine.anchorX = 1
+			separatorLine.anchorY = 0
+			separatorLine.x = projectPathText.x
+			separatorLine.y = projectPathText.y + projectPathText.contentHeight + 2
+			separatorLine:setFillColor(unpack(buttonBackgroundColor))
+			recentProjectsGroup:insert(separatorLine)
+		end
+	else
+		local noRecentProjectsText = display.newText(
+		{
+			text = "No recent projects were found.\nWhy not create one?",
+			font = mainFont,
+			fontSize = buttonFontSize + 1,
+			align = "center"
+		})
+		noRecentProjectsText.anchorX = 1
+		noRecentProjectsText.anchorY = 0
+		noRecentProjectsText.x = display.contentWidth - sidePadding
+		noRecentProjectsText.y =  (separatorLine.y + separatorLine.contentHeight) + 4
+		noRecentProjectsText:setFillColor(1, 1, 1, 1)
+		recentProjectsGroup:insert(noRecentProjectsText)
+	end
+
+	recentProjectsGroup:toFront()
+end
+
+local function createPopupMenu()
+	local group = display.newGroup()
+	group.event = nil
+
+	local modalBackground = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+	modalBackground.x = display.contentCenterX
+	modalBackground.y = display.contentCenterY
+	modalBackground.alpha = 0
+	modalBackground.isHitTestable = true
+	group:insert(modalBackground)
+	modalBackground:addEventListener("tap", 
+		function(event)
+			return true
+		end
+	)
+	modalBackground:addEventListener("touch", 
+		function(event)
+			return true
+		end
+	)
+
+	local popupBackground = display.newRoundedRect(0, 0, display.contentWidth / 1.5, display.contentHeight / 1.5, 2)
+	popupBackground.x = display.contentCenterX
+	popupBackground.y = display.contentCenterY
+	popupBackground:setFillColor(unpack(backgroundColor))
+	popupBackground.alpha = 0.92
+	group:insert(popupBackground)
+
+	local targetNameText = display.newText(
+	{
+		text = "",
+		font = mainFont,
+		fontSize = buttonFontSize,
+		align = "center"
+	})
+	targetNameText.x = display.contentCenterX
+	targetNameText.y = display.contentCenterY - (popupBackground.contentHeight * 0.5) + targetNameText.contentHeight
+	targetNameText:setFillColor(1, 1, 1, 1)
+	group:insert(targetNameText)
+
+	local targetPathText = display.newText(
+	{
+		text = "",
+		font = mainFont,
+		fontSize = buttonFontSize - 2,
+		align = "center"
+	})
+	targetPathText.x = display.contentCenterX
+	targetPathText.y = targetNameText.y + targetNameText.contentHeight + 2
+	targetPathText:setFillColor(1, 1, 1, 1)
+	group:insert(targetPathText)
+
+	local targetSeparatorLine = display.newRect(0, 0, popupBackground.contentWidth - 20, 1)
+	targetSeparatorLine.x = display.contentCenterX
+	targetSeparatorLine.y = targetPathText.y + targetPathText.contentHeight + 2
+	targetSeparatorLine:setFillColor(unpack(buttonBackgroundColor))
+	group:insert(targetSeparatorLine)
+
+	local launchTargetButton = createButton("Launch Project", 
+		function(e) 
+			openRecentProject(group.event)
+		end
+	)
+	launchTargetButton.x = display.contentCenterX
+	launchTargetButton.y = (targetSeparatorLine.y + targetSeparatorLine.contentHeight) + (launchTargetButton.contentHeight * 0.5) + 4
+	group:insert(launchTargetButton)
+
+	local showProjectFilesButton = createButton("Open Project Folder", 
+		function(e) 
+			simulator.show("showFiles", group.targetPath)
+		end
+	)
+	showProjectFilesButton.x = display.contentCenterX
+	showProjectFilesButton.y = launchTargetButton.y + buttonHeight + buttonYPadding
+	group:insert(showProjectFilesButton)
+
+	local openProjectInEditorButton = createButton("Open Project In Editor", 
+		function(e) 
+			simulator.show("editProject", group.targetPath)
+		end
+	)
+	openProjectInEditorButton.x = display.contentCenterX
+	openProjectInEditorButton.y = showProjectFilesButton.y + buttonHeight + buttonYPadding
+	group:insert(openProjectInEditorButton)
+
+	local showTargetSandboxButton = createButton("Open Sandbox Folder", 
+		function(e) 
+			simulator.show("showSandbox", group.targetName)
+		end
+	)
+	showTargetSandboxButton.x = display.contentCenterX
+	showTargetSandboxButton.y = openProjectInEditorButton.y + buttonHeight + buttonYPadding
+	group:insert(showTargetSandboxButton)
+
+	local removeFromRecentsButton = createButton("Remove From Recents", 
+		function(e) 
+			local recentProjects = loadTable(recentProjectsPath)
+			removeExistingProjectFromRecents(recentProjects, group.targetName)
+			createRecentProjectList()
+			group:hide()
+		end
+	)
+	removeFromRecentsButton.x = display.contentCenterX
+	removeFromRecentsButton.y = openProjectInEditorButton.y + buttonHeight + buttonYPadding
+	group:insert(removeFromRecentsButton)
+
+	local closePopupButton = createButton("Close", 
+		function(e) 
+			group:hide()
+		end
+	)
+	closePopupButton.x = display.contentCenterX
+	closePopupButton.y = removeFromRecentsButton.y + buttonHeight + buttonYPadding
+	group:insert(closePopupButton)
+
+	function group:setEvent(event)
+		self.event = event
+		self.targetName = event.target.details.formattedString
+		self.targetPath = event.target.details.fullURL
+		local targetPath = event.target.details.fullURL
+
+		if (targetPath:len() > 65) then
+			targetPath = sFormat("..%s", targetPath:sub(targetPath:len() - 65, targetPath:len()))
+		end
+
+		targetNameText.text = self.targetName
+		targetPathText.text = targetPath
+	end
+
+	function group:show()
+		self:toFront()
+		self.isVisible = true
+	end
+
+	function group:hide()
+		self:toBack()
+		self.isVisible = false
+	end
+
+	group.isVisible = false
+	return group;
+end
+
+popupMenu = createPopupMenu()
+
 local cloneProjectButton = createButton("Clone A Repository", 
 	function(event) 
 		simulator.show("clone")
@@ -243,6 +514,7 @@ local cloneProjectButton = createButton("Clone A Repository",
 cloneProjectButton.anchorX = 0
 cloneProjectButton.x = sidePadding
 cloneProjectButton.y = (separatorLine.y + separatorLine.contentHeight) + (cloneProjectButton.contentHeight * 0.5) + 4
+cloneProjectButton.isMainButton = true
 
 local openProjectButton = createButton("Open Existing Project",
 	function(event)
@@ -267,6 +539,7 @@ local openProjectButton = createButton("Open Existing Project",
 openProjectButton.anchorX = 0
 openProjectButton.x = sidePadding
 openProjectButton.y = cloneProjectButton.y + buttonHeight + buttonYPadding
+openProjectButton.isMainButton = true
 
 local createProjectButton = createButton("Create New Project",
 	function(event)
@@ -276,6 +549,7 @@ local createProjectButton = createButton("Create New Project",
 createProjectButton.anchorX = 0
 createProjectButton.x = sidePadding
 createProjectButton.y = openProjectButton.y + buttonHeight + buttonYPadding
+createProjectButton.isMainButton = true
 
 local openSampleCodeButton = createButton("View Sample Code",
 	function(event)
@@ -285,6 +559,7 @@ local openSampleCodeButton = createButton("View Sample Code",
 openSampleCodeButton.anchorX = 0
 openSampleCodeButton.x = sidePadding
 openSampleCodeButton.y = createProjectButton.y + buttonHeight + buttonYPadding
+openSampleCodeButton.isMainButton = true
 
 local reportAnIssueButton = createButton("Report An Issue",
 	function(event)
@@ -294,6 +569,7 @@ local reportAnIssueButton = createButton("Report An Issue",
 reportAnIssueButton.anchorX = 0
 reportAnIssueButton.x = sidePadding
 reportAnIssueButton.y = openSampleCodeButton.y + buttonHeight + buttonYPadding
+reportAnIssueButton.isMainButton = true
 
 local documentationButton = createButton("Documentation", 
 	function(event) 
@@ -303,6 +579,7 @@ local documentationButton = createButton("Documentation",
 documentationButton.anchorX = 0
 documentationButton.x = sidePadding
 documentationButton.y = reportAnIssueButton.y + buttonHeight + buttonYPadding
+documentationButton.isMainButton = true
 
 local githubButton = createButton("GitHub", 
 	function(event) 
@@ -312,6 +589,7 @@ local githubButton = createButton("GitHub",
 githubButton.anchorX = 0
 githubButton.x = sidePadding
 githubButton.y = documentationButton.y + buttonHeight + buttonYPadding
+githubButton.isMainButton = true
 
 local websiteButton = createButton("Website",
 	function(event) 
@@ -321,6 +599,7 @@ local websiteButton = createButton("Website",
 websiteButton.anchorX = 0
 websiteButton.x = sidePadding
 websiteButton.y = githubButton.y + buttonHeight + buttonYPadding
+websiteButton.isMainButton = true
 
 local pluginsButton = createButton("Plugins",
 	function(event) 
@@ -330,6 +609,7 @@ local pluginsButton = createButton("Plugins",
 pluginsButton.anchorX = 0
 pluginsButton.x = sidePadding
 pluginsButton.y = websiteButton.y + buttonHeight + buttonYPadding
+pluginsButton.isMainButton = true
 
 -- recent projects
 local recentProjectsText = display.newText(
@@ -345,19 +625,10 @@ recentProjectsText.x = display.contentWidth - sidePadding
 recentProjectsText.y = getStartedText.y
 recentProjectsText:setFillColor(1, 1, 1, 1)
 
+--[[
 local recentProjects = loadTable(recentProjectsPath)
 
 if (#recentProjects > 0) then
-	local function openRecentProject(event)
-		local details = event.target.details
-		local recentProjects = loadTable(recentProjectsPath)
-		removeExistingProjectFromRecents(recentProjects, details.formattedString)
-		table.insert(recentProjects, 1, {formattedString = details.formattedString, fullURLString = details.fullURL})
-		saveTable(recentProjects, recentProjectsPath)
-
-		simulator.show("open", details.fullURL)
-	end
-
 	for i = 1, #recentProjects do
 		local icon = nil
 		local projectName = recentProjects[i].formattedString
@@ -392,8 +663,24 @@ if (#recentProjects > 0) then
 		recentProjectTitles[#recentProjectTitles].y = icon.y
 		recentProjectTitles[#recentProjectTitles].details = {formattedString = projectName, fullURL = sFormat("%s/main.lua", projectDir)}
 		recentProjectTitles[#recentProjectTitles]:addEventListener("tap", openRecentProject)
-		recentProjectTitles[#recentProjectTitles]:addEventListener("mouse", handleObjectMouseEvents)
+		recentProjectTitles[#recentProjectTitles]:addEventListener("mouse", 
+			function(event)
+				local phase = event.type
 
+				if (phase == "move" and not popupMenu.isVisible) then
+					native.setProperty("mouseCursor", "pointingHand")
+				else
+					if (phase == "down") then
+						if (event.isSecondaryButtonDown) then
+							popupMenu:setEvent(event)
+							popupMenu:show()
+						end
+					end
+				end
+
+				return true
+			end
+		)
 
 		-- limit long paths
 		if (projectDir:len() > 78) then
@@ -433,6 +720,9 @@ else
 	noRecentProjectsText.y =  (separatorLine.y + separatorLine.contentHeight) + 4
 	noRecentProjectsText:setFillColor(1, 1, 1, 1)
 end
+--]]
+
+createRecentProjectList()
 
 local versionText = display.newText(
 {
