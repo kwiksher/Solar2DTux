@@ -20,6 +20,8 @@
 #define ID_MENU_OPEN_WELCOME_SCREEN wxID_HIGHEST + 150
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 160
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 170
+#define ID_MENU_ROTATE_LEFT wxID_HIGHEST + 180
+#define ID_MENU_ROTATE_RIGHT wxID_HIGHEST + 190
 
 class LinuxMenuEvents
 {
@@ -37,6 +39,8 @@ public:
 	static void OnBuildForAndroid(wxCommandEvent &event);
 	static void OnBuildForWeb(wxCommandEvent &event);
 	static void OnBuildForLinux(wxCommandEvent &event);
+	static void OnHardwareRotateLeft(wxCommandEvent &event);
+	static void OnHardwareRotateRight(wxCommandEvent &event);
 	static void OnOpenDocumentation(wxCommandEvent &event);
 	static void OnOpenSampleProjects(wxCommandEvent &event);
 	static void OnAbout(wxCommandEvent &WXUNUSED(event));

@@ -197,6 +197,20 @@ void LinuxMenuEvents::OnBuildForLinux(wxCommandEvent &event)
 	linuxBuildDialog->Destroy();
 }
 
+// hardware menu items
+
+void LinuxMenuEvents::OnHardwareRotateLeft(wxCommandEvent &event)
+{
+	// Rotate Left Stub
+
+}
+
+void LinuxMenuEvents::OnHardwareRotateRight(wxCommandEvent &event)
+{
+	// Rotate Right Stub
+
+}
+
 // help menu items
 
 void LinuxMenuEvents::OnOpenDocumentation(wxCommandEvent &event)

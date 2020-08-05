@@ -717,6 +717,8 @@ SolarFrame::SolarFrame(int style)
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForWeb, ID_MENU_BUILD_WEB);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForLinux, ID_MENU_BUILD_LINUX);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenPreferences, wxID_PREFERENCES);
+	Bind(wxEVT_MENU, &LinuxMenuEvents::OnHardwareRotateLeft, ID_MENU_ROTATE_LEFT);
+	Bind(wxEVT_MENU, &LinuxMenuEvents::OnHardwareRotateRight, ID_MENU_ROTATE_RIGHT);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnQuit, wxID_EXIT);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenDocumentation, ID_MENU_OPEN_DOCUMENTATION);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenSampleProjects, ID_MENU_OPEN_SAMPLE_CODE);
@@ -838,16 +840,16 @@ void SolarFrame::CreateMenus()
 
 			// hardware menu
 			fHardwareMenu = new wxMenu();
-			wxMenuItem *rotateLeft = fHardwareMenu->Append(wxID_HELP_CONTENTS, _T("&Rotate Left"));
-			wxMenuItem *rotateRight = fHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
+			wxMenuItem *rotateLeft = fHardwareMenu->Append(ID_MENU_ROTATE_LEFT, _T("&Rotate Left"));
+			wxMenuItem *rotateRight = fHardwareMenu->Append(ID_MENU_ROTATE_RIGHT, _T("&Rotate Right"));
 			//fHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
 			fHardwareMenu->AppendSeparator();
 			wxMenuItem *back = fHardwareMenu->Append(wxID_ABOUT, _T("&Back"));
 			fHardwareMenu->AppendSeparator();
 			fHardwareMenu->Append(ID_MENU_SUSPEND, _T("&Suspend	\tCtrl-Down"));
 			fMenuProject->Append(fHardwareMenu, _T("&Hardware"));
-			rotateLeft->Enable(false);
-			rotateRight->Enable(false);
+			rotateLeft->Enable(true);
+			rotateRight->Enable(true);
 			back->Enable(false);
 
 			// view menu
