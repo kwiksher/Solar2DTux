@@ -7,6 +7,7 @@
 #include "Rtt_LinuxNewProjectDialog.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxBuildDialog.h"
+#include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
 #include "wx/aboutdlg.h"
 
@@ -127,19 +128,26 @@ void LinuxMenuEvents::OnShowProjectSandbox(wxCommandEvent &event)
 
 void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent &event)
 {
-	const char *homeDir = Rtt::LinuxFileUtils::GetHomePath();
-	string appName = wxGetApp().GetFrame()->GetContext()->GetAppName();
-	string command("rm -r ");
-	command.append(homeDir);
-	command.append("/.Solar2D/Sandbox/");
-	command.append(appName);
-	command.append("_");
-	command.append(Rtt::LinuxFileUtils::CalculateMD5(appName));
+	Rtt::LinuxClearProjectSandboxDialog *clearProjectSandboxDlg = new Rtt::LinuxClearProjectSandboxDialog(wxGetApp().GetFrame(), wxID_ANY, wxEmptyString);
 
-	system(command.c_str());
-	// relaunch
-	wxCommandEvent relaunchEvent(eventRelaunchProject);
-	wxPostEvent(wxGetApp().GetFrame(), relaunchEvent);
+	if (clearProjectSandboxDlg->ShowModal() == wxID_OK)
+	{
+		const char *homeDir = Rtt::LinuxFileUtils::GetHomePath();
+		string appName = wxGetApp().GetFrame()->GetContext()->GetAppName();
+		string command("rm -r ");
+		command.append(homeDir);
+		command.append("/.Solar2D/Sandbox/");
+		command.append(appName);
+		command.append("_");
+		command.append(Rtt::LinuxFileUtils::CalculateMD5(appName));
+
+		system(command.c_str());
+		// relaunch
+		wxCommandEvent relaunchEvent(eventRelaunchProject);
+		wxPostEvent(wxGetApp().GetFrame(), relaunchEvent);
+	}
+
+	clearProjectSandboxDlg->Destroy();
 }
 
 void LinuxMenuEvents::OnOpenPreferences(wxCommandEvent &event)

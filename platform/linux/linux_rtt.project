@@ -40,6 +40,7 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="dialogs">
+        <File Name="Rtt_LinuxClearSandboxDialog.cpp"/>
         <File Name="Rtt_LinuxBuildDialog.cpp"/>
         <File Name="Rtt_LinuxRelaunchProjectDialog.cpp"/>
         <File Name="Rtt_LinuxRuntimeErrorDialog.cpp"/>
@@ -47,6 +48,7 @@
         <File Name="Rtt_LinuxNewProjectDialog.cpp"/>
         <File Name="Rtt_LinuxCloneProjectDialog.cpp"/>
         <VirtualDirectory Name="include">
+          <File Name="Rtt_LinuxClearSandboxDialog.h"/>
           <File Name="Rtt_LinuxBuildDialog.h"/>
           <File Name="Rtt_LinuxRelaunchProjectDialog.h"/>
           <File Name="Rtt_LinuxRuntimeErrorDialog.h"/>

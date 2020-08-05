@@ -107,7 +107,6 @@ namespace Rtt
 		EVT_BUTTON(wxID_OPEN, LinuxBuildDialog::OnSelectOutputPathClicked)
 		EVT_BUTTON(wxID_OK, LinuxBuildDialog::OnBuildClicked)
 		EVT_BUTTON(wxID_CANCEL, LinuxBuildDialog::OnCancelClicked)
-
 	END_EVENT_TABLE();
 
 	void LinuxBuildDialog::OnSelectOutputPathClicked(wxCommandEvent &event)
