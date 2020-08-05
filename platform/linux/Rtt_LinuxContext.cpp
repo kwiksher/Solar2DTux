@@ -1141,6 +1141,7 @@ SolarGLCanvas::SolarGLCanvas(SolarFrame *parent, const wxGLAttributes &canvasAtt
 {
 	fSolarFrame = parent;
 	fGLContext = new wxGLContext(this, NULL, 0);
+	SetSize(parent->GetSize());
 
 	if (!fGLContext->IsOK())
 	{
@@ -1206,6 +1207,8 @@ void SolarGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 	if (fWindowHeight > 0)
 	{
 		SwapBuffers();
+		Update();
+		Refresh();
 	}
 }
 
