@@ -1207,8 +1207,6 @@ void SolarGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 	if (fWindowHeight > 0)
 	{
 		SwapBuffers();
-		Update();
-		Refresh();
 	}
 }
 
