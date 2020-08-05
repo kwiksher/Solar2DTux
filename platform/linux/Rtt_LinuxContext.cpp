@@ -756,7 +756,7 @@ void SolarFrame::WatchFolder(const char *path, const char *appName)
 	wxFileName fn = wxFileName::DirName(path);
 	fn.DontFollowLink();
 	fWatcher->RemoveAll();
-	fWatcher->Add(fn);
+	fWatcher->AddTree(fn);
 }
 
 void SolarFrame::ResetSize()
