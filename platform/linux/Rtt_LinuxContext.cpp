@@ -446,10 +446,14 @@ SolarApp::SolarApp()
 {
 	const char *homeDir = LinuxFileUtils::GetHomePath();
 	string basePath(homeDir);
+	string sandboxPath(homeDir);
+	string pluginPath(homeDir);
 	string buildPath(homeDir);
 	string projectCreationPath(homeDir);
 
 	basePath.append("/.Solar2D");
+	sandboxPath.append("/.Solar2D/Sandbox");
+	pluginPath.append("/.Solar2D/Plugins");
 	buildPath.append("/Documents/Solar2D Built Apps");
 	projectCreationPath.append("/Documents/Solar2D Projects");
 
@@ -457,6 +461,16 @@ SolarApp::SolarApp()
 	if (!Rtt_IsDirectory(basePath.c_str()))
 	{
 		Rtt_MakeDirectory(basePath.c_str());
+	}
+
+	if (!Rtt_IsDirectory(sandboxPath.c_str()))
+	{
+		Rtt_MakeDirectory(sandboxPath.c_str());
+	}
+
+	if (!Rtt_IsDirectory(pluginPath.c_str()))
+	{
+		Rtt_MakeDirectory(pluginPath.c_str());
 	}
 
 	if (!Rtt_IsDirectory(buildPath.c_str()))
