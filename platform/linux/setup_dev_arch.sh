@@ -20,6 +20,7 @@ sudo pacman -Sy jdk14-openjdk
 sudo pacman -Sy jre14-openjdk
 sudo pacman -Sy p7zip
 sudo pacman -Sy lua51
+sudo pacman -Sy gradle
 sudo ln -s /usr/lib/libreadline.so /usr/lib/libreadline.so.7
 # copy wx web extensions
 sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
