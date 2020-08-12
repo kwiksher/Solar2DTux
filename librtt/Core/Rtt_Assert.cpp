@@ -14,7 +14,9 @@
 #include "Core/Rtt_Assert.h"
 
 #ifdef Rtt_LINUX_ENV
+#ifndef CORONABUILDER_LINUX
 #include "../../platform/linux/Rtt_ConsoleApp.h"
+#endif
 #endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
@@ -238,12 +240,14 @@ Rtt_VLogException(const char *format, va_list ap)
 	}
 #else
 #if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+#if !defined(CORONABUILDER_LINUX)
 	char buffer[4096];
 	va_list apCopy;
 	va_copy(apCopy, ap);
 
 	int n = vsnprintf(buffer, 4096, format, apCopy);
 	ConsoleApp::Log((n > 0) ? buffer : format, linuxIsErrorMsg);
+#endif
 #endif
 
 	result = vfprintf( stderr, format, ap );

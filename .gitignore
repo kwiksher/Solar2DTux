@@ -288,3 +288,7 @@ platform/linux/Solar2DSimulator/Resources/template_arm.tgz
 platform/linux/Solar2DSimulator/Resources/template_web.tgz
 platform/linux/lua
 platform/linux/Console
+platform/linux/Builder/
+platform/linux/Solar2DBuilder.txt
+platform/linux/Solar2DSimulator/Solar2DBuilder
+platform/linux/Solar2DBuilder.mk

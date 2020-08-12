@@ -109,6 +109,7 @@ namespace Rtt
 
 	void LinuxSimulatorView::OnAndroidBuild(wxCommandEvent &e)
 	{
+#ifndef CORONABUILDER_LINUX
 		int rc;
 
 		androidBuildParams *params = (androidBuildParams *)e.GetEventUserData();
@@ -208,6 +209,7 @@ namespace Rtt
 		}
 
 		dial->ShowModal();
+#endif
 	}
 
 	void LinuxSimulatorView::OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform)
@@ -249,6 +251,7 @@ namespace Rtt
 
 	void LinuxSimulatorView::OnWebBuild(wxCommandEvent &e)
 	{
+#ifndef CORONABUILDER_LINUX
 		webBuildParams *params = (webBuildParams *)e.GetEventUserData();
 		SolarAppContext *ctx = params->fCtx;
 		bool useStandardResources = params->fUseStandardResources->GetValue();
@@ -336,6 +339,7 @@ namespace Rtt
 		}
 
 		dial->ShowModal();
+#endif
 	}
 
 	void LinuxSimulatorView::OnCancel(wxCommandEvent &e)

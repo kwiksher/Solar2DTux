@@ -8,13 +8,15 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../../librtt/Core/Rtt_String.h"/>
+    <VirtualDirectory Name="include">
+      <File Name="../../librtt/Core/Rtt_FileSystem.h"/>
+      <File Name="../../librtt/Core/Rtt_String.h"/>
+      <File Name="../../tools/car/Rtt_Car.h"/>
+      <File Name="../../librtt/Rtt_Archive.h"/>
+    </VirtualDirectory>
     <File Name="../../librtt/Core/Rtt_String.cpp"/>
-    <File Name="../../librtt/Core/Rtt_FileSystem.h"/>
     <File Name="../../librtt/Core/Rtt_FileSystem.cpp"/>
-    <File Name="../../librtt/Rtt_Archive.h"/>
     <File Name="../../librtt/Rtt_Archive.cpp"/>
-    <File Name="../../tools/car/Rtt_Car.h"/>
     <File Name="../../tools/car/Rtt_Car.cpp"/>
     <File Name="../../tools/car/main.cpp"/>
   </VirtualDirectory>
@@ -116,4 +118,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>
