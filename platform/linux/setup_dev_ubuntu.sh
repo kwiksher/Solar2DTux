@@ -1,12 +1,12 @@
+#!/bin/bash 
 # this file is run inside ubuntu environment
 if [[ "$OSTYPE" != "linux-gnu" ]]
 then
     echo "This script is meant to run on Linux"
     exit 1
 fi
-# download android sdk
-wget -c http://vlad-test.s3.amazonaws.com/tmp/android-sdk.tar.gz -P /tmp
-tar -xzf /tmp/android-sdk.tar.gz -C Solar2DSimulator
+# extract the solar platform tools directory
+tar -xzf /Solar2DSimulator/platform_tools.tar.gz -C ~/.local/share/
 # nake sure we have the latest package lists
 sudo apt-get update
 # install dependencies
@@ -39,7 +39,9 @@ sudo apt-get install openjdk-8-jdk-headless -y
 sudo apt-get install openjdk-8-jre-headless -y
 sudo apt-get install p7zip -y
 sudo apt-get install p7zip-full -y
-sudo apt-get install lua5.1
+sudo apt-get install lua5.1 -y
+sudo apt-get install gradle -y
 # copy wx web extensions
 sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
 sudo cp wx/lib/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
+echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements\n.Then you can build via Solar2DTux for Android."
