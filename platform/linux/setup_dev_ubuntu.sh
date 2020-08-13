@@ -6,7 +6,7 @@ then
     exit 1
 fi
 # extract the solar platform tools directory
-tar -xzf /Solar2DSimulator/platform_tools.tar.gz -C ~/.local/share/
+tar -xzf Solar2DSimulator/Resources/platform_tools.tar.gz -C ~/.local/share/
 # nake sure we have the latest package lists
 sudo apt-get update
 # install dependencies

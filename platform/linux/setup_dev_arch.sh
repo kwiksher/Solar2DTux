@@ -1,8 +1,9 @@
 #!/bin/bash 
 # extract the solar platform tools directory
-tar -xzf /Solar2DSimulator/platform_tools.tar.gz -C ~/.local/share/
+tar -xzf Solar2DSimulator/Resources/platform_tools.tar.gz -C ~/.local/share/
 # install dependencies
 sudo pacman -Sy base-devel
+sudo pacman -Sy gcc
 sudo pacman -Sy readline
 sudo pacman -Sy openal
 sudo pacman -Sy gtk3
