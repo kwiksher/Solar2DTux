@@ -8,6 +8,13 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <VirtualDirectory Name="android">
+      <VirtualDirectory Name="include">
+        <File Name="../shared/jniUtils.h"/>
+        <File Name="../shared/ListKeyStore.h"/>
+      </VirtualDirectory>
+      <File Name="../shared/ListKeyStore.cpp" ExcludeProjConfig=""/>
+    </VirtualDirectory>
     <VirtualDirectory Name="linux">
       <File Name="Rtt_LinuxMenuEvents.cpp"/>
       <File Name="Rtt_LinuxMouseListener.cpp"/>
@@ -40,6 +47,7 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="dialogs">
+        <File Name="Rtt_AndroidBuildDialog.cpp"/>
         <File Name="Rtt_LinuxClearSandboxDialog.cpp"/>
         <File Name="Rtt_LinuxBuildDialog.cpp"/>
         <File Name="Rtt_LinuxRelaunchProjectDialog.cpp"/>
@@ -48,6 +56,7 @@
         <File Name="Rtt_LinuxNewProjectDialog.cpp"/>
         <File Name="Rtt_LinuxCloneProjectDialog.cpp"/>
         <VirtualDirectory Name="include">
+          <File Name="Rtt_AndroidBuildDialog.h"/>
           <File Name="Rtt_LinuxClearSandboxDialog.h"/>
           <File Name="Rtt_LinuxBuildDialog.h"/>
           <File Name="Rtt_LinuxRelaunchProjectDialog.h"/>
@@ -1366,6 +1375,8 @@
         <IncludePath Value="./wx/include"/>
         <IncludePath Value="../android"/>
         <IncludePath Value="../../external/hmac"/>
+        <IncludePath Value="/usr/lib/jvm/java-14-openjdk/include/"/>
+        <IncludePath Value="/usr/lib/jvm/java-14-openjdk/include/linux/"/>
         <Preprocessor Value="Rtt_LUA_COMPILER"/>
         <Preprocessor Value="Rtt_SIMULATOR"/>
         <Preprocessor Value="LUA_DL_DLOPEN"/>

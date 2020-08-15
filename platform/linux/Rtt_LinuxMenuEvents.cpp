@@ -7,6 +7,7 @@
 #include "Rtt_LinuxNewProjectDialog.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxBuildDialog.h"
+#include "Rtt_AndroidBuildDialog.h"
 #include "Rtt_LinuxClearSandboxDialog.h"
 #include "Rtt_ConsoleApp.h"
 #include "wx/aboutdlg.h"
@@ -180,7 +181,11 @@ void LinuxMenuEvents::OnQuit(wxCommandEvent &WXUNUSED(event))
 // build menu items
 void LinuxMenuEvents::OnBuildForAndroid(wxCommandEvent &event)
 {
-	Rtt::LinuxSimulatorView::OnBuildForAndroid(wxGetApp().GetFrame()->GetContext());
+	wxGetApp().GetFrame()->CreateSuspendedPanel();
+	Rtt::AndroidBuildDialog *androidBuildDialog = new Rtt::AndroidBuildDialog(wxGetApp().GetFrame(), -1, wxEmptyString, wxDefaultPosition, wxSize(550, 470));
+	androidBuildDialog->SetAppContext(wxGetApp().GetFrame()->GetContext());
+	androidBuildDialog->ShowModal();
+	androidBuildDialog->Destroy();
 }
 
 void LinuxMenuEvents::OnBuildForWeb(wxCommandEvent &event)

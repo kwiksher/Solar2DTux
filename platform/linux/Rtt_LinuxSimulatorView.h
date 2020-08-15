@@ -92,25 +92,12 @@ namespace Rtt
 
 		static bool IsRunningOnSimulator();
 		static void OnBuildForWeb(SolarAppContext *ctx);
-		static void OnBuildForAndroid(SolarAppContext *ctx);
 		static void OnWebBuild(wxCommandEvent &);
-		static void OnAndroidBuild(wxCommandEvent &);
 		static void OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform);
 		static void OnCancel(wxCommandEvent &);
 		static void AppWebBuild(SolarAppContext *ctx);
 
 	public:
-		struct androidBuildParams : public wxObject
-		{
-			androidBuildParams(wxDialog *dlg, SolarAppContext *ctx, wxTextCtrl *keystore, wxTextCtrl *package)
-				: fDlg(dlg), fCtx(ctx), fKeystore(keystore), fPackage(package) {};
-
-			wxDialog *fDlg;
-			SolarAppContext *fCtx;
-			wxTextCtrl *fKeystore;
-			wxTextCtrl *fPackage;
-		};
-
 		struct webBuildParams : public wxObject
 		{
 			webBuildParams(wxDialog *dlg, SolarAppContext *ctx, wxCheckBox *useStandardResources, wxCheckBox *runAfterBuild, wxCheckBox *createFBInstance)
