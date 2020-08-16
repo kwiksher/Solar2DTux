@@ -1,4 +1,4 @@
-#Contributing.
+##Contributing.
 
 Thank you for contributing to Solar2DTux! Before you get started, please review this document to get an understanding of our guidelines.
 

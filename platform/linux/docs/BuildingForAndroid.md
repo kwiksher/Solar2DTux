@@ -1,4 +1,4 @@
-#Setting up the Android build environment.
+##Setting up the Android build environment.
 
 **Step 1**
 

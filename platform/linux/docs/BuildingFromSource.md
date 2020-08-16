@@ -1,4 +1,4 @@
-#Building Solar2DTux From Source
+##Building Solar2DTux From Source
 
 **Step 1**
 
