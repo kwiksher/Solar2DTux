@@ -71,7 +71,7 @@ namespace Rtt
 		virtual ~LinuxAppPackager();
 
 	public:
-		virtual int Build(AppPackagerParams *params);
+		virtual int Build(AppPackagerParams * params, const char * tmpDirBase);
 	};
 }; // namespace Rtt
 

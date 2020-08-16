@@ -147,7 +147,6 @@ SRCS =	shell.lua \
 		$(ROOT)/resources/webPackageApp.lua \
 		$(ROOT)/resources/linuxPackageApp.lua \
 		$(ROOT)/../platform/android/create_build_properties.lua \
-		$(ROOT)/../tools/CoronaBuilder/BuilderPluginDownloader.lua \
 		$(ROOT)/../tools/CoronaBuilder/CoronaBuilder.lua
 		
 

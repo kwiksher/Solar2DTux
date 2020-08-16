@@ -10,7 +10,7 @@ After installation, launch Android Studio and install everything is requires you
 
 **Step 3**
 
-Open the `Android SDK Manager` from within Android Studio and install Api level 28 (Android 9 Pie). Be sure to accept the license agreements prior to installation.
+Open the `Android SDK Manager` from within Android Studio and install `Api level 28` (Android 9 Pie). Be sure to accept the license agreements prior to installation.
 
 **Step 4**
 

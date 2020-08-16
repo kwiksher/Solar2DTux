@@ -159,7 +159,7 @@ namespace Rtt
 	{
 	}
 
-	int LinuxAppPackager::Build(AppPackagerParams *_params)
+	int LinuxAppPackager::Build(AppPackagerParams *_params, const char * tmpDirBase)
 	{
 		LinuxAppPackagerParams *params = (LinuxAppPackagerParams *)_params;
 		Rtt_ASSERT(params);
