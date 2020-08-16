@@ -13,6 +13,7 @@ This is a fork of the Solar2D games & applications SDK for Linux systems.
 * [Building From Source](platform/linux/docs/BuildingFromSource.md)
 * [Building Android Apps](platform/linux/docs/BuildingForAndroid.md)
 * [Contributing To Solar2DTux](platform/linux/docs/ContributingLinux.md)
+* [Building Your App From The Terminal](platform/linux/docs/BuildingYourAppFromTheTerminal.md)
 
 ## Goals
 
