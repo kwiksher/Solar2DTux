@@ -197,7 +197,7 @@ namespace Rtt
 
 		// build the app (warning! This is blocking call)
 		platform->SetActivityIndicator(true);
-		int buildResult = packager.Build(&linuxBuilderParams);
+		int buildResult = packager.Build(&linuxBuilderParams, NULL);
 		platform->SetActivityIndicator(false);
 		EndModal(wxID_OK);
 		wxGetApp().GetFrame()->RemoveSuspendedPanel();
