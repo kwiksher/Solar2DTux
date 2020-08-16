@@ -2,7 +2,7 @@
 
 **Step 1**
 
- Install the latest version of the Codelite IDE for your distribution. You will find it in your software center. On Arch based distributions, you will find this package in the AUR repository.
+ Install the latest version of the Codelite IDE (version 14) for your distribution. You will find it in your software center. On Arch based distributions, you will find this package in the AUR repository.
  
  **Step 2**
  

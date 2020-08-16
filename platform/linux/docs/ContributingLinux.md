@@ -4,7 +4,7 @@ Thank you for contributing to Solar2DTux! Before you get started, please review 
 
 **Code Style**
 
-Please ensure you follow the below settings for Codelite when contributing, as the coding style must be adhered to, or any pull requests not adhering to this style will be rejected. This may seem harsh, but we're aiming for consistency, so it's important that you follow the guidelines.
+Please ensure you follow the below settings for Codelite (version 14) when contributing, as the coding style must be adhered to, or any pull requests not adhering to this style will be rejected. This may seem harsh, but we're aiming for consistency, so it's important that you follow the guidelines.
 
 We use camel case strictly in this project.
 
