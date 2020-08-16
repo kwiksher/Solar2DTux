@@ -821,8 +821,8 @@ void SolarFrame::CreateMenus()
 
 			// file Menu
 			wxMenu *fileMenu = new wxMenu();
-			fileMenu->Append(wxID_NEW, _T("&New Project	\tCtrl-N"));
-			fileMenu->Append(wxID_OPEN, _T("&Open Project	\tCtrl-O"));
+			fileMenu->Append(ID_MENU_NEW_PROJECT, _T("&New Project	\tCtrl-N"));
+			fileMenu->Append(ID_MENU_OPEN_PROJECT, _T("&Open Project	\tCtrl-O"));
 			fileMenu->AppendSeparator();
 
 			wxMenu *buildMenu = new wxMenu();
