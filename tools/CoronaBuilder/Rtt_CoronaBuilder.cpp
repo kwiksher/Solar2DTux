@@ -231,9 +231,7 @@ namespace Rtt
 #endif
 		Lua::RegisterModuleLoader( fL, "dkjson", Lua::Open< luaload_dkjson >, 0 );
 		Lua::RegisterModuleLoader( fL, "json", Lua::Open< luaload_json >, 0 );
-
 		Lua::DoBuffer( fL, &luaload_CoronaBuilder, NULL);
-
 	}
 
 	CoronaBuilder::~CoronaBuilder()

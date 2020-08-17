@@ -24,6 +24,7 @@ local function quoteString( str )
 end
 
 local windows = (package.config:match("^.") == '\\')
+local linux = not windows and not lfs.chdir(os.getenv("HOME") .. "/Library/Application Support")
 local dirSeparator = package.config:sub(1,1)
 
 local function unpackPlugin( archive, dst )
@@ -48,6 +49,8 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 		lfs.mkdir(pluginsDest)
 		pluginsDest = pluginsDest .. platform .. '\\'
 		lfs.mkdir(pluginsDest)
+	elseif linux then
+		pluginsDest = os.getenv('HOME') .. '/.Solar2D/Plugins/'
 	else
 		pluginsDest = os.getenv('HOME') .. '/Library/Application Support/Corona'
 		lfs.mkdir(pluginsDest)
@@ -75,9 +78,9 @@ local function getPluginDirectories(platform, build, pluginsToDownload)
 				downloadURL = supportedPlatform.url
 			else
 				local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. '/' .. build .. '/' .. platform
-				local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-				if not downloadInfoText then
-					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+				local code, downloadInfoText = builder.fetch(downloadInfoURL)
+				if code ~= 0 then
+					print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. code )
 					return
 				end
 
@@ -290,9 +293,9 @@ function fetchDependenciesForDirectories(root, deps, urlSuffix)
 	for _, pd in pairs(toFetch) do
 		local plugin, developer = unpack(pd)
 		local downloadInfoURL = serverBackend .. '/v1/plugins/download/' .. developer .. '/' .. plugin .. urlSuffix
-		local downloadInfoText, msg = builder.fetch(downloadInfoURL)
-		if not downloadInfoText then
-			print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. msg )
+		local code, downloadInfoText = builder.fetch(downloadInfoURL)
+		if code ~= 0 then
+			print("ERROR: unable to fetch plugin download location for " .. plugin .. ' ('.. developer.. '). Error message: ' .. code )
 			return 1
 		end
 
@@ -449,10 +452,10 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 		if user then
 			local authURL = serverBackend .. '/v1/plugins/show/' .. user
 
-			local authorisedPluginsText, msg = builder.fetch(authURL)
+			local code, authorisedPluginsText = builder.fetch(authURL)
 
-			if not authorisedPluginsText then
-				print("ERROR: Unable to retrieve authorised plugins list (" .. msg .. ").")
+			if code ~= 0 then
+				print("ERROR: Unable to retrieve authorised plugins list (" .. code .. ").")
 				return 1
 			end
 
@@ -495,7 +498,7 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 						authErrors = true
 					end
 				else
-					local status = authorisedPlugins[plugin .. ' ' .. developer] or 0
+					local status = 1--authorisedPlugins[plugin .. ' ' .. developer] or 0
 					if status == 0 then
 						print("ERROR: plugin could not be validated: " .. plugin .. " (" .. developer .. ")")
 						print("ERROR: Activate plugin at: https://marketplace.coronalabs.com/plugin/" .. developer .. "/" .. plugin)
@@ -587,9 +590,9 @@ function DownloadPluginsMain(args, user, buildYear, buildRevision)
 
 	if androidBuild then
 		if user then
-			local downloadInfoText, msg = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
-			if not downloadInfoText then
-				print("ERROR: unable to fetch build ID: ", msg )
+			local code, downloadInfoText = builder.fetch(serverBackend.. "/v1/buildid/native/" .. user)
+			if code ~= 0 then
+				print("ERROR: unable to fetch build ID: ", code )
 				return 1
 			end
 			print("BUILD\t" .. downloadInfoText)

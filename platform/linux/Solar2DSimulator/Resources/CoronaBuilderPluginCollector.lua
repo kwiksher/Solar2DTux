@@ -23,8 +23,8 @@ lfs = require "lfs"
 SEP = package.config:sub(1,1)
 isWindows = SEP == '\\'
 
-function fetch() assert(false, "HTTP Fetch is not set!") end
-function download() assert(false, "HTTP Download is not set!") end
+--function fetch() assert(false, "HTTP Fetch is not set!") end
+--function download() assert(false, "HTTP Download is not set!") end
 locatorNames = {}
 
 debugBuildProcess = 0
@@ -112,9 +112,10 @@ end
 local PluginCollectorSolar2DDirectory =  { name = "Solar2D Free Directory"}
 function PluginCollectorSolar2DDirectory:init(params)
     local t = {}
-	local directoryPluginsText, msg = fetch("https://plugins.solar2d.com/plugins.json")
-    if not directoryPluginsText then
-        log("Solar2D Directory: error initializing directory " .. tostring(msg))
+    local code, directoryPluginsText = fetch("https://plugins.solar2d.com/plugins.json")
+
+    if code ~= 0 then
+        log("Solar2D Directory: error initializing directory " .. tostring(code))
 		return
 	end
 	local directoryPlugins = json.decode( directoryPluginsText )

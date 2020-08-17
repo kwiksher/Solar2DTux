@@ -137,5 +137,10 @@ namespace Rtt
 
 	void HTTPClient::registerFetcherModuleLoaders(lua_State *L)
 	{
+		lua_pushcfunction(L, &HTTPClient::fetch);
+		lua_setglobal ( L, "pluginCollector_fetch");
+
+		lua_pushcfunction(L, &HTTPClient::download);
+		lua_setglobal ( L, "pluginCollector_download");
 	}
 } // namespace Rtt
