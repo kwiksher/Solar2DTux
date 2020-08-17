@@ -312,6 +312,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 	local supportedPlatformsKey = "supportedPlatforms"
 	local linuxKey = "linux"
 	local linuxSimKey = "linux-sim"
+	local androidKey = "android"
 	local pluginBaseDir = sFormat("%s/.Solar2DPlugins", os.getenv("HOME"))
 	local pluginCatalogPath = sFormat("%s/.Solar2D/Plugins/catalog.json", os.getenv("HOME"))
 	local pluginCatalog = loadTable(pluginCatalogPath)
@@ -393,7 +394,14 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 		if (fileExists(repoCatalogPath)) then
 			printf("%s found catalog file", pluginMessagePrefix)
 			local repoData = loadTable(repoCatalogPath)
+			local publisherKey = "solar2d"
 			local publisherTable = repoData["solar2d"][publisherID]
+
+			if (publisherTable == nil) then
+				publisherTable = repoData["coronalabs"][publisherID]
+				publisherKey = "coronalabs"
+			end
+
 			local pluginTable = publisherTable[pluginName]
 
 			if (pluginTable ~= nil) then
@@ -423,6 +431,9 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 
 									if (platform == "lua") then
 										pluginInfo.isLuaPlugin = true
+									elseif (platform == androidKey) then
+										pluginInfo.platformKey = platform
+										pluginInfo.isAndroidPlugin = true
 									elseif (platform == linuxKey or platform == linuxSimKey) then
 										pluginInfo.platformKey = platform
 										pluginInfo.isNativePlugin = true
@@ -438,10 +449,14 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 				local url = nil
 
 				if (pluginInfo.isLuaPlugin) then
-					url = sFormat("https://github.com/solar2d/%s-%s/releases/download/%s/%s-lua.tgz", publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber)
+					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-lua.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber)
 					pluginPath = downloadDir .. pluginName:sub(8) .. ".lua"
-				else
-					url = sFormat("https://github.com/solar2d/%s-%s/releases/download/%s/%s-%s.tgz", publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, pluginInfo.platformKey)
+				elseif (pluginInfo.isAndroidPlugin) then
+					-- plugin stubs are in short supply for Linux, so we download the win32-sim stubs instead.
+					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-%s.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, "win32-sim")
+					pluginPath = downloadDir .. pluginName:sub(8) .. ".lua"
+				elseif (pluginInfo.isNativePlugin) then
+					url = sFormat("https://github.com/%s/%s-%s/releases/download/%s/%s-%s.tgz", publisherKey, publisherID, pluginName, pluginInfo.releaseVersion, pluginInfo.supportedBuildNumber, pluginInfo.platformKey)
 					pluginPath = downloadDir .. pluginName:sub(8) .. ".so"
 				end
 
@@ -458,7 +473,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 					isLuaPlugin = pluginInfo.isLuaPlugin
 				})
 			end
-			-- https://github.com/solar2d/provider-plugin.name/releases/download/version/SOLARVERSION-lua.tgz
+			--https://github.com/solar2d/provider-plugin.name/releases/download/version/SOLARVERSION-lua.tgz
 			--https://github.com/solar2d/com.schroederapps-plugin.progressRing/releases/download/v1/2017.3032-lua.tgz
 		end
 	end
@@ -496,6 +511,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 						-- look for the plugin
 						local pluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxKey)
 						local otherPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, linuxSimKey)
+						local androidPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, pluginName, androidKey)
 						local pluginDownloadDir = sFormat("%s/.Solar2D/Plugins/%s/", os.getenv("HOME"), pluginName)
 
 						if (shouldDownloadPlugin) then
@@ -532,6 +548,10 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 										linuxTable = supportedPlatforms[linuxSimKey]
 									end
 
+									if (linuxTable == nil) then
+										linuxTable = supportedPlatforms[androidKey]
+									end
+
 									if (linuxTable ~= nil and type(linuxTable) == "table") then
 										local url = linuxTable["url"]
 
@@ -548,7 +568,6 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 									end
 									-- search the repo for lua plugins
 								else
-									--[[
 									printf("%s time to check the plugin repo for %s plugin by %s", pluginMessagePrefix, pluginName, publisherID)
 									getPluginFromRepo(
 									{
@@ -556,7 +575,7 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 										publisherID = publisherID,
 										downloadDir = pluginDownloadDir,
 										pluginCatalogKey = pluginCatalogKey
-									})--]]
+									})
 								end
 							end
 						end
