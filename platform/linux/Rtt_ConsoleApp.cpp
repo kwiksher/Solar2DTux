@@ -16,17 +16,16 @@ void ConsoleApp::Log(const char *message, bool isError)
 	{
 		consoleClient = new Rtt_LinuxIPCClient();
 	}
-	
+
 	if (!instanceCreated)
 	{
 		sleep(1);
 		instanceCreated = true;
 	}
-	
+
 	while (!consoleClient->IsConnected())
 	{
 		consoleClient->Connect(IPC_HOST, IPC_SERVICE, IPC_TOPIC);
-		
 	}
 
 	time_t timeNow = time(NULL);

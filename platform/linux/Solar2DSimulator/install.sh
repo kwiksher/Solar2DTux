@@ -136,6 +136,18 @@ else
     echo 'export PATH="~/.local/share/Corona/Native/Corona/lin/bin/:$PATH"' >> ~/.bashrc
 fi
 
+# clone sample code (or just fetch latest if it exists)
+SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
+SAMPLE_CODE_DIR=/opt/Solar2D/SampleCode
+
+if [ ! -d $SAMPLE_CODE_DIR ]
+then
+    git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
+else
+    cd $SAMPLE_CODE_DIR/
+    git pull $SAMPLE_CODE_REMOTE
+fi
+
 echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements."
 echo "Then you can build via Solar2DTux for Android."
 
