@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# remove the desktop entry
-rm -rf /usr/share/applications/Solar2D.desktop

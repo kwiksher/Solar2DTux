@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -19,7 +19,7 @@
 #include <fcntl.h>
 
 #include "Rtt_Car.h"
- 
+
 // ----------------------------------------------------------------------------
 
 using namespace Rtt;
@@ -82,7 +82,7 @@ Rtt_CarMain( int argc, const char *argv[] )
 			else
 			{
 				FILE *inFile = NULL;
-				
+
 				// If the filename is "-" read file list from stdin
 				if ( 0 == strcmp( argv[2], "-" ) )
 				{
@@ -93,65 +93,65 @@ Rtt_CarMain( int argc, const char *argv[] )
 					if ((inFile = fopen(argv[2], "r")) == NULL)
 					{
 						fprintf(stderr, "%s: cannot open '%s' for reading\n", argv[0], argv[2]);
-						
+
 						return -1;
 					}
 				}
-				
+
 				int numSrcPaths = 0;
 				int allocStride = 100;
 				int numAlloced = allocStride;
 				int spaceLeft = numAlloced;
 				char buf[BUFSIZ];
 				const char **srcPaths = (const char **) calloc(numAlloced, sizeof(char *));
-				
+
 				if (srcPaths == NULL)
 				{
 					fprintf(stderr, "%s: out of memory allocating %d filenames\n", argv[0], numAlloced);
-					
+
 					return -1;
 				}
-				
+
 				while (fgets(buf, BUFSIZ, inFile) != NULL)
 				{
 					// zap the newline
 					size_t len = strlen(buf);
-					if (buf[len-1] == '\n')
+					if (buf[len - 1] == '\n')
 					{
-						buf[len-1] = '\0';
+						buf[len - 1] = '\0';
 					}
-					
+
 					if (spaceLeft == 0)
 					{
 						numAlloced += allocStride;
 						spaceLeft = allocStride;
-						
+
 						srcPaths = (const char **) realloc( srcPaths, (numAlloced * sizeof(char *)));
 					}
-					
+
 					if (srcPaths == NULL)
 					{
 						fprintf(stderr, "%s: out of memory allocating %d filenames\n", argv[0], numAlloced);
-						
+
 						return -1;
 					}
-					
+
 					if ((srcPaths[numSrcPaths++] = strdup(buf)) == NULL)
 					{
 						fprintf(stderr, "%s: out of memory after processing %d filenames\n", argv[0], numSrcPaths);
-						
+
 						return -1;
 					}
-					
+
 					// printf("srcPath '%s', spaceLeft %d, numAlloced %d, numSrcPaths %d\n", srcPaths[numSrcPaths-1], spaceLeft,numAlloced,numSrcPaths);
-										
+
 					--spaceLeft;
 				}
-				
+
 				fclose( inFile );
-				
+
 				Archive::Serialize( argv[3], numSrcPaths, srcPaths );
-				
+
 				// Free the memory we allocated
 				for (int i = 0; i < numSrcPaths; i++)
 				{
@@ -165,15 +165,15 @@ Rtt_CarMain( int argc, const char *argv[] )
 			int argOffset = (0 == strcmp(argv[1], "-a") || 0 == strcmp(argv[1], "--add")) ? 1 : 0;
 			int numSrcPaths = argc - (2 + argOffset);
 			const char **srcPaths = argv + (2 + argOffset);
-			#if 0
-				for (int i = 0; i < argc; i++ )
-				{
-					printf( "argv[%d] = %s\n", i, argv[i] );
-				}
-			#endif
-			Archive::Serialize( argv[argOffset+1], numSrcPaths, srcPaths );
+#if 0
+			for (int i = 0; i < argc; i++ )
+			{
+				printf( "argv[%d] = %s\n", i, argv[i] );
+			}
+#endif
+			Archive::Serialize( argv[argOffset + 1], numSrcPaths, srcPaths );
 		}
 	}
 
-    return result;
+	return result;
 }

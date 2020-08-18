@@ -48,8 +48,12 @@ elif [[ "${OS,,}" == *"pop"* ]]; then
   USE_APT=1
 fi
 
+# remove the existing solar platform tools directory
+rm -rf ~/.local/share/Corona
 # extract the solar platform tools directory
-tar -xzf Solar2DSimulator/Resources/platform_tools.tar.gz -C ~/.local/share/
+tar -xzf Solar2DSimulator/Resources/platform_tools.tgz -C ~/.local/share/
+# move Solar2DBuilder into the platform tools directory
+mv Solar2DBuilder ~/.local/share/Corona/Native/Corona/lin/bin/
 
 # install required dependencies via Apt
 if [[ $USE_APT == 1 ]]; then

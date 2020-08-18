@@ -14,6 +14,7 @@
 
 #include "Core/Rtt_Macros.h"
 
+#ifndef IS_RELEASE_BUILD
 #define Rtt_VERSION_MAJOR	3
 #define Rtt_VERSION_MINOR	0
 #define Rtt_VERSION_REVISION	0
@@ -23,6 +24,8 @@
 #define Rtt_BUILD_YEAR 2100
 #define Rtt_BUILD_MONTH 1
 #define Rtt_BUILD_DAY 1
+#endif
+
 #define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
 
 // If this is a public release, this should be 0
@@ -40,7 +43,11 @@
 #define Rtt_STRING_VERSION	Rtt_MACRO_TO_STRING( Rtt_VERSION_MAJOR ) "." Rtt_MACRO_TO_STRING( Rtt_VERSION_MINOR ) "." Rtt_MACRO_TO_STRING( Rtt_VERSION_REVISION )
 
 // 2010.1234
+#ifdef Rtt_LINUX_ENV
+#define Rtt_STRING_BUILD Rtt_MACRO_TO_STRING( Rtt_VERSION_MAJOR ) "." Rtt_MACRO_TO_STRING( Rtt_VERSION_MINOR ) "." Rtt_MACRO_TO_STRING( Rtt_VERSION_REVISION )
+#else
 #define Rtt_STRING_BUILD	Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_REVISION )
+#endif
 
 // 2010.9.26
 #define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY )

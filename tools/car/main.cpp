@@ -1,13 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Rtt_Car.cpp"
+#include "Rtt_Car.h"
 
 
 #if defined(Rtt_WIN_ENV) && defined(_UNICODE)
@@ -31,7 +31,7 @@ wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 			if (stringConverter.GetLength() > 0)
 			{
 				size_t byteLength = strlen(stringConverter.GetUTF8()) + 1;
-				utf8String = (char*)malloc(sizeof(char)* byteLength);
+				utf8String = (char*)malloc(sizeof(char) * byteLength);
 				memcpy(utf8String, stringConverter.GetUTF8(), byteLength);
 			}
 			utf8ArgumentArray[index] = utf8String;
