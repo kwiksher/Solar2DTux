@@ -486,7 +486,9 @@ SolarApp::SolarApp()
 	// start the console immediately
 	if (LinuxSimulatorView::IsRunningOnSimulator())
 	{
-		wxExecute("./Solar2DConsole");
+		std::string cmd(LinuxFileUtils::GetStartupPath(NULL));
+		cmd.append("/Solar2DConsole");
+		wxExecute(cmd);
 	}
 }
 

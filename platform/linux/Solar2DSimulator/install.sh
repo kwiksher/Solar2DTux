@@ -112,10 +112,10 @@ fi
 
 # copy wx web extensions
 sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
-sudo cp wx/lib/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
+sudo mv webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
 
 # move the desktop file
-mv Resources/Solar2DTux.desktop /usr/share/applications/
+sudo mv Resources/Solar2DTux.desktop /usr/share/applications/
 
 # move everything to /opt
 OPT_LOCATION=/opt/Solar2D
@@ -126,10 +126,9 @@ sudo mv start.sh $OPT_LOCATION
 sudo mv Resources $OPT_LOCATION
 
 # set permissions
-chmod -R a+rwx $USER:$USER $OPT_LOCATION
-chmod -R a+rwx $OPT_LOCATION/start.sh
+sudo chown $USER:$USER $OPT_LOCATION
+sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
-# add to path
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
 else

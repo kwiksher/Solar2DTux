@@ -6,15 +6,27 @@
 #define LINUX_CONSOLE_CLEAR_CMD "###clear###"
 #define LINUX_CONSOLE_QUIT_CMD "###quit###"
 
-static Rtt_LinuxIPCClient * consoleClient;
+static Rtt_LinuxIPCClient *consoleClient;
+static bool instanceCreated = false;
 using namespace std;
 
 void ConsoleApp::Log(const char *message, bool isError)
 {
-	if (consoleClient == wxNullPtr)
+	while (consoleClient == wxNullPtr)
 	{
 		consoleClient = new Rtt_LinuxIPCClient();
+	}
+	
+	if (!instanceCreated)
+	{
+		sleep(1);
+		instanceCreated = true;
+	}
+	
+	while (!consoleClient->IsConnected())
+	{
 		consoleClient->Connect(IPC_HOST, IPC_SERVICE, IPC_TOPIC);
+		
 	}
 
 	time_t timeNow = time(NULL);
