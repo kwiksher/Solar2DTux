@@ -85,28 +85,28 @@ if [[ $USE_APT == 1 ]]; then
   sudo apt-get install gradle -y
 # install required dependencies via Pacman
 elif [[ $USE_PACMAN == 1 ]]; then
-  sudo pacman -Sy base-devel
-  sudo pacman -Sy gcc
-  sudo pacman -Sy readline
-  sudo pacman -Sy openal
-  sudo pacman -Sy gtk3
-  sudo pacman -Sy libpng
-  sudo pacman -Sy zlib
-  sudo pacman -Sy gstreamer
-  sudo pacman -Sy gst-plugins-base
-  sudo pacman -Sy libjpeg-turbo
-  sudo pacman -Sy openssl
-  sudo pacman -Sy libvorbis
-  sudo pacman -Sy libogg
-  sudo pacman -Sy util-linux
-  sudo pacman -Sy libxxf86vm
-  sudo pacman -Sy webkit2gtk
-  sudo pacman -Sy zopfli
-  sudo pacman -Sy jdk14-openjdk
-  sudo pacman -Sy jre14-openjdk
-  sudo pacman -Sy p7zip
-  sudo pacman -Sy lua51
-  sudo pacman -Sy gradle
+  sudo pacman -Sy base-devel --noconfirm
+  sudo pacman -Sy gcc --noconfirm
+  sudo pacman -Sy readline --noconfirm
+  sudo pacman -Sy openal --noconfirm
+  sudo pacman -Sy gtk3 --noconfirm
+  sudo pacman -Sy libpng --noconfirm
+  sudo pacman -Sy zlib --noconfirm
+  sudo pacman -Sy gstreamer --noconfirm
+  sudo pacman -Sy gst-plugins-base --noconfirm
+  sudo pacman -Sy libjpeg-turbo --noconfirm
+  sudo pacman -Sy openssl --noconfirm
+  sudo pacman -Sy libvorbis --noconfirm
+  sudo pacman -Sy libogg --noconfirm
+  sudo pacman -Sy util-linux --noconfirm
+  sudo pacman -Sy libxxf86vm --noconfirm
+  sudo pacman -Sy webkit2gtk --noconfirm
+  sudo pacman -Sy zopfli --noconfirm
+  sudo pacman -Sy jdk14-openjdk --noconfirm
+  sudo pacman -Sy jre14-openjdk --noconfirm
+  sudo pacman -Sy p7zip --noconfirm
+  sudo pacman -Sy lua51 --noconfirm
+  sudo pacman -Sy gradle --noconfirm
   sudo ln -s /usr/lib/libreadline.so /usr/lib/libreadline.so.7
 fi
 
