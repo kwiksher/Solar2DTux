@@ -439,6 +439,14 @@ namespace Rtt
 			fRuntime->Resume();
 		}
 	}
+
+	void SolarAppContext::UpdateScaleMode()
+	{
+		fRuntime->GetDisplay().WindowSizeChanged();
+		fRuntime->RestartRenderer(fRuntimeDelegate->fOrientation);
+		fRuntime->GetDisplay().Invalidate();
+		fRuntime->DispatchEvent(ResizeEvent());
+	}
 } // namespace Rtt
 
 // App implementation
@@ -1030,6 +1038,7 @@ void SolarFrame::OnRelaunch(wxCommandEvent &event)
 
 		SetTitle(fContext->GetTitle().c_str());
 		SetMenu(fAppPath.c_str());
+		fContext->UpdateScaleMode();
 		fSolarGLCanvas->StartTimer(1000.0f / (float)fContext->GetFPS());
 		fFileSystemEventTimestamp = wxGetUTCTimeMillis();
 	}
@@ -1132,6 +1141,7 @@ void SolarFrame::OnOpen(wxCommandEvent &event)
 	fContext->SetCanvas(fSolarGLCanvas);
 	SetTitle(fContext->GetTitle().c_str());
 	SetMenu(path.c_str());
+	fContext->UpdateScaleMode();
 	fSolarGLCanvas->StartTimer(1000.0f / (float)fContext->GetFPS());
 
 	if (LinuxSimulatorView::IsRunningOnSimulator())

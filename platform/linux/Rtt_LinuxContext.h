@@ -67,6 +67,7 @@ namespace Rtt
 		const LinuxKeyListener *GetKeyListener() const { return fKeyListener; }
 		void Pause();
 		void Resume();
+		void UpdateScaleMode();
 		int GetFPS() const { return fRuntime ? fRuntime->GetFPS() : 30; }
 		int GetWidth() const { return fRuntimeDelegate->fContentWidth; }
 		int GetHeight() const { return fRuntimeDelegate->fContentHeight; }
