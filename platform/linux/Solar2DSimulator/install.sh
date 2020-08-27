@@ -120,6 +120,7 @@ sudo mv Resources/Solar2DTux.desktop /usr/share/applications/
 # move everything to /opt
 OPT_LOCATION=/opt/Solar2D
 sudo mkdir -p $OPT_LOCATION
+sudo rm -rf $OPT_LOCATION/Resources
 sudo mv Solar2DSimulator $OPT_LOCATION
 sudo mv Solar2DConsole $OPT_LOCATION
 sudo mv start.sh $OPT_LOCATION
