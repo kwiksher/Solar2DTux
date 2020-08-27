@@ -151,6 +151,12 @@ void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent &event)
 	clearProjectSandboxDlg->Destroy();
 }
 
+void LinuxMenuEvents::OnAndroidBackButton(wxCommandEvent &event)
+{
+	Rtt::PlatformInputDevice *dev = NULL;
+	Rtt::KeyEvent ke(dev, Rtt::KeyEvent::kDown, "back", 0, false, false, false, false);
+	wxGetApp().GetFrame()->GetContext()->GetRuntime()->DispatchEvent(ke);
+}
 void LinuxMenuEvents::OnOpenPreferences(wxCommandEvent &event)
 {
 	Rtt::LinuxPreferencesDialog *newPreferencesDialog = new Rtt::LinuxPreferencesDialog(wxGetApp().GetFrame(), wxID_ANY, wxEmptyString);

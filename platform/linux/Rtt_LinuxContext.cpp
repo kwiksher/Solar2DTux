@@ -780,6 +780,7 @@ SolarFrame::SolarFrame(int style)
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectFiles, ID_MENU_SHOW_PROJECT_FILES);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnShowProjectSandbox, ID_MENU_SHOW_PROJECT_SANDBOX);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnClearProjectSandbox, ID_MENU_CLEAR_PROJECT_SANDBOX);
+	Bind(wxEVT_MENU, &LinuxMenuEvents::OnAndroidBackButton, ID_MENU_BACK_BUTTON);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForAndroid, ID_MENU_BUILD_ANDROID);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForWeb, ID_MENU_BUILD_WEB);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnBuildForLinux, ID_MENU_BUILD_LINUX);
@@ -913,13 +914,12 @@ void SolarFrame::CreateMenus()
 			wxMenuItem *rotateRight = fHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
 			//fHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
 			fHardwareMenu->AppendSeparator();
-			wxMenuItem *back = fHardwareMenu->Append(wxID_ABOUT, _T("&Back"));
+			wxMenuItem *back = fHardwareMenu->Append(ID_MENU_BACK_BUTTON, _T("&Back"));
 			fHardwareMenu->AppendSeparator();
 			fHardwareMenu->Append(ID_MENU_SUSPEND, _T("&Suspend	\tCtrl-Down"));
 			fMenuProject->Append(fHardwareMenu, _T("&Hardware"));
 			rotateLeft->Enable(false);
 			rotateRight->Enable(false);
-			back->Enable(false);
 
 			// view menu
 			fViewMenu = new wxMenu();
