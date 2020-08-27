@@ -1005,6 +1005,7 @@ void SolarFrame::OnViewAsChanged(wxCommandEvent &event)
 
 	while (initialWidth > screen.width || initialHeight > screen.height)
 	{
+		initialWidth /= LinuxSimulatorView::skinScaleFactor;
 		initialHeight /= LinuxSimulatorView::skinScaleFactor;
 	}
 
