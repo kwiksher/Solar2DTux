@@ -139,7 +139,8 @@ fi
 
 # clone sample code (or just fetch latest if it exists)
 SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
-SAMPLE_CODE_DIR=/opt/Solar2D/SampleCode
+SAMPLE_CODE_DIR=$OPT_LOCATION/SampleCode
+sudo mkdir -p $SAMPLE_CODE_DIR
 
 if [ ! -d $SAMPLE_CODE_DIR ]
 then
