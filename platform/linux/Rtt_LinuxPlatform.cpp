@@ -69,6 +69,7 @@ namespace Rtt
 		fSystemCachesDir.Set(systemCachesDir);
 		fSkinDir.Set(skinDir);
 		fInstallDir.Set(installDir);
+		fStatusBarMode = MPlatform::StatusBarMode::kDefaultStatusBar;
 		isMouseCursorVisible = true;
 		fRuntimeErrorDialog = new LinuxRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
 	}
@@ -466,11 +467,33 @@ namespace Rtt
 
 	void LinuxPlatform::SetStatusBarMode(MPlatform::StatusBarMode newValue) const
 	{
+		switch (newValue)
+		{
+			case MPlatform::StatusBarMode::kHiddenStatusBar:
+				break;
+
+			case MPlatform::StatusBarMode::kDefaultStatusBar:
+				break;
+
+			case MPlatform::StatusBarMode::kTranslucentStatusBar:
+				break;
+
+			case MPlatform::StatusBarMode::kDarkStatusBar:
+				break;
+
+			case MPlatform::StatusBarMode::kLightTransparentStatusBar:
+				break;
+
+			case MPlatform::StatusBarMode::kDarkTransparentStatusBar:
+				break;
+		}
+
+		fStatusBarMode = newValue;
 	}
 
 	MPlatform::StatusBarMode LinuxPlatform::GetStatusBarMode() const
 	{
-		return MPlatform::kDefaultStatusBar;
+		return fStatusBarMode;
 	}
 
 	int LinuxPlatform::GetStatusBarHeight() const
@@ -1230,7 +1253,7 @@ namespace Rtt
 		fScreenSurface->setWindow(ctx);
 	}
 
-	// for native.showAlert
+// for native.showAlert
 	msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
 		: wxFrame(wxGetApp().GetFrame(), wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
 	{

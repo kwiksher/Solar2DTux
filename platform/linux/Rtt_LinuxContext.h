@@ -67,7 +67,7 @@ namespace Rtt
 		const LinuxKeyListener *GetKeyListener() const { return fKeyListener; }
 		void Pause();
 		void Resume();
-		void UpdateScaleMode();
+		void RestartRenderer();
 		int GetFPS() const { return fRuntime ? fRuntime->GetFPS() : 30; }
 		int GetWidth() const { return fRuntimeDelegate->fContentWidth; }
 		int GetHeight() const { return fRuntimeDelegate->fContentHeight; }
@@ -137,8 +137,12 @@ public:
 	void OnRelaunch(wxCommandEvent &event);
 	void OnSuspendOrResume(wxCommandEvent &event);
 	void OnOpenWelcome(wxCommandEvent &event);
+	void OnZoomIn(wxCommandEvent &event);
+	void OnZoomOut(wxCommandEvent &event);
+	static void OnViewAsChanged(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
 	void SetOGLString(const wxString &ogls) { fGLString = ogls; }
+	void ChangeSize(int newWidth, int newHeight);
 	void CreateSuspendedPanel();
 	void RemoveSuspendedPanel();
 	SolarGLCanvas *GetCanvas() const { return fSolarGLCanvas; }
@@ -146,6 +150,8 @@ public:
 	void ResetSize();
 	void SetMenu(const char *appPath);
 	void CreateMenus();
+	void CreateViewAsChildMenu(std::vector<std::string>skin, wxMenu *targetMenu);
+	void ClearMenuCheckboxes(wxMenu *menu, wxString currentSkinTitle);
 	void WatchFolder(const char *path, const char *appName);
 
 	bool fRelaunchedViaFileEvent;
@@ -158,9 +164,18 @@ public:
 	SolarGLCanvas *fSolarGLCanvas;
 	Rtt::SolarAppContext *fContext;
 	wxMenuBar *fMenuMain;
+	wxMenu *fViewMenu;
+	wxMenu *fViewAsAndroidMenu;
+	wxMenu *fViewAsIOSMenu;
+	wxMenu *fViewAsTVMenu;
+	wxMenu *fViewAsDesktopMenu;
+	wxMenuItem *fZoomIn;
+	wxMenuItem *fZoomOut;
 	wxMenuBar *fMenuProject;
 	std::string fAppPath;
 	std::string fProjectPath;
+	int currentSkinWidth;
+	int currentSkinHeight;
 	wxFileSystemWatcher *fWatcher;
 	wxDECLARE_EVENT_TABLE();
 };

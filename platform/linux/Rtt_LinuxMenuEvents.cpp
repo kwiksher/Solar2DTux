@@ -196,7 +196,7 @@ void LinuxMenuEvents::OnBuildForWeb(wxCommandEvent &event)
 void LinuxMenuEvents::OnBuildForLinux(wxCommandEvent &event)
 {
 	wxGetApp().GetFrame()->CreateSuspendedPanel();
-	Rtt::LinuxBuildDialog *linuxBuildDialog = new Rtt::LinuxBuildDialog(wxGetApp().GetFrame(), -1, wxEmptyString, wxDefaultPosition, wxSize(550, 300));
+	Rtt::LinuxBuildDialog *linuxBuildDialog = new Rtt::LinuxBuildDialog(wxGetApp().GetFrame(), -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
 	linuxBuildDialog->SetAppContext(wxGetApp().GetFrame()->GetContext());
 	linuxBuildDialog->ShowModal();
 	linuxBuildDialog->Destroy();

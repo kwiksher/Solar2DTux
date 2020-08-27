@@ -33,6 +33,6 @@ namespace Rtt
 		mutable int fContentHeight;
 		mutable int fFPS;
 		mutable std::string fScaleMode;
-		DeviceOrientation::Type fOrientation;
+		mutable DeviceOrientation::Type fOrientation;
 	};
 }; // namespace Rtt
