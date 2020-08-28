@@ -729,6 +729,7 @@ wxBEGIN_EVENT_TABLE(SolarFrame, wxFrame)
 	EVT_COMMAND(wxID_ANY, eventOpenProject, SolarFrame::OnOpen)
 	EVT_COMMAND(wxID_ANY, eventRelaunchProject, SolarFrame::OnRelaunch)
 	EVT_COMMAND(wxID_ANY, eventWelcomeProject, SolarFrame::OnOpenWelcome)
+	EVT_ICONIZE(SolarFrame::OnIconized)
 	EVT_CLOSE(SolarFrame::OnClose)
 wxEND_EVENT_TABLE()
 
@@ -1016,10 +1017,9 @@ void SolarFrame::OnViewAsChanged(wxCommandEvent &event)
 	frame->GetContext()->GetRuntimeDelegate()->fContentWidth = initialWidth;
 	frame->GetContext()->GetRuntimeDelegate()->fContentHeight = initialHeight;
 	frame->ChangeSize(initialWidth, initialHeight);
-	frame->GetContext()->RestartRenderer();
-	frame->SetTitle(newWindowTitle);
-	frame->Refresh(false);
-	frame->Update();
+
+	wxCommandEvent ev(eventRelaunchProject);
+	wxPostEvent(wxGetApp().GetFrame(), ev);
 }
 
 void SolarFrame::SetMenu(const char *appPath)
@@ -1132,6 +1132,11 @@ void SolarFrame::SetMenu(const char *appPath)
 			fViewMenu->Append(ID_MENU_OPEN_WELCOME_SCREEN, _T("&Welcome Screen"));
 		}
 	}
+}
+
+void SolarFrame::OnIconized(wxIconizeEvent &event)
+{
+	fContext->RestartRenderer();
 }
 
 void SolarFrame::OnClose(wxCloseEvent &event)

@@ -140,6 +140,7 @@ public:
 	void OnZoomIn(wxCommandEvent &event);
 	void OnZoomOut(wxCommandEvent &event);
 	static void OnViewAsChanged(wxCommandEvent &event);
+	void OnIconized(wxIconizeEvent &event);
 	void OnClose(wxCloseEvent &event);
 	void SetOGLString(const wxString &ogls) { fGLString = ogls; }
 	void ChangeSize(int newWidth, int newHeight);
