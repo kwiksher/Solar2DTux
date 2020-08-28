@@ -1275,6 +1275,7 @@ namespace Rtt
 			wxButton *b = new wxButton(panel, i, caption);
 			Connect(i, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(msgBox::ShowMessage));
 			gs->Add(b, 0, 0, 7);
+			gs->AddSpacer(5);
 		}
 
 		Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(msgBox::OnClose));
