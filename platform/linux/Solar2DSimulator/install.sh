@@ -79,6 +79,7 @@ if [[ $USE_APT == 1 ]]; then
   sudo apt-get install libzopfli1 -y
   sudo apt-get install openjdk-8-jdk-headless -y
   sudo apt-get install openjdk-8-jre-headless -y
+  sudo apt-get install unzip -y
   sudo apt-get install p7zip -y
   sudo apt-get install p7zip-full -y
   sudo apt-get install lua5.1 -y
@@ -104,6 +105,7 @@ elif [[ $USE_PACMAN == 1 ]]; then
   sudo pacman -Sy zopfli --noconfirm
   sudo pacman -Sy jdk14-openjdk --noconfirm
   sudo pacman -Sy jre14-openjdk --noconfirm
+  sudo pacman -Sy unzip --noconfirm
   sudo pacman -Sy p7zip --noconfirm
   sudo pacman -Sy lua51 --noconfirm
   sudo pacman -Sy gradle --noconfirm
