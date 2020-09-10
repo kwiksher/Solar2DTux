@@ -574,7 +574,15 @@ namespace Rtt
 
 		// Fetch the requested preference value.
 		const char *resultPointer = "";
-		wxString localeName = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage())->CanonicalName.Lower();
+		int systemLanguage = wxLocale::GetSystemLanguage();
+
+		// fallback to en_us if wx wasn't able to determine the system language
+		if (systemLanguage == wxLANGUAGE_UNKNOWN)
+		{
+			systemLanguage = wxLANGUAGE_ENGLISH_US;
+		}
+
+		wxString localeName = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
 
 		switch (category)
 		{

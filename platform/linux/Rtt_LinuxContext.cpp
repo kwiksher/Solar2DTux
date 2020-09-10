@@ -272,7 +272,15 @@ namespace Rtt
 		// read build.settings
 		if (fProjectSettings->HasBuildSettings())
 		{
-			wxString localeName = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage())->CanonicalName.Lower();
+			int systemLanguage = wxLocale::GetSystemLanguage();
+
+			// fallback to en_us if wx wasn't able to determine the system language
+			if (systemLanguage == wxLANGUAGE_UNKNOWN)
+			{
+				systemLanguage = wxLANGUAGE_ENGLISH_US;
+			}
+
+			wxString localeName = wxLocale::GetLanguageInfo(systemLanguage)->CanonicalName.Lower();
 			string langCode = localeName.ToStdString().substr(0, 2);
 			string countryCode = localeName.ToStdString().substr(3, 5);
 			int minWidth = fProjectSettings->GetMinWindowViewWidth();
