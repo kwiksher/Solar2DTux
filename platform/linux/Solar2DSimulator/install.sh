@@ -120,14 +120,11 @@ sudo mv Resources/Solar2DTux.desktop /usr/share/applications/
 # move everything to /opt
 OPT_LOCATION=/opt/Solar2D
 sudo mkdir -p $OPT_LOCATION
+sudo rm -rf $OPT_LOCATION/Resources
 sudo mv Solar2DSimulator $OPT_LOCATION
 sudo mv Solar2DConsole $OPT_LOCATION
 sudo mv start.sh $OPT_LOCATION
 sudo mv Resources $OPT_LOCATION
-
-# set permissions
-sudo chown $USER:$USER $OPT_LOCATION
-sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
@@ -138,18 +135,24 @@ fi
 
 # clone sample code (or just fetch latest if it exists)
 SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
-SAMPLE_CODE_DIR=/opt/Solar2D/SampleCode
+SAMPLE_CODE_DIR=$OPT_LOCATION/SampleCode
+CURRENT_DIR=${PWD}
 
 if [ ! -d $SAMPLE_CODE_DIR ]
 then
-    git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
+    sudo git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
 else
-    cd $SAMPLE_CODE_DIR/
-    git pull $SAMPLE_CODE_REMOTE
+    cd $SAMPLE_CODE_DIR
+    sudo git pull $SAMPLE_CODE_REMOTE
 fi
+
+# set permissions
+sudo chown $USER:$USER $OPT_LOCATION
+sudo chown $USER:$USER $SAMPLE_CODE_DIR
+sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
 echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements."
 echo "Then you can build via Solar2DTux for Android."
 
 ## remove this directory
-rm -rf ${PWD}
+rm -rf ${CURRENT_DIR}
