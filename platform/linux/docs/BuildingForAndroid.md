@@ -7,6 +7,8 @@
  __IMPORTANT__: The snap version of Android Studio __WILL NOT WORK__. Please ensure that you install the native version for your Linux distribution. 
  
  If a non-snap version of Android Studio is not available in your package manager, please download the zip versoin of Android Studio directly from their website and extract it to ~/android-studio. You can then launch it via `cd ~/android-studio/bin &&  .studio.sh`.
+ 
+ __NOTE:__ Do __NOT__ change the default installation paths provided by Android studio. The builder expects your SDK installation path to be `~/Android/Sdk` - changing this is going to cause builds to fail. It is vital that you leave things at their default values.
 
 **Step 2**
 
