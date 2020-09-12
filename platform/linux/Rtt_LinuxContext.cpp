@@ -1469,8 +1469,13 @@ void SolarFrame::OnOpen(wxCommandEvent &event)
 			LinuxSimulatorView::SkinProperties sProperties = LinuxSimulatorView::GetSkinProperties(LinuxSimulatorView::Config::skinID);
 			newWindowTitle.append(" - ").append(sProperties.skinTitle.ToStdString());
 			fContext->GetPlatform()->SetStatusBarMode(fContext->GetPlatform()->GetStatusBarMode());
+			string sandboxPath("~/.Solar2D/Sandbox/");
+			sandboxPath.append(fContext->GetTitle());
+			sandboxPath.append("_");
+			sandboxPath.append(LinuxFileUtils::CalculateMD5(fContext->GetTitle().c_str()));
+
 			Rtt_Log("Loading project from: %s\n", fContext->GetAppPath());
-			Rtt_Log("Project sandbox folder: %s%s\n", "~/.Solar2D/Sandbox/", fContext->GetTitle().c_str());
+			Rtt_Log("Project sandbox folder: %s\n", sandboxPath.c_str());
 		}
 	}
 
