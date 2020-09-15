@@ -460,6 +460,8 @@ namespace Rtt
 	void SolarAppContext::Flush()
 	{
 		fCanvas->Refresh(false);
+		fCanvas->Update();
+		fRuntime->GetDisplay().Invalidate();
 	}
 
 	void SolarAppContext::Pause()

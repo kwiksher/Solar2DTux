@@ -135,6 +135,7 @@ sudo mv Resources $OPT_LOCATION
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
 else
+    echo 'export ANDROID_SDK_ROOT=~/Android/Sdk' >> ~/.bashrc
     echo 'export PATH="/opt/Solar2D:$PATH"' >> ~/.bashrc
     echo 'export PATH="~/.local/share/Corona/Native/Corona/lin/bin/:$PATH"' >> ~/.bashrc
 fi
