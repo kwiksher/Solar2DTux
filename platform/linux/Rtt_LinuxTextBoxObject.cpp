@@ -118,7 +118,7 @@ namespace Rtt
 		else if (strcmp("font", key) == 0)
 		{
 			Runtime *runtime = LuaContext::GetRuntime(L);
-			auto fontPointer = Rtt_NEW(runtime->GetAllocator(), LinuxFont(*runtime->GetAllocator(), "", 32, false));
+			auto fontPointer = Rtt_NEW(runtime->GetAllocator(), LinuxFont(*runtime->GetAllocator(), "", 16, false));
 			LuaLibNative::PushFont(L, fontPointer);
 		}
 		else if (strcmp("setTextColor", key) == 0)

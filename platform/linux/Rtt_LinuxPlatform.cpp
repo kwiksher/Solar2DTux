@@ -736,7 +736,7 @@ namespace Rtt
 
 	Rtt_Real LinuxPlatform::GetStandardFontSize() const
 	{
-		return 32.0f; // todo: silly
+		return 16.0f;
 	}
 
 	S32 LinuxPlatform::GetFontNames(lua_State *L, int index) const
