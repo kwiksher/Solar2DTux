@@ -459,9 +459,8 @@ namespace Rtt
 
 	void SolarAppContext::Flush()
 	{
-		fCanvas->Refresh(false);
-		fCanvas->Update();
 		fRuntime->GetDisplay().Invalidate();
+		fCanvas->Refresh(false);
 	}
 
 	void SolarAppContext::Pause()
@@ -853,8 +852,7 @@ void SolarFrame::ResetSize()
 	}
 
 	ChangeSize(fContext->GetRuntimeDelegate()->fContentWidth, fContext->GetRuntimeDelegate()->fContentHeight);
-	Refresh(false);
-	Update();
+	GetCanvas()->Refresh(false);
 }
 
 void SolarFrame::CreateMenus()
@@ -1345,8 +1343,7 @@ void SolarFrame::OnZoomIn(wxCommandEvent &event)
 			frame->GetContext()->GetRuntimeDelegate()->fContentHeight = proposedHeight;
 			frame->ChangeSize(proposedWidth, proposedHeight);
 			frame->GetContext()->RestartRenderer();
-			frame->Refresh(false);
-			frame->Update();
+			GetCanvas()->Refresh(false);
 
 			LinuxSimulatorView::Config::zoomedWidth = proposedWidth;
 			LinuxSimulatorView::Config::zoomedHeight = proposedHeight;
@@ -1374,8 +1371,7 @@ void SolarFrame::OnZoomOut(wxCommandEvent &event)
 		frame->GetContext()->GetRuntimeDelegate()->fContentHeight = proposedHeight;
 		frame->ChangeSize(proposedWidth, proposedHeight);
 		frame->GetContext()->RestartRenderer();
-		frame->Refresh(false);
-		frame->Update();
+		GetCanvas()->Refresh(false);
 
 		LinuxSimulatorView::Config::zoomedWidth = proposedWidth;
 		LinuxSimulatorView::Config::zoomedHeight = proposedHeight;
@@ -1570,18 +1566,9 @@ void SolarGLCanvas::OnWindowCreate(wxWindowCreateEvent &event)
 {
 	// SetCurrent() must have an active window created before being called, making this hte perfect place to do it.
 	Rtt_ASSERT(fGLContext);
-
 	// the current context must be set before we get OGL pointers
 	SetCurrent(*fGLContext);
-
-	if (fContext && fContext->GetRuntime())
-	{
-		fContext->GetRuntime()->GetDisplay().Invalidate();
-	}
-
-	// generate paint event
 	Refresh(false);
-	Update();
 }
 
 void SolarGLCanvas::OnSize(wxSizeEvent &event)
@@ -1596,12 +1583,5 @@ void SolarGLCanvas::OnSize(wxSizeEvent &event)
 
 	fWindowHeight = event.GetSize().y;
 
-	if (fContext && fContext->GetRuntime())
-	{
-		fContext->GetRuntime()->GetDisplay().Invalidate();
-	}
-
-	// generate a paint event
 	Refresh(false);
-	Update();
 }
