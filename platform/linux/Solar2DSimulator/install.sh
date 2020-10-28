@@ -87,6 +87,7 @@ if [[ $USE_APT == 1 ]]; then
   sudo apt-get install lua5.1 -y
   sudo apt-get install gradle -y
   sudo apt upgrade gradle
+  sudo ln -s /usr/lib/libreadline.so /usr/lib/libreadline.so.7
 # install required dependencies via Pacman
 elif [[ $USE_PACMAN == 1 ]]; then
   sudo pacman -Sy base-devel --noconfirm
