@@ -280,6 +280,12 @@ namespace Rtt
 		float yscale = 1;
 		const char *fontFile = inFont.Name();
 		int fontSize = inFont.Size() - 2;
+		
+		if (width > 0 && width < 4)
+		{
+			width = 4;
+		}
+		
 		smart_ptr<alpha> im = gp->render_string(str, alignment, fontFile, is_bold, is_italic, fontSize, xleading, yleading, width, height, multiline, xscale, yscale, &baselineOffset);
 
 		if (im == NULL)
@@ -291,8 +297,7 @@ namespace Rtt
 		fHeight = im->m_height;
 		const U8 *image = im->m_data;
 
-		// it's needs for corona ?
-		if ((fWidth & 0x3) != 0)
+		if (fWidth & 0x3)
 		{
 			fWidth = (fWidth + 3) & -4;
 		}
