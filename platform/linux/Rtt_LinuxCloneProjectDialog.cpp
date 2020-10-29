@@ -117,7 +117,7 @@ namespace Rtt
 		command.append("/.Solar2D/Sandbox/Simulator/TemporaryFiles/clone.log");
 		//command.append(" &");
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 		wxYield();
 
 		string logPath(homeDir);

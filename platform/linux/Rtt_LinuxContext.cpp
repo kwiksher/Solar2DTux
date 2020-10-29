@@ -798,6 +798,7 @@ SolarFrame::SolarFrame(int style)
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnQuit, wxID_EXIT);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenDocumentation, ID_MENU_OPEN_DOCUMENTATION);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnOpenSampleProjects, ID_MENU_OPEN_SAMPLE_CODE);
+	Bind(wxEVT_MENU, &LinuxMenuEvents::OnHelpBuildForAndroid, ID_MENU_HELP_BUILD_ANDROID);
 	Bind(wxEVT_MENU, &LinuxMenuEvents::OnAbout, wxID_ABOUT);
 }
 
@@ -875,11 +876,12 @@ void SolarFrame::CreateMenus()
 			fMenuMain->Append(fileMenu, _T("&File"));
 
 			// about menu
-			wxMenu *m_pHelpMenu = new wxMenu();
-			m_pHelpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
-			m_pHelpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
-			m_pHelpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
-			fMenuMain->Append(m_pHelpMenu, _T("&Help"));
+			wxMenu *helpMenu = new wxMenu();
+			helpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
+			helpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
+			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
+			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
+			fMenuMain->Append(helpMenu, _T("&Help"));
 		}
 
 		// project's menu
@@ -941,6 +943,7 @@ void SolarFrame::CreateMenus()
 			wxMenu *helpMenu = new wxMenu();
 			helpMenu->Append(ID_MENU_OPEN_DOCUMENTATION, _T("&Online Documentation..."));
 			helpMenu->Append(ID_MENU_OPEN_SAMPLE_CODE, _T("&Sample projects..."));
+			helpMenu->Append(ID_MENU_HELP_BUILD_ANDROID, _T("&Building For Android"));
 			helpMenu->Append(wxID_ABOUT, _T("&About Simulator..."));
 			fMenuProject->Append(helpMenu, _T("&Help"));
 		}

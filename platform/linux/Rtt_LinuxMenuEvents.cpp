@@ -47,7 +47,7 @@ void LinuxMenuEvents::OnNewProject(wxCommandEvent &event)
 		command.append(newProjectDlg->GetProjectFolder().c_str());
 		command.append("/").append(newProjectDlg->GetProjectName().c_str());
 		command.append("\"");
-		system(command.c_str());
+		wxExecute(command.c_str());
 	}
 
 	newProjectDlg->Destroy();
@@ -101,7 +101,7 @@ void LinuxMenuEvents::OnOpenInEditor(wxCommandEvent &event)
 	command.append(wxGetApp().GetFrame()->GetContext()->GetAppPath());
 	command.append("/main.lua");
 
-	system(command.c_str());
+	wxExecute(command.c_str());
 }
 
 void LinuxMenuEvents::OnShowProjectFiles(wxCommandEvent &event)
@@ -110,7 +110,7 @@ void LinuxMenuEvents::OnShowProjectFiles(wxCommandEvent &event)
 	string command("xdg-open ");
 	command.append(appPath);
 
-	system(command.c_str());
+	wxExecute(command.c_str());
 }
 
 void LinuxMenuEvents::OnShowProjectSandbox(wxCommandEvent &event)
@@ -124,7 +124,7 @@ void LinuxMenuEvents::OnShowProjectSandbox(wxCommandEvent &event)
 	command.append("_");
 	command.append(Rtt::LinuxFileUtils::CalculateMD5(appName.c_str()));
 
-	system(command.c_str());
+	wxExecute(command.c_str());
 }
 
 void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent &event)
@@ -142,7 +142,7 @@ void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent &event)
 		command.append("_");
 		command.append(Rtt::LinuxFileUtils::CalculateMD5(appName));
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 		// relaunch
 		wxCommandEvent relaunchEvent(eventRelaunchProject);
 		wxPostEvent(wxGetApp().GetFrame(), relaunchEvent);
@@ -213,7 +213,7 @@ void LinuxMenuEvents::OnBuildForLinux(wxCommandEvent &event)
 void LinuxMenuEvents::OnOpenDocumentation(wxCommandEvent &event)
 {
 	string command("xdg-open https://docs.coronalabs.com/api/index.html");
-	system(command.c_str());
+	wxExecute(command.c_str());
 }
 
 void LinuxMenuEvents::OnOpenSampleProjects(wxCommandEvent &event)
@@ -236,6 +236,12 @@ void LinuxMenuEvents::OnOpenSampleProjects(wxCommandEvent &event)
 	wxCommandEvent eventOpen(eventOpenProject);
 	eventOpen.SetString(path.c_str());
 	wxPostEvent(wxGetApp().GetFrame(), eventOpen);
+}
+
+void LinuxMenuEvents::OnHelpBuildForAndroid(wxCommandEvent &event)
+{
+	string command("xdg-open https://github.com/DannyGlover/Solar2DTux/blob/dev/platform/linux/docs/BuildingForAndroid.md");
+	wxExecute(command);
 }
 
 void LinuxMenuEvents::OnAbout(wxCommandEvent &WXUNUSED(event))

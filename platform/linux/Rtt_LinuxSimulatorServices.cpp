@@ -99,7 +99,7 @@ namespace Rtt
 
 	void LinuxSimulatorServices::ShowSampleCode() const
 	{
-		system("xdg-open /opt/Solar2D/SampleCode");
+		wxExecute("xdg-open /opt/Solar2D/SampleCode");
 	}
 
 	// stub to match Mac implementation
@@ -205,7 +205,7 @@ namespace Rtt
 		string command("xdg-open ");
 		command.append(filename);
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 	}
 
 	// stub to match Mac implementation
@@ -236,7 +236,7 @@ namespace Rtt
 		string command("xdg-open ");
 		command.append(name);
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 		return true;
 	}
 
@@ -247,7 +247,7 @@ namespace Rtt
 		string command("xdg-open ");
 		command.append(path.c_str());
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 		return true;
 	}
 
@@ -262,7 +262,7 @@ namespace Rtt
 		command.append("_");
 		command.append(LinuxFileUtils::CalculateMD5(name));
 
-		system(command.c_str());
+		wxExecute(command.c_str());
 		return true;
 	}
 }; // namespace Rtt
