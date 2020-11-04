@@ -505,6 +505,10 @@ SolarApp::SolarApp()
 	buildPath.append("/Documents/Solar2D Built Apps");
 	projectCreationPath.append("/Documents/Solar2D Projects");
 
+#ifdef __WXGTK3__
+	setenv("GDK_BACKEND", "x11", 1);
+#endif
+
 	// create default directories if missing
 	if (!Rtt_IsDirectory(basePath.c_str()))
 	{
