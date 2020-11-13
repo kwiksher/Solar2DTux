@@ -132,8 +132,6 @@ sudo mv Solar2DSimulator $OPT_LOCATION
 sudo mv Solar2DConsole $OPT_LOCATION
 sudo mv start.sh $OPT_LOCATION
 sudo mv Resources $OPT_LOCATION
-# extract the android sdk
-tar -xf Resources/android_sdk.tar.xz -C $OPT_LOCATION
 
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
