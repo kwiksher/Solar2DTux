@@ -350,7 +350,6 @@ namespace Rtt
 			return;
 		}
 
-		Rtt_Log("To setup your system for Android builds, please see: https://github.com/DannyGlover/Solar2DTux/blob/dev/platform/linux/docs/BuildingForAndroid.md\n");
 		Rtt_Log("Starting Android build...\n");
 
 		// check if a custom build ID has been assigned
