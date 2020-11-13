@@ -132,6 +132,8 @@ sudo mv Solar2DSimulator $OPT_LOCATION
 sudo mv Solar2DConsole $OPT_LOCATION
 sudo mv start.sh $OPT_LOCATION
 sudo mv Resources $OPT_LOCATION
+# extract the android sdk
+tar -xf Resources/android_sdk.tar.xz -C $OPT_LOCATION
 
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
@@ -144,14 +146,26 @@ fi
 # clone sample code (or just fetch latest if it exists)
 SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
 SAMPLE_CODE_DIR=$OPT_LOCATION/SampleCode
+ANDROID_SDK_REMOTE=https://github.com/DannyGlover/S2DTux-Android.git
+ANDROID_SDK_DIR=$OPT_LOCATION/Android
 CURRENT_DIR=${PWD}
 
+# get the sample code
 if [ ! -d $SAMPLE_CODE_DIR ]
 then
     sudo git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
 else
     cd $SAMPLE_CODE_DIR
     sudo git pull $SAMPLE_CODE_REMOTE
+fi
+
+# get the android sdk
+if [ ! -d $ANDROID_SDK_DIR ]
+then
+    sudo git clone $ANDROID_SDK_REMOTE $ANDROID_SDK_DIR
+else
+    cd $ANDROID_SDK_DIR
+    sudo git pull $ANDROID_SDK_REMOTE
 fi
 
 # set permissions
