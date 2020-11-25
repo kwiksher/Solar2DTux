@@ -129,6 +129,10 @@ namespace Rtt
 		{
 			lua_pushcfunction(L, SetReturnKey);
 		}
+		else if (strcmp("setSelection", key) == 0)
+		{
+			lua_pushcfunction(L, SetSelection);
+		}
 		else if (strcmp("align", key) == 0)
 		{
 			char buf[16] = {0};
@@ -303,7 +307,7 @@ namespace Rtt
 		char rgb[8];
 		snprintf(rgb, sizeof(rgb), "#%02X%02X%02X", r, g, b);
 		//jsTextFieldSetColor(obj->fElementID, rgb);
-		Rtt_LogException("LinuxVideoObject:SetTextColor() is not implemented\n");
+		Rtt_LogException("LinuxTextBoxObject:SetTextColor() is not implemented\n");
 
 		return 0;
 	}
@@ -317,6 +321,12 @@ namespace Rtt
 			const char *keyType = lua_tostring(L, 2);
 			//TODO: Set the return key type here.
 		}
+		return 0;
+	}
+
+	int LinuxTextBoxObject::SetSelection(lua_State *L)
+	{
+		Rtt_LogException("LinuxTextBoxObject:SetSelection() is not implemented\n");
 		return 0;
 	}
 

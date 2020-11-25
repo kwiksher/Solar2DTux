@@ -46,6 +46,7 @@ namespace Rtt
 	protected:
 		static int SetTextColor(lua_State *L);
 		static int SetReturnKey(lua_State *L);
+		static int SetSelection(lua_State *L);
 
 	private:
 		/// Set TRUE if this is a single line text field. Set FALSE for a multiline text box.

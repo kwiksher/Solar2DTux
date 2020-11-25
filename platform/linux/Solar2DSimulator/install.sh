@@ -172,8 +172,7 @@ sudo chown $USER:$USER $SAMPLE_CODE_DIR
 sudo chown $USER:$USER $ANDROID_SDK_DIR
 sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
-echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements."
-echo "Then you can build via Solar2DTux for Android."
+echo "Installation complete! You can now create and build apps/games using Solar2DTux. Happy coding."
 
 ## remove this directory
 rm -rf ${CURRENT_DIR}
