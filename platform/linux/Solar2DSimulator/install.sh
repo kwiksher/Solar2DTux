@@ -6,6 +6,13 @@ then
     exit 1
 fi
 
+# prevent the script from being run as root or via sudo
+if [[ $(id -u) -eq 0 ]] ; then
+  echo "You can't run the Solar2DTux install script as root or via sudo."
+  echo "Just run ./install.sh and you will be prompted for your password when the script requires elevated permissions."
+  exit 1
+fi
+
 if [ -f /etc/os-release ]; then
     # freedesktop.org and systemd
     . /etc/os-release
