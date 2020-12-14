@@ -124,6 +124,8 @@ ARM build for jetson nano and raspberry pi
     make install PREFIX=$(pwd)/../../../platform/linux
     ```
 
+    gcc -march=armv7-a -c aes_armv4.S
+
 * codelite
 
     * https://github.com/eranif/codelite
