@@ -227,7 +227,8 @@ ARM build for jetson nano and raspberry pi
 
         * external/loop-2.3-beta/lua/precompiler.constant.lua
         
-        * bin/linux/lua2c.sh
+        > bin/linux/lua2c.sh is a symbolic link unless downloaded the repo as a zipped file. clone it. If downloading the repo as a zip file, you need to modify to work linking to the mac's lua2c.sh
+    
             ```
             ../../bin/mac/lua2c.sh $1 $2 $3 $4 /usr/bin
             ```

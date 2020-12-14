@@ -298,3 +298,4 @@ platform/linux/build-Release/
 external/curl/curl-7.74.0
 external/openssl/openssl-1.1.1i
 binutils-2.30.tar.xz
+tags

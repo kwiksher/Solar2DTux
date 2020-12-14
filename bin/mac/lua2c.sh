@@ -57,8 +57,9 @@ DST_DIR=$dir
 popd > /dev/null
 
 if [ -z "$LUA_DIR" ]
+	LUA_DIR=/usr/bin
 then
-	LUA_DIR=$SCRIPT_ROOT
+	LUA_DIR=/usr/bin
 	echo "WARNING: No LUA_DIR specified. Looking for it here: $LUA_DIR"
 fi
 

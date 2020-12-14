@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="Solar2DTux" Database="" Version="10.0.0">
   <Project Name="Solar2DSimulator" Path="Solar2DSimulator.project" Active="Yes"/>
-  <Project Name="Solar2Dcar" Path="Solar2Dcar.project" Active="No"/>
   <Project Name="Solar2DConsole" Path="Solar2DTuxConsole.project" Active="No"/>
-  <Project Name="Solar2DBuilder" Path="Solar2DBuilder.project" Active="No"/>
   <Project Name="Solar2Dlua" Path="Solar2Dlua.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Release" Selected="no">
