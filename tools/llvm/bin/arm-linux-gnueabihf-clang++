@@ -1,0 +1,109 @@
+#!/bin/bash
+BASE=/usr/local/opt/llvm/bin
+SYSROOT="$HOME/Documents/work/sysroot"
+TARGET=arm-linux-gnueabihf
+TOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils"
+LIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8"
+LIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf"
+exec env LIBPATH="${LIBPATH}" \
+    "${BASE}/clang++" --target=${TARGET} \
+        --sysroot="${SYSROOT}" \
+        -isysroot "${SYSROOT}" \
+        -isystem "${SYSROOT}/usr/include/c++/8" \
+        -isystem "${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8" \
+        -isystem "${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include/" \
+        -I "${SYSROOT}/usr/include/gtk-3.0" \
+        -I "${SYSROOT}/usr/include/cairo" \
+        -I "${SYSROOT}/usr/include/gdk-pixbuf-2.0" \
+        -I "${SYSROOT}/usr/include/atk-1.0" \
+        -I "${SYSROOT}/usr/include/cairo" \
+        -I "${SYSROOT}/usr/include/glib-2.0" \
+        -I "${SYSROOT}/usr/include/pango-1.0" \
+        -I "${SYSROOT}/usr/include/freetype2" \
+        -I "${SYSROOT}/usr/include/gtk-3.0/unix-print" \
+        -I "${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include" \
+        -I "../src/tiff/libtiff" \
+        -I "${SYSROOT}/usr/include/gstreamer-1.0" \
+        -I "${SYSROOT}/usr/include/webkitgtk-4.0" \
+        -I "${SYSROOT}/usr/include/libsoup-2.4" \
+        -L"${LIBPATH}" \
+        -rpath "${LIBARMPATH}" \
+        --gcc-toolchain="${TOOLCHAIN}" \
+        "$@" -fuse-ld=lld
+
+        # -I "${SYSROOT}/usr/include/dbus-1.0" \
+        # -I "${SYSROOT}/usr/include/EGL" \
+        # -I "${SYSROOT}/usr/include/epoxy" \
+        # -I "${SYSROOT}/usr/include/exynos" \
+        # -I "${SYSROOT}/usr/include/fontconfig" \
+        # -I "${SYSROOT}/usr/include/freedreno" \
+        # -I "${SYSROOT}/usr/include/fribidi" \
+        # -I "${SYSROOT}/usr/include/gdb" \
+        # -I "${SYSROOT}/usr/include/gdk-pixbuf-2.0" \
+        # -I "${SYSROOT}/usr/include/gio-unix-2.0" \
+        # -I "${SYSROOT}/usr/include/GL" \
+        # -I "${SYSROOT}/usr/include/GLES" \
+        # -I "${SYSROOT}/usr/include/GLES2" \
+        # -I "${SYSROOT}/usr/include/GLES3" \
+        # -I "${SYSROOT}/usr/include/graphite2" \
+        # -I "${SYSROOT}/usr/include/harfbuzz" \
+        # -I "${SYSROOT}/usr/include/iproute2" \
+        # -I "${SYSROOT}/usr/include/KHR" \
+        # -I "${SYSROOT}/usr/include/libdrm" \
+        # -I "${SYSROOT}/usr/include/libltdl" \
+        # -I "${SYSROOT}/usr/include/libmnl" \
+        # -I "${SYSROOT}/usr/include/libmount" \
+        # -I "${SYSROOT}/usr/include/libpng" \
+        # -I "${SYSROOT}/usr/include/libpng16" \
+        # -I "${SYSROOT}/usr/include/libssh" \
+        # -I "${SYSROOT}/usr/include/libxml2" \
+        # -I "${SYSROOT}/usr/include/linux" \
+        # -I "${SYSROOT}/usr/include/misc" \
+        # -I "${SYSROOT}/usr/include/Mrm" \
+        # -I "${SYSROOT}/usr/include/mtd" \
+        # -I "${SYSROOT}/usr/include/net" \
+        # -I "${SYSROOT}/usr/include/netash" \
+        # -I "${SYSROOT}/usr/include/netatalk" \
+        # -I "${SYSROOT}/usr/include/netax25" \
+        # -I "${SYSROOT}/usr/include/neteconet" \
+        # -I "${SYSROOT}/usr/include/netinet" \
+        # -I "${SYSROOT}/usr/include/netipx" \
+        # -I "${SYSROOT}/usr/include/netiucv" \
+        # -I "${SYSROOT}/usr/include/netpacket" \
+        # -I "${SYSROOT}/usr/include/netrom" \
+        # -I "${SYSROOT}/usr/include/netrose" \
+        # -I "${SYSROOT}/usr/include/nfs" \
+        # -I "${SYSROOT}/usr/include/omap" \
+        # -I "${SYSROOT}/usr/include/openssl" \
+        # -I "${SYSROOT}/usr/include/orc-0.4" \
+        # -I "${SYSROOT}/usr/include/pixman-1" \
+        # -I "${SYSROOT}/usr/include/protocols" \
+        # -I "${SYSROOT}/usr/include/rdma" \
+        # -I "${SYSROOT}/usr/include/reglib" \
+        # -I "${SYSROOT}/usr/include/rpc" \
+        # -I "${SYSROOT}/usr/include/rpcsvc" \
+        # -I "${SYSROOT}/usr/include/scsi" \
+        # -I "${SYSROOT}/usr/include/selinux" \
+        # -I "${SYSROOT}/usr/include/sepol" \
+        # -I "${SYSROOT}/usr/include/sound" \
+        # -I "${SYSROOT}/usr/include/uil" \
+        # -I "${SYSROOT}/usr/include/unicode" \
+        # -I "${SYSROOT}/usr/include/uuid" \
+        # -I "${SYSROOT}/usr/include/video" \
+        # -I "${SYSROOT}/usr/include/X11" \
+        # -I "${SYSROOT}/usr/include/xcb" \
+        # -I "${SYSROOT}/usr/include/xen" \
+        # -I "${SYSROOT}/usr/include/xkbcommon" \
+        # -I "${SYSROOT}/usr/include/Xm" \
+
+        # -I "${SYSROOT}/usr/include/AL" \
+        # -I "${SYSROOT}/usr/include/arpa" \
+        # -I "${SYSROOT}/usr/include/asm-generic" \
+        # -I "${SYSROOT}/usr/include/at-spi-2.0" \
+        # -I "${SYSROOT}/usr/include/at-spi2-atk" \
+        # -I "${SYSROOT}/usr/include/atk-1.0" \
+        # -I "${SYSROOT}/usr/include/blkid" \
+        # -I "${SYSROOT}/usr/include/c++" \
+
+#        -I "${SYSROOT}/usr/include/arm-linux-gnueabihf" \
+#        -I "${SYSROOT}/usr/include/wx-3.0" \
