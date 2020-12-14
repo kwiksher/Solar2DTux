@@ -60,13 +60,13 @@ rm -rf ~/.local/share/Corona
 # extract the solar platform tools directory
 tar -xzf Resources/platform_tools.tgz -C ~/.local/share/
 # move Solar2DBuilder into the platform tools directory
-mv Solar2DBuilder ~/.local/share/Corona/Native/Corona/lin/bin/
+cp -rf Solar2DBuilder ~/.local/share/Corona/Native/Corona/lin/bin/
 
 # install required dependencies via Apt
 if [[ $USE_APT == 1 ]]; then
   # nake sure we have the latest package lists
   sudo add-apt-repository ppa:cwchien/gradle -y
-  sudo apt-get update
+  # sudo apt-get update
   # install dependencies
   sudo apt-get install build-essential -y
   sudo apt-get install libopenal-dev -y
@@ -126,19 +126,19 @@ fi
 
 # copy wx web extensions
 sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
-sudo mv webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
+sudo cp -rf webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
 
 # move the desktop file
-sudo mv Resources/Solar2DTux.desktop /usr/share/applications/
+sudo cp -rf Resources/Solar2DTux.desktop /usr/share/applications/
 
 # move everything to /opt
 OPT_LOCATION=/opt/Solar2D
 sudo mkdir -p $OPT_LOCATION
 sudo rm -rf $OPT_LOCATION/Resources
-sudo mv Solar2DSimulator $OPT_LOCATION
-sudo mv Solar2DConsole $OPT_LOCATION
-sudo mv start.sh $OPT_LOCATION
-sudo mv Resources $OPT_LOCATION
+sudo cp -rf Solar2DSimulator $OPT_LOCATION
+sudo cp -rf Solar2DConsole $OPT_LOCATION
+sudo cp -rf start.sh $OPT_LOCATION
+sudo cp -rf Resources $OPT_LOCATION
 
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
@@ -182,4 +182,4 @@ sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 echo "Installation complete! You can now create and build apps/games using Solar2DTux. Happy coding."
 
 ## remove this directory
-rm -rf ${CURRENT_DIR}
+#rm -rf ${CURRENT_DIR}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="lua" Version="10.0.0" InternalType="Library">
+<CodeLite_Project Name="Solar2Dlua" Version="10.0.0" InternalType="Library">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0007Release000000000000]]>

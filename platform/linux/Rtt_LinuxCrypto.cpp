@@ -9,10 +9,10 @@
 
 #include "Core/Rtt_Build.h"
 #include "Rtt_LinuxCrypto.h"
-#include "CryptoPP/hmac.h"
-#include "CryptoPP/md4.h"
-#include "CryptoPP/md5.h"
-#include "CryptoPP/sha.h"
+#include <cryptopp/hmac.h>
+#include <cryptopp/md4.h>
+#include <cryptopp/md5.h>
+#include <cryptopp/sha.h>
 
 namespace Rtt
 {

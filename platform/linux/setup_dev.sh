@@ -112,8 +112,9 @@ elif [[ $USE_PACMAN == 1 ]]; then
 fi
 
 # copy wx web extensions
-sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
-sudo cp wx/lib/webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
+WX_VERSION=3.1.4
+sudo mkdir -p /usr/local/lib/wx/${WX_VERSION}/web-extensions/
+sudo cp ../../external/wx/wxWidgets-3.1.4/gtk-build-so/webkit2_extu-${WX_VERSION}.so /usr/local/lib/wx/${WX_VERSION}/web-extensions/webkit2_extu-${WX_VERSION}.so
 
 echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements."
 echo "Then you can build via Solar2DTux for Android."

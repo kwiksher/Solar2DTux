@@ -1404,7 +1404,7 @@
         <Command Enabled="yes">make -f lua2cpp.mk</Command>
       </PreBuild>
       <PostBuild>
-        <Command Enabled="yes">cd Solar2DSimulator&amp;&amp; mv $(ProjectName) ~/.local/share/Corona/Native/Corona/lin/bin/</Command>
+          <Command Enabled="yes">cd Solar2DSimulator $amp;$amp; mv ../build-$(ConfigurationName)/bin/$(ProjectName) $(ProjectName) 
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -1506,7 +1506,7 @@
         <Command Enabled="yes">make -f lua2cpp.mk</Command>
       </PreBuild>
       <PostBuild>
-        <Command Enabled="yes">cd Solar2DSimulator&amp;&amp; mv $(ProjectName) ~/.local/share/Corona/Native/Corona/lin/bin/</Command>
+          <Command Enabled="yes">cd Solar2DSimulator $amp;$amp; mv ../build-$(ConfigurationName)/bin/$(ProjectName) $(ProjectName) 
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
@@ -1606,7 +1606,7 @@
       </PreBuild>
       <PostBuild>
         <Command Enabled="yes">cd $(ProjectName) &amp;&amp; mv $(ProjectName) template_x64 &amp;&amp; tar -czf template_x64.tgz template_x64 &amp;&amp; rm -rf template_x64 &amp;&amp; cd ..</Command>
-        <Command Enabled="yes">mv $(ProjectName)/template_x64.tgz $(ProjectName)/Resources</Command>
+        <Command Enabled="yes">mv $(ProjectName)/template_x64.tgz Solar2DSimualtor/Resources</Command>
         <Command Enabled="yes"/>
       </PostBuild>
       <CustomBuild Enabled="no">

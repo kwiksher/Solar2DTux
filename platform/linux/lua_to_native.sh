@@ -57,7 +57,7 @@ SRC_PATH="$SRC_DIR/$SRCFILE"
 if [[ $(uname -s) == Darwin ]];then
     BIN_DIR=mac
 else 
-    BIN_DIR=linux
+    BIN_DIR=/user/bin
 fi
 
 

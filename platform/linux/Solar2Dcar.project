@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="car" Version="11000" InternalType="Console">
+<CodeLite_Project Name="Solar2Dcar" Version="11000" InternalType="Console">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
@@ -98,6 +98,7 @@
         <StartupCommands/>
       </Debugger>
       <PreBuild/>
+          <Command Enabled="yes">cd Solar2DSimulator $amp;$amp; mv ../build-$(ConfigurationName)/bin/$(ProjectName) car 
       <PostBuild/>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
