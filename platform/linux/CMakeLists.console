@@ -38,16 +38,17 @@ include_directories(
 
 
 # Compiler options
-add_definitions(-Wfatal-errors)
-add_definitions(-O0)
-add_definitions(-std=c++11)
 add_definitions(-isysroot "${SYSROOT}")
 add_definitions(--target=${TARGET})
 add_definitions(--sysroot=${SYSROOT})
 add_definitions(--gcc-toolchain=${TOOLCHAIN})
+add_definitions(-D_FILE_OFFSET_BITS=64)
+
+add_definitions(-Wfatal-errors)
+add_definitions(-O0)
+add_definitions(-std=c++11)
 add_definitions(-g3)
 add_definitions(-Wno-narrowing)
-add_definitions(-D_FILE_OFFSET_BITS=64)
 add_definitions(-Wall)
 add_definitions(
     -DwxUSE_MEDIACTRL=1
@@ -65,7 +66,6 @@ add_definitions(
     -DwxUSE_STD_CONTAINERS_COMPATIBLY
     -DwxUSE_GLCANVAS
     -DFT2_BUILD_LIBRARY
-    -D_FILE_OFFSET_BITS=64
 )
 
 # Linker options
