@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+BASEDIR=$(dirname "$0")
+
+cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
+-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+-DBASE=/usr/local/opt/llvm/bin \
+-DSYSROOT="$HOME/Documents/work/sysroot" \
+-DTARGET=arm-linux-gnueabihf \
+-DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
+-DLIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8" \
+-DLIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf" \
+-DCMAKE_OSX_SYSROOT=/Users/ymmtny/Documents/work/sysroot \
+$BASEDIR/.
+
+
+#-DCMAKE_SYSTEM_NAME=linux \
+#-DCMAKE_SYSTEM_PROCESSOR=arm \

@@ -95,7 +95,7 @@ set ( C_SRCS
 
 set_source_files_properties(
     ${C_SRCS} PROPERTIES COMPILE_FLAGS 
-    " -fPIC")
+    " -fPIC -v")
 
 if(WIN32)
     enable_language(RC)

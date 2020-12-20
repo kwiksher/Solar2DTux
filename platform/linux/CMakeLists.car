@@ -47,6 +47,12 @@ add_definitions(--sysroot=${SYSROOT})
 add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
+add_definitions(-isystem ${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include/)
+add_definitions(-isystem ${SYSROOT}/usr/include/c++/8)
+add_definitions(-isystem ${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8)
+
+#add_definitions(-I${SYSROOT}/usr/include)
+
 add_definitions(-O2)
 add_definitions(-Wfatal-errors)
 add_definitions(-std=c++11)
@@ -87,7 +93,7 @@ set ( CXX_SRCS
 
 set_source_files_properties(
     ${CXX_SRCS} PROPERTIES COMPILE_FLAGS 
-    " -O2 -Wfatal-errors -std=c++11 -g3 -Wno-narrowing")
+    " -O2 -Wfatal-errors -std=c++11 -g3 -Wno-narrowing -v")
 
 if(WIN32)
     enable_language(RC)
