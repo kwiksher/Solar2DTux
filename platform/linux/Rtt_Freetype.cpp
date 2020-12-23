@@ -118,7 +118,7 @@ namespace Rtt
 
 		// default fallback font
 		std::string defaultFontPath(LinuxFileUtils::GetStartupPath(NULL));
-		defaultFontPath.append("/Resources/FreeSans.ttf");
+		defaultFontPath.append("/Resources/fonts/FreeSans.ttf");
 		const char* defaultFontFile = defaultFontPath.c_str();
 
 		if (fontname.size() == 0)

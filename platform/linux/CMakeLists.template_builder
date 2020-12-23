@@ -8,7 +8,7 @@ project(Solar2DBuilder)
 # This setting is useful for providing JSON file used by CodeLite for code completion
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(CONFIGURATION_NAME "x64Template")
+set(CONFIGURATION_NAME ${CONFIG_NAME})
 
 set(CL_WORKSPACE_DIRECTORY .)
 # Set default locations
