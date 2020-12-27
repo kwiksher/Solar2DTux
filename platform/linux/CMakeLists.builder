@@ -58,7 +58,7 @@ include_directories(
     ../../external/tremor/Tremor
     ../../modules/simulator
     ../../librtt/Core
-    ./curl-7.61.0/include
+    ./include
     ./wx/include
     ../android
     ../../external/hmac
@@ -73,7 +73,11 @@ add_definitions(--sysroot=${SYSROOT})
 add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
-add_definitions(-std=c++11)
+add_definitions(-isystem ${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include/)
+add_definitions(-isystem ${SYSROOT}/usr/include/c++/8)
+add_definitions(-isystem ${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8)
+
+#add_definitions(-std=c++11)
 add_definitions(-O2)
 add_definitions(-g3)
 add_definitions(-Wfatal-errors)
@@ -753,14 +757,13 @@ endif(WIN32)
 add_executable(Solar2DBuilder ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DBuilder ${LINK_OPTIONS})
 
-target_link_libraries(Solar2DConsole
+target_link_libraries(Solar2DBuilder
     libcryptopp.a 
     libcurl.a
     libssl.a
     libcrypto.a
     libwx_gtk3u-3.1.a
     libwx_gtk3u_gl-3.1.a
-    libwxtiff-3.1.a
     libwxregexu-3.1.a
 )
 

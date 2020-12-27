@@ -12,9 +12,10 @@ cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
 -DLIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8" \
 -DLIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf" \
 -DCMAKE_OSX_SYSROOT=/Users/ymmtny/Documents/work/sysroot \
--DCONFIG_NAME="armTemplate" \
+-DCONFIG_NAME="Release" \
 $BASEDIR/.
 
+#-DCONFIG_NAME="template-arm" \
 
 #-DCMAKE_SYSTEM_NAME=linux \
 #-DCMAKE_SYSTEM_PROCESSOR=arm \

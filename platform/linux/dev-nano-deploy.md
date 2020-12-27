@@ -36,6 +36,12 @@
 
 		Mac simualtor uses the template to build a linux app
 
+		```
+		cp Solar2DTemplate template_x64 && tar -czf template_x64.tgz template_x64
+		mv template_x64.tgz ../../Solar2DSimulator/Resources/templates/template_x64.tgz
+		rm template_x64
+		```
+
 	* CMakeLists.builder (CMakeLists.template_builder is same)
 
 		builds an app in command line without simulator
@@ -44,8 +50,56 @@
 		* -DRtt_SIMULATOR
 		* -DCORONABUILDER_LINUX
 
+	* (TODO) plat-form_tools
+	
+		platform_tools.tgz == Solar2DBuilder
+
+		> platform_tools.tgz is extracted with install.sh to ~/.local/share/
+
+		* linux/bin
+			* lua/luac
+				* from external/lua-5.1.3
+					* make linux
+					* make install INSTALL_TOP=$(pwd)/../../bin/linux/bin
+						* sudo apt-get install libreadline-dev 
+			* Solar2DBuilder
+
+		* shared
+			* bin/*.lua
+				* from bin
+				* from bin/shared
+			* include		
+				* from librtt/Corona/*.h
+				* from Products/Debug/usr/local/include
+			* resouce
+				* from platfrom/resources
+
+		```
+
+		```
+
+		<img src="./img/2020-12-27-20-06-01.png" >
+
+
+	* (TODO)CNakeLists.plugin-source-zip
+
+		zip plugin 
+
+		* https://github.com/coronalabs/plugins-source-zip
+		* https://github.com/DannyGlover/plugins-source-zip 
+			* linux
+		
+
+	* (TODO)CNakeLists.plugin-TinyFileDialogs-Plugin
+
 ---
 ## Binaries & Resouces
+
+packages
+* amd64
+* arm64
+
+content
 
 * Solar2DConsole
 * Solar2DSimulator
