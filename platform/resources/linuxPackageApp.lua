@@ -824,7 +824,7 @@ function linuxPackageApp(args)
 	debugBuildProcess = args.debugBuildProcess
 
 	local template = args.templateLocation
-	local templateArm = template
+	--local templateArm = template
 
 	-- read settings
 	local buildSettingsFile = pathJoin(args.srcDir, 'build.settings')
@@ -844,7 +844,7 @@ function linuxPackageApp(args)
 		end
 	else
 		local startTime = os.time()
-		templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
+		--templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
 		printf("%s build started", linuxBuilderPrefx)
 		--print(json.prettify(args))
 		--printf("%s template: %s", linuxBuilderPrefx, getLastPathComponent(args.templateLocation))
@@ -870,7 +870,7 @@ function linuxPackageApp(args)
 		lfs.mkdir(pluginExtractDir)
 		local templateFilename = getLastPathComponent(template);
 
-		local rc = makeApp('x86-64', linuxAppFolder, template, args, templateFilename:sub(1, templateFilename:len() - 4))
+		local rc = makeApp(args.arch, linuxAppFolder, template, args, templateFilename:sub(1, templateFilename:len() - 4))
 
 		if (rc ~= nil) then
 			return rc

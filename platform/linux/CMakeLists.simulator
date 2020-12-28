@@ -78,12 +78,14 @@ add_definitions(-isystem ${SYSROOT}/usr/include/c++/8)
 add_definitions(-isystem ${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8)
 
 # add_definitions(-std=c++11)
-add_definitions(-O2)
+add_definitions(-O0)
+#add_definitions(-O2)
 add_definitions(-g3)
 add_definitions(-Wfatal-errors)
 add_definitions(-Wno-narrowing)
 add_definitions(-Wall)
 add_definitions(
+    -D_DEBUG
     -DRtt_LUA_COMPILER
     -DRtt_SIMULATOR
     -DLUA_DL_DLOPEN

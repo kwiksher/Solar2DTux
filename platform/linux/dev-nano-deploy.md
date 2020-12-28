@@ -30,16 +30,16 @@
 
 		* -DRtt_LUA_COMPILER
 
-		* 	template_x64.tgz
+		* 	template_arm.tgz
 
 		> mv $(ProjectName) template_x64 && tar -czf template_x64.tgz template_x64
 
 		Mac simualtor uses the template to build a linux app
 
 		```
-		cp Solar2DTemplate template_x64 && tar -czf template_x64.tgz template_x64
-		mv template_x64.tgz ../../Solar2DSimulator/Resources/templates/template_x64.tgz
-		rm template_x64
+		cp Solar2DTemplate template_arm && tar -czf template_arm.tgz template_arm
+		mv template_arm.tgz ../../Solar2DSimulator/Resources/templates/template_arm.tgz
+		rm template_arm
 		```
 
 	* CMakeLists.builder (CMakeLists.template_builder is same)
@@ -232,3 +232,13 @@ https://forums.solar2d.com/t/command-line-build-documentation-macos/348547
 
 	./Solar2DBuilder build --lua "/home/danny/Documents/Projects/Solar2D/SampleCode/Graphics/Fishies/args.lua"`
 
+---
+## Test
+
+* builder
+	* Solar2DBuilder/test
+		* test.sh
+
+
+../src/common/socket.cpp(238): assert "!m_socket->m_writing" failed in wxSocketWriteGuard(): write reentrancy?
+<img src="./img/2020-12-28-18-57-06.png" width="600">

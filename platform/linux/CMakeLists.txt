@@ -15,13 +15,13 @@ project(Solar2D)
 
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.console_)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.template_player)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.template_player)
 
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.lua)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.car)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.builder)
 
-#include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.simulator)
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.simulator)
 
 # Debug
 
