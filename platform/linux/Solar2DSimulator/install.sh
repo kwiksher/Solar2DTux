@@ -58,7 +58,7 @@ fi
 # remove the existing solar platform tools directory
 rm -rf ~/.local/share/Corona
 # extract the solar platform tools directory
-tar -xzf Resources/platform_tools.tgz -C ~/.local/share/
+tar -xzf Resources/templates/platform_tools.tgz -C ~/.local/share/
 # move Solar2DBuilder into the platform tools directory
 cp -rf Solar2DBuilder ~/.local/share/Corona/Native/Corona/lin/bin/
 
@@ -125,8 +125,9 @@ elif [[ $USE_PACMAN == 1 ]]; then
 fi
 
 # copy wx web extensions
-sudo mkdir -p /usr/local/lib/wx/3.1.3/web-extensions/
-sudo cp -rf webkit2_extu-3.1.3.so /usr/local/lib/wx/3.1.3/web-extensions/webkit2_extu-3.1.3.so
+WX_VERSION=3.1.4
+sudo mkdir -p /usr/local/lib/wx/$(WX_VERSION)/web-extensions/
+sudo cp -rf webkit2_extu-$(WX_VERSION).so /usr/local/lib/wx/$(WX_VERSION)/web-extensions/webkit2_extu-$(WX_VERSION).so
 
 # move the desktop file
 sudo cp -rf Resources/Solar2DTux.desktop /usr/share/applications/
