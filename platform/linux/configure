@@ -2,19 +2,37 @@
 
 BASEDIR=$(dirname "$0")
 
-cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
--DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
--DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
--DBASE=/usr/local/opt/llvm/bin \
--DSYSROOT="$HOME/Documents/work/sysroot" \
--DTARGET=arm-linux-gnueabihf \
--DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
--DLIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8" \
--DLIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf" \
--DCMAKE_OSX_SYSROOT=/Users/ymmtny/Documents/work/sysroot \
--DCONFIG_NAME="Release" \
-$BASEDIR/.
+#if [[ $("$1") -eq "arm-linux-gnueabihf" ]] ; then
 
+	# cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
+	# -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+	# -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+	# -DBASE=/usr/local/opt/llvm/bin \
+	# -DSYSROOT="$HOME/Documents/work/sysroot" \
+	# -DTARGET=arm-linux-gnueabihf \
+	# -DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
+	# -DLIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8" \
+	# -DLIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf" \
+	# -DCMAKE_OSX_SYSROOT=/Users/ymmtny/Documents/work/sysroot \
+	# -DCONFIG_NAME="Release" \
+	# $BASEDIR/.
+
+#else
+	cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
+	-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+	-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+	-DBASE=/usr/local/opt/llvm/bin \
+	-DSYSROOT="$HOME/Documents/work/sysroot_nano" \
+	-DTARGET=aarch64-linux-gnu \
+	-DISYSTEM_1=${SYSROOT}/usr/include/c++/7 \
+	-DISYSTEM_2=${SYSROOT}/usr/include/aarch64-linux-gnu/c++/7 \
+	-DTOOLCHAIN="/Users/ymmtny/Documents/work/gcc-4.8.5-aarch64" \
+	-DLIB_1="${SYSROOT}/usr/lib/gcc/aarch64-linux-gnu/7" \
+	-DLIB_2="${SYSROOT}/usr/lib/aarch64-linux-gnu" \
+	-DCMAKE_OSX_SYSROOT=/Users/ymmtny/Documents/work/sysroot_nano \
+	-DCONFIG_NAME="Release" \
+	$BASEDIR/.
+#fi
 #-DCONFIG_NAME="template-arm" \
 
 #-DCMAKE_SYSTEM_NAME=linux \

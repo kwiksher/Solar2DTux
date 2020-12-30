@@ -127,8 +127,8 @@ endif(WIN32)
 link_directories(
     .
     ./lib
-    ${SYSROOT}/usr/lib/gcc/${TARGET}/8
-    ${SYSROOT}/usr/lib/arm-linux-gnueabihf
+    ${LIB_1}
+    ${LIB_2}
 )
 
 # Define the C sources

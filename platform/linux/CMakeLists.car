@@ -47,9 +47,9 @@ add_definitions(--sysroot=${SYSROOT})
 add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
-add_definitions(-isystem ${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include/)
-add_definitions(-isystem ${SYSROOT}/usr/include/c++/8)
-add_definitions(-isystem ${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8)
+add_definitions(-isystem ${SYSROOT}/usr/lib/${TARGET}/glib-2.0/include/)
+add_definitions(-isystem ${ISYSTEM_1})
+add_definitions(-isystem ${ISYSTEM_2})
 
 #add_definitions(-I${SYSROOT}/usr/include)
 
@@ -78,8 +78,8 @@ endif(WIN32)
 link_directories(
     .
     ./lib
-    ${SYSROOT}/usr/lib/gcc/${TARGET}/8
-    ${SYSROOT}/usr/lib/arm-linux-gnueabihf
+    ${LIB_1}
+    ${LIB_2}
 )
 
 # Define the CXX sources
