@@ -122,12 +122,20 @@ endif(WIN32)
 add_executable(Solar2DConsole ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DConsole ${LINK_OPTIONS} )
 
+# target_link_libraries(Solar2DConsole
+#     libwx_gtk3u-3.1.a
+#     libwx_gtk3u_gl-3.1.a
+#     libwxregexu-3.1.a
+#     libwxscintilla-3.1.a
+#     libwxtiff-3.1.a
+# )
+
 target_link_libraries(Solar2DConsole
-    libwx_gtk3u-3.1.a
-    libwx_gtk3u_gl-3.1.a
-    libwxregexu-3.1.a
-    libwxscintilla-3.1.a
-    libwxtiff-3.1.a
+    libwx_gtk3u-3.1-${TARGET}.a
+    libwx_gtk3u_gl-3.1-${TARGET}.a
+    libwxregexu-3.1-${TARGET}.a
+    libwxscintilla-3.1-${TARGET}.a
+    libwxtiff-3.1-${TARGET}.a
 )
 
 

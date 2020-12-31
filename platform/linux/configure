@@ -26,12 +26,15 @@ BASEDIR=$(dirname "$0")
 	-DTARGET=aarch64-linux-gnu \
 	-DISYSTEM_1=/usr/include/c++/7 \
 	-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7 \
-	-DTOOLCHAIN="$HOME/Documents/work/gcc-4.8.5-aarch64" \
+	-DTOOLCHAIN=$HOME/Documents/work/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu \
 	-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7 \
 	-DLIB_2=/usr/lib/aarch64-linux-gnu \
 	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_nano \
 	-DCONFIG_NAME="Release" \
 	$BASEDIR/.
+
+	# -DTOOLCHAIN="$HOME/Documents/work/gcc-4.8.5-aarch64" \
+
 #fi
 #-DCONFIG_NAME="template-arm" \
 

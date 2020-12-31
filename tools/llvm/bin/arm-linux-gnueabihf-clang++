@@ -22,7 +22,6 @@ exec env LIBPATH="${LIBPATH}" \
         -I "${SYSROOT}/usr/include/freetype2" \
         -I "${SYSROOT}/usr/include/gtk-3.0/unix-print" \
         -I "${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include" \
-        -I "../src/tiff/libtiff" \
         -I "${SYSROOT}/usr/include/gstreamer-1.0" \
         -I "${SYSROOT}/usr/include/webkitgtk-4.0" \
         -I "${SYSROOT}/usr/include/libsoup-2.4" \
@@ -30,6 +29,8 @@ exec env LIBPATH="${LIBPATH}" \
         -rpath "${LIBARMPATH}" \
         --gcc-toolchain="${TOOLCHAIN}" \
         "$@" -fuse-ld=lld
+
+        # -I "../src/tiff/libtiff" \
 
         # -I "${SYSROOT}/usr/include/dbus-1.0" \
         # -I "${SYSROOT}/usr/include/EGL" \
