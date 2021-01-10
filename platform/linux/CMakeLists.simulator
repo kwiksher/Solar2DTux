@@ -74,8 +74,9 @@ add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
 add_definitions(-isystem ${SYSROOT}/usr/lib/${TARGET}/glib-2.0/include/)
-add_definitions(-isystem ${ISYSTEM_1})
-add_definitions(-isystem ${ISYSTEM_2})
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_0})
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_1})
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_2})
 
 #add_definitions(-std=c++11)
 add_definitions(-O0)
@@ -138,8 +139,8 @@ endif(WIN32)
 link_directories(
     .
     ./lib
-    ${LIB_1}
-    ${LIB_2}
+    ${SYSROOT}${LIB_1}
+    ${SYSROOT}${LIB_2}
 )
 
 # Define the C sources
@@ -786,22 +787,31 @@ add_executable(Solar2DSimulator ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DSimulator ${LINK_OPTIONS})
 
 
-target_link_libraries(Solar2DSimulator 
-    -lwx_gtk3u-3.1-aarch64-linux-gnu
-    -lwx_gtk3u_gl-3.1-aarch64-linux-gnu
-    -lwxregexu-3.1-aarch64-linux-gnu
-    )
-
-target_link_libraries(Solar2DSimulator 
+ target_link_libraries(Solar2DSimulator 
     libcryptopp.a 
     libcurl.a 
     libssl.a
     libcrypto.a
-    )
+    -lwx_gtk3u-3.1-aarch64-linux-gnu
+     -lwx_gtk3u_gl-3.1-aarch64-linux-gnu
+     -lwxregexu-3.1-aarch64-linux-gnu
+     -lwebkit2gtk-4.0
+      )
+
+# target_link_libraries(Solar2DSimulator 
+#     libcryptopp.a 
+#     libcurl.a 
+#     libssl.a
+#     libcrypto.a
+#     libwx_gtk3u_gl-3.1.a
+#     libwx_gtk3u-3.1.a
+#     libwxregexu-3.1.a
+#     libwxscintilla-3.1.a
+#     libwxtiff-3.1.a    
+#     -lwebkit2gtk-4.0
+#     )
     
-    # libwx_gtk3u-3.1-aarch64-linux-gnu.a 
-    # libwx_gtk3u_gl-3.1-aarch64-linux-gnu.a
-    # libwxregexu-3.1-aarch64-linux-gnu.a
+#    libwxjpeg-3.1-arm-linux-gnueabihf.a
 
     # Adding PRE_BUILD commands
 # add_custom_command(

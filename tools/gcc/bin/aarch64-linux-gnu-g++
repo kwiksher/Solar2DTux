@@ -1,0 +1,40 @@
+#!/bin/bash
+BASE=/usr/local/aarch64-linux-gnu-gcc/bin
+SYSROOT="$HOME/Documents/work/sysroot_ubuntu"
+TARGET=aarch64-linux-gnu
+TOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc
+LIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}"
+exec env LIBPATH="${LIBPATH}" \
+    "${BASE}/${TARGET}-g++" \
+        --sysroot="${SYSROOT}" \
+        -isysroot "${SYSROOT}" \
+        -isystem "${SYSROOT}/usr/include/c++/7.5.0" \
+        -isystem "${SYSROOT}/usr/include/aarch64-linux-gnu/c++/7.5.0" \
+        -isystem "${SYSROOT}/usr/lib/aarch64-linux-gnu/glib-2.0/include/" \
+        -L"${SYSROOT}/usr/lib/${TARGET}" \
+        -Wl,-rpath="${SYSROOT}/usr/lib/${TARGET}" \
+        -Wl,-rpath-link="${SYSROOT}/usr/lib/${TARGET}" \
+        -v \
+        "$@"
+
+
+#        -I"${SYSROOT}/usr/include" \
+#        -I"${SYSROOT}/usr/include/gtk-3.0" \
+#        -I"${SYSROOT}/usr/include/cairo" \
+#        -I"${SYSROOT}/usr/include/gdk-pixbuf-2.0" \
+#        -I"${SYSROOT}/usr/include/atk-1.0" \
+#        -I"${SYSROOT}/usr/include/cairo" \
+#        -I"${SYSROOT}/usr/include/glib-2.0" \
+#        -I"${SYSROOT}/usr/include/pango-1.0" \
+#        -I"${SYSROOT}/usr/include/freetype2" \
+#        -I"${SYSROOT}/usr/include/gtk-3.0/unix-print" \
+#        -I"${SYSROOT}/usr/lib/aarch64-linux-gnu/glib-2.0/include" \
+#        -I"${SYSROOT}/usr/include/gstreamer-1.0" \
+#        -I"${SYSROOT}/usr/include/webkitgtk-4.0" \
+#        -I"${SYSROOT}/usr/include/libsoup-2.4" \
+#        -L"${LIBPATH}" \
+
+# --target=${TARGET} \
+#        --gcc-toolchain="${TOOLCHAIN}" \
+#        -fuse-ld=lld \
+

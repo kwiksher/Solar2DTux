@@ -1,6 +1,6 @@
 #!/bin/bash
 BASE=/usr/local/opt/llvm/bin
-SYSROOT="$HOME/Documents/work/sysroot"
+SYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf"
 TARGET=arm-linux-gnueabihf
 TOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils"
 LIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8"
@@ -12,6 +12,8 @@ exec env LIBPATH="${LIBPATH}" \
         -isystem "${SYSROOT}/usr/include/c++/8" \
         -isystem "${SYSROOT}/usr/include/arm-linux-gnueabihf/c++/8" \
         -isystem "${SYSROOT}/usr/lib/arm-linux-gnueabihf/glib-2.0/include/" \
+        -I "${SYSROOT}/usr/include" \
+        -I "${SYSROOT}/usr/include/c++/8" \
         -I "${SYSROOT}/usr/include/gtk-3.0" \
         -I "${SYSROOT}/usr/include/cairo" \
         -I "${SYSROOT}/usr/include/gdk-pixbuf-2.0" \

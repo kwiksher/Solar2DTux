@@ -308,3 +308,12 @@ platform/linux/Solar2DBuilder/shared
 2020-12-28-18-57-06.png
 *.core
 platform/linux/lib_
+external/binutils/binutils-2.35.1
+external/gcc
+external/iconv
+binutils-2.35.1.tar.gz
+platform/linux/lib_arm_linux
+platform/linux/lib_raspbian
+tools/binutils/binutils-2.35.1
+tools/gcc/gcc-7.5.0
+gcc-7.5.0.tar.gz

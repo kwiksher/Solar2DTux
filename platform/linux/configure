@@ -8,12 +8,15 @@ BASEDIR=$(dirname "$0")
 	# -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
 	# -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
 	# -DBASE=/usr/local/opt/llvm/bin \
-	# -DSYSROOT="$HOME/Documents/work/sysroot" \
+	# -DSYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf" \
 	# -DTARGET=arm-linux-gnueabihf \
+	# -DISYSTEM_0=/usr/include/c++/8 \
+	# -DISYSTEM_1=/usr/include/arm-linux-gnueabihf \
+	# -DISYSTEM_2=/usr/include/arm-linux-gnueabihf/c++/8 \
 	# -DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
-	# -DLIBPATH="${SYSROOT}/usr/lib/gcc/${TARGET}/8" \
-	# -DLIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf" \
-	# -DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot \
+	# -DLIB_1=/usr/lib/gcc/arm-linux-gnueabihf/8 \
+	# -DLIB_2=/usr/lib/arm-linux-gnueabihf \
+	# -DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_arm-linux-gnueabihf \
 	# -DCONFIG_NAME="Release" \
 	# $BASEDIR/.
 
@@ -22,14 +25,15 @@ BASEDIR=$(dirname "$0")
 	-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
 	-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
 	-DBASE=/usr/local/opt/llvm/bin \
-	-DSYSROOT="$HOME/Documents/work/sysroot_nano" \
+	-DSYSROOT="$HOME/Documents/work/sysroot_ubuntu" \
 	-DTARGET=aarch64-linux-gnu \
-	-DISYSTEM_1=/usr/include/c++/7 \
+	-DISYSTEM_0=/usr/include/c++/7 \
+	-DISYSTEM_1=/usr/include/aarch64-linux-gnu \
 	-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7 \
-	-DTOOLCHAIN=$HOME/Documents/work/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu \
+	-DTOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc \
 	-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7 \
 	-DLIB_2=/usr/lib/aarch64-linux-gnu \
-	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_nano \
+	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_ubuntu \
 	-DCONFIG_NAME="Release" \
 	$BASEDIR/.
 
