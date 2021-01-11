@@ -45,6 +45,11 @@ add_definitions(--sysroot=${SYSROOT})
 add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
+add_definitions(-isystem ${SYSROOT}/usr/lib/${TARGET}/glib-2.0/include/)
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_0})
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_1})
+add_definitions(-isystem ${SYSROOT}${ISYSTEM_2})
+
 add_definitions(-O2)
 add_definitions(-g3)
 add_definitions(-std=c++11)
@@ -122,21 +127,21 @@ endif(WIN32)
 add_executable(Solar2DConsole ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DConsole ${LINK_OPTIONS} )
 
-# target_link_libraries(Solar2DConsole
-#     libwx_gtk3u-3.1.a
-#     libwx_gtk3u_gl-3.1.a
-#     libwxregexu-3.1.a
-#     libwxscintilla-3.1.a
-#     libwxtiff-3.1.a
-# )
-
 target_link_libraries(Solar2DConsole
-    libwx_gtk3u-3.1-${TARGET}.a
-    libwx_gtk3u_gl-3.1-${TARGET}.a
-    libwxregexu-3.1-${TARGET}.a
-    libwxscintilla-3.1-${TARGET}.a
-    libwxtiff-3.1-${TARGET}.a
+    libwx_gtk3u-3.1.a
+    libwx_gtk3u_gl-3.1.a
+    libwxregexu-3.1.a
+    libwxscintilla-3.1.a
+    libwxtiff-3.1.a
 )
+
+#target_link_libraries(Solar2DConsole
+#    libwx_gtk3u-3.1-${TARGET}.a
+#    libwx_gtk3u_gl-3.1-${TARGET}.a
+#    libwxregexu-3.1-${TARGET}.a
+#    libwxscintilla-3.1-${TARGET}.a
+#    libwxtiff-3.1-${TARGET}.a
+#)
 
 
 #{{{{ User Code 3

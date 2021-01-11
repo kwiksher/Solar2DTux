@@ -787,30 +787,47 @@ add_executable(Solar2DSimulator ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DSimulator ${LINK_OPTIONS})
 
 
- target_link_libraries(Solar2DSimulator 
+# target_link_libraries(Solar2DSimulator 
+#    libcryptopp.a 
+#    libcurl.a 
+#    libssl.a
+#    libcrypto.a
+#    libwxregexu-3.1-aarch64-linux-gnu.a
+#    libwxscintilla-3.1-aarch64-linux-gnu.a
+#    libwxtiff-3.1-aarch64-linux-gnu.a
+#    -lwx_gtk3u-3.1-aarch64-linux-gnu
+#    -lwx_gtk3u_gl-3.1-aarch64-linux-gnu
+#    -lwebkit2gtk-4.0
+#    )
+
+
+target_link_libraries(Solar2DSimulator 
     libcryptopp.a 
     libcurl.a 
     libssl.a
     libcrypto.a
-    -lwx_gtk3u-3.1-aarch64-linux-gnu
-     -lwx_gtk3u_gl-3.1-aarch64-linux-gnu
-     -lwxregexu-3.1-aarch64-linux-gnu
-     -lwebkit2gtk-4.0
-      )
+    libwx_gtk3u_gl-3.1.a
+    libwx_gtk3u-3.1.a
+    libwxregexu-3.1.a
+    libwxscintilla-3.1.a
+    libwxtiff-3.1.a
+    -lwebkit2gtk-4.0
+    )
 
-# target_link_libraries(Solar2DSimulator 
-#     libcryptopp.a 
-#     libcurl.a 
-#     libssl.a
-#     libcrypto.a
-#     libwx_gtk3u_gl-3.1.a
-#     libwx_gtk3u-3.1.a
-#     libwxregexu-3.1.a
-#     libwxscintilla-3.1.a
-#     libwxtiff-3.1.a    
-#     -lwebkit2gtk-4.0
-#     )
-    
+#target_link_libraries(Solar2DSimulator 
+#    libcryptopp.a 
+#    libcurl.a 
+#    libssl.a
+#    libcrypto.a
+#    libwx_gtk3u_gl-3.1-aarch64-linux-gnu.a
+#    libwx_gtk3u-3.1-aarch64-linux-gnu.a
+#    libwxjpeg-3.1-aarch64-linux-gnu.a
+#    libwxregexu-3.1-aarch64-linux-gnu.a
+#    libwxscintilla-3.1-aarch64-linux-gnu.a
+#    libwxtiff-3.1-aarch64-linux-gnu.a
+#    -lwebkit2gtk-4.0
+#    )
+
 #    libwxjpeg-3.1-arm-linux-gnueabihf.a
 
     # Adding PRE_BUILD commands

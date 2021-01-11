@@ -29,10 +29,10 @@ exec env LIBPATH="${LIBPATH}" \
         -rpath "${LIBARMPATH}" \
         -L"${LIBPATH}" \
         -fuse-ld=lld \
+        --gcc-toolchain="${TOOLCHAIN}" \
         -v \
         "$@"
 
-#        --gcc-toolchain="${TOOLCHAIN}" \
 
 
 #        -I "../src/tiff/libtiff" \
