@@ -242,3 +242,5 @@ https://forums.solar2d.com/t/command-line-build-documentation-macos/348547
 
 ../src/common/socket.cpp(238): assert "!m_socket->m_writing" failed in wxSocketWriteGuard(): write reentrancy?
 <img src="./img/2020-12-28-18-57-06.png" width="600">
+
+
