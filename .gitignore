@@ -347,4 +347,3 @@ external/curl/build-for-corona.sh
 platform/linux/CMakeFiles/
 platform/linux/cmake_install.cmake
 platform/linux/CMakeCache.txt
-platform/linux/wx/
