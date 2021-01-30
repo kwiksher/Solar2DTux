@@ -40,9 +40,9 @@ include_directories(
 
 # Compiler options
 add_definitions(-isysroot "${SYSROOT}")
-add_definitions(--target=${TARGET})
+#add_definitions(--target=${TARGET})
 add_definitions(--sysroot=${SYSROOT})
-add_definitions(--gcc-toolchain=${TOOLCHAIN})
+#add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
 add_definitions(-isystem ${SYSROOT}/usr/lib/${TARGET}/glib-2.0/include/)
@@ -77,7 +77,7 @@ add_definitions(
 
 
 # Linker options
-set(LINK_OPTIONS -s -v --sysroot=${SYSROOT} --target=${TARGET} --gcc-toolchain=${TOOLCHAIN} -fuse-ld=lld)
+set(LINK_OPTIONS -s -v --sysroot=${SYSROOT} -Wl,-rpath=${SYSROOT}${LIB_3})    
 set(LINK_OPTIONS ${LINK_OPTIONS} -rdynamic -lGL -lopenal -lgdk-3 -lpangocairo-1.0 -lgthread-2.0 -pthread -lX11 -lXxf86vm -lSM -lgtk-3 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lXtst -lpangoft2-1.0 -lpango-1.0 -lfontconfig -lfreetype -lpng -lz -lexpat -ljpeg -ldl -lm -lwebkit2gtk-4.0 -ljavascriptcoregtk-4.0 -lgstreamer-1.0 -lgstvideo-1.0)
 
 
@@ -127,21 +127,21 @@ endif(WIN32)
 add_executable(Solar2DConsole ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DConsole ${LINK_OPTIONS} )
 
-target_link_libraries(Solar2DConsole
-    libwx_gtk3u-3.1.a
-    libwx_gtk3u_gl-3.1.a
-    libwxregexu-3.1.a
-    libwxscintilla-3.1.a
-    libwxtiff-3.1.a
-)
-
 #target_link_libraries(Solar2DConsole
-#    libwx_gtk3u-3.1-${TARGET}.a
-#    libwx_gtk3u_gl-3.1-${TARGET}.a
-#    libwxregexu-3.1-${TARGET}.a
-#    libwxscintilla-3.1-${TARGET}.a
-#    libwxtiff-3.1-${TARGET}.a
+#    libwx_gtk3u-3.1.a
+#    libwx_gtk3u_gl-3.1.a
+#    libwxregexu-3.1.a
+#    libwxscintilla-3.1.a
+#    libwxtiff-3.1.a
 #)
+
+target_link_libraries(Solar2DConsole
+    libwx_gtk3u-3.1-${TARGET}.a
+    libwx_gtk3u_gl-3.1-${TARGET}.a
+    libwxregexu-3.1-${TARGET}.a
+    libwxscintilla-3.1-${TARGET}.a
+    libwxtiff-3.1-${TARGET}.a
+)
 
 
 #{{{{ User Code 3
