@@ -32,8 +32,10 @@ rsync -rzLR --safe-links \
 	export CC=/usr/local/bin/gcc-7 
 	export LD=/usr/local/bin/gcc-7
 
-	export PREFIX="/usr/local/arm-linux-gnueabihf"
-	export TARGET=arm-linux-gnueabihf
+	#export PREFIX="/usr/local/arm-linux-gnueabihf"
+	#export TARGET=arm-linux-gnueabihf
+	export PREFIX="/usr/local/aarch64-linux-gnu
+	export TARGET=aarch64-linux-gnu
 	export PATH="$PREFIX/bin:$PATH"
 
 	# binutils
@@ -64,7 +66,7 @@ rsync -rzLR --safe-links \
 	tar xf gcc-7.5.0.tar.gz
 	mkdir gcc-build
 	cd gcc-build
-	../gcc-5.3.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --disable-libssp --enable-languages=c --without-headers --with-gmp=/usr/local --with-mpfr=/usr/local --with-mpfr=/usr/local --with-libiconv-prefix=/usr/local
+	../gcc-7.5.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --disable-libssp --enable-languages=c --without-headers --with-gmp=/usr/local --with-mpfr=/usr/local --with-mpfr=/usr/local --with-libiconv-prefix=/usr/local
 	make all-gcc 
 	make all-target-libgcc 
 	sudo make install-gcc 
