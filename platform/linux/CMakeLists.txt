@@ -13,7 +13,7 @@ project(Solar2D)
 #   template_simulator w/o -DRtt_SIMULATOR and then tar -czf template_x64.tgz 
 
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.console)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.console)
 
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.template_player)
 
@@ -21,7 +21,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.console)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.car)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.builder)
 
-#include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.simulator)
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.simulator)
 
 # Debug
 

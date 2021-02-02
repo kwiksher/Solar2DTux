@@ -4,38 +4,38 @@ BASEDIR=$(dirname "$0")
 
 #if [[ $("$1") -eq "arm-linux-gnueabihf" ]] ; then
 
-	# cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
-	# -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
-	# -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
-	# -DBASE=/usr/local/opt/llvm/bin \
-	# -DSYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf" \
-	# -DTARGET=arm-linux-gnueabihf \
-	# -DISYSTEM_0=/usr/include/c++/8 \
-	# -DISYSTEM_1=/usr/include/arm-linux-gnueabihf \
-	# -DISYSTEM_2=/usr/include/arm-linux-gnueabihf/c++/8 \
-	# -DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
-	# -DLIB_1=/usr/lib/gcc/arm-linux-gnueabihf/8 \
-	# -DLIB_2=/usr/lib/arm-linux-gnueabihf \
-	# -DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_arm-linux-gnueabihf \
-	# -DCONFIG_NAME="Release" \
-	# $BASEDIR/.
-
-#else
 	cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
 	-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
 	-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
 	-DBASE=/usr/local/opt/llvm/bin \
-	-DSYSROOT="$HOME/Documents/work/sysroot_ubuntu" \
-	-DTARGET=aarch64-linux-gnu \
-	-DISYSTEM_0=/usr/include/c++/7 \
-	-DISYSTEM_1=/usr/include/aarch64-linux-gnu \
-	-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7.5.0 \
-	-DTOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc \
-	-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7.5.0 \
-	-DLIB_2=/usr/lib/aarch64-linux-gnu \
-	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_ubuntu \
+	-DSYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf" \
+	-DTARGET=arm-linux-gnueabihf \
+	-DISYSTEM_0=/usr/include/c++/8 \
+	-DISYSTEM_1=/usr/include/arm-linux-gnueabihf \
+	-DISYSTEM_2=/usr/include/arm-linux-gnueabihf/c++/8 \
+	-DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
+	-DLIB_1=/usr/lib/gcc/arm-linux-gnueabihf/8 \
+	-DLIB_2=/usr/lib/arm-linux-gnueabihf \
+	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_arm-linux-gnueabihf \
 	-DCONFIG_NAME="Release" \
 	$BASEDIR/.
+
+#else
+	#cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
+	#-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+	#-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+	#-DBASE=/usr/local/opt/llvm/bin \
+	#-DSYSROOT="$HOME/Documents/work/sysroot_ubuntu" \
+	#-DTARGET=aarch64-linux-gnu \
+	#-DISYSTEM_0=/usr/include/c++/7 \
+	#-DISYSTEM_1=/usr/include/aarch64-linux-gnu \
+	#-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7.5.0 \
+	#-DTOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc \
+	#-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7.5.0 \
+	#-DLIB_2=/usr/lib/aarch64-linux-gnu \
+	#-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_ubuntu \
+	#-DCONFIG_NAME="Release" \
+	#$BASEDIR/.
 
 	# -DTOOLCHAIN="$HOME/Documents/work/gcc-4.8.5-aarch64" \
 
