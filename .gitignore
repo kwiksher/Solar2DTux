@@ -451,3 +451,5 @@ external/wx/wxWidgets-3.1.4/gtk-build-win/wx/setup.h
 external/wx/wxWidgets-3.1.4/gtk-build-win/wx-config
 external/wx/wxWidgets-3.1.4/gtk-build-win/regfree.s
 external/wx/wxWidgets-3.1.4/gtk-build-win/regcomp.bc
+external/wx/wxWidgets-3.1.4/gtk-build-win-stretch/
+external/wx/wxWidgets-3.1.4/gtk-build-win-stretch-so/

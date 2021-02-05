@@ -1,16 +1,17 @@
 #!/bin/bash
-BASE=/usr/local/opt/llvm/bin
-SYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf"
+BASE=/usr/bin
+SYSROOT="/mnt/e/Ubuntu/sysroot_arm32v7"
 TARGET=arm-linux-gnueabihf
-TOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils"
-LIBPATH="${SYSROOT}/usr/lib/gcc/arm-linux-gnueabihf/8"
+CPLUS=7.5.0
+TOOLCHAIN="/usr/bin/${TARGET}-gcc"
+LIBPATH="${SYSROOT}/usr/lib/gcc/arm-linux-gnueabihf/${CPLUS}"
 LIBARMPATH="${SYSROOT}/usr/lib/arm-linux-gnueabihf"
 
 exec env LD_LIBRARY_PATH=="${LIBPATH}" \
     "${BASE}/clang" --target=${TARGET} \
         --sysroot="${SYSROOT}" \
         -isysroot "${SYSROOT}" \
-        -I "${SYSROOT}/usr/include/c++/8" \
+        -I "${SYSROOT}/usr/include/c++/${CPLUS}" \
         -I "${SYSROOT}/usr/include/gtk-3.0" \
         -I "${SYSROOT}/usr/include/cairo" \
         -I "${SYSROOT}/usr/include/gdk-pixbuf-2.0" \

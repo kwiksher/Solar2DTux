@@ -178,10 +178,12 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.console)
 --- 
 ## Cross Compile: Dependencies of Solar2D
 
+```
 BASE=$HOME/Documents/work/Solar2DTux/tools/llvm/bin
 export CXX="${BASE}/${TARGET}-clang++" 
 export CC="${BASE}/${TARGET}-clang" 
 export CXXFLAGS="-DNDEBUG -O2 -g3  -std=c++11"
+```
 
 * CryptoPP
 

@@ -73,6 +73,7 @@ add_definitions(--sysroot=${SYSROOT})
 #add_definitions(--gcc-toolchain=${TOOLCHAIN})
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
+add_definitions(-isystem ${SYSROOT}/usr/include/GL/)
 add_definitions(-isystem ${SYSROOT}/usr/lib/${TARGET}/glib-2.0/include/)
 add_definitions(-isystem ${SYSROOT}${ISYSTEM_0})
 add_definitions(-isystem ${SYSROOT}${ISYSTEM_1})
@@ -128,6 +129,10 @@ add_definitions(
 
 # Linker options
 set(LINK_OPTIONS -s -v --sysroot=${SYSROOT} -Wl,-rpath=${SYSROOT}${LIB_3})    
+#set(LINK_OPTIONS -s -v --sysroot=${SYSROOT} --target=${TARGET} --gcc-toolchain=${TOOLCHAIN} )
+
+#-fuse-ld=lld
+
 set(LINK_OPTIONS ${LINK_OPTIONS} -export-dynamic  -lGL -lopenal -lgdk-3 -lpangocairo-1.0 -lgthread-2.0 -pthread -lX11 -lXxf86vm -lSM -lgtk-3 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lXtst -lpangoft2-1.0 -lpango-1.0 -lfontconfig -lfreetype -lpng -lz -lexpat -ljpeg -ldl -lm -lwebkit2gtk-4.0 -ljavascriptcoregtk-4.0 -lgstreamer-1.0 -lgstvideo-1.0)
 
 
@@ -786,47 +791,19 @@ endif(WIN32)
 add_executable(Solar2DSimulator ${RC_SRCS} ${CXX_SRCS} ${C_SRCS})
 target_link_libraries(Solar2DSimulator ${LINK_OPTIONS})
 
-
 target_link_libraries(Solar2DSimulator 
    libcryptopp.a 
    libcurl.a 
    libssl.a
    libcrypto.a
-   libwxregexu-3.1-aarch64-linux-gnu.a
-   libwxscintilla-3.1-aarch64-linux-gnu.a
-   libwxtiff-3.1-aarch64-linux-gnu.a
-   -lwx_gtk3u-3.1-aarch64-linux-gnu
-   -lwx_gtk3u_gl-3.1-aarch64-linux-gnu
+   libwxregexu-3.1-${TARGET}.a
+   libwxscintilla-3.1-${TARGET}.a
+   libwxtiff-3.1-${TARGET}.a
+   libwx_gtk3u-3.1-${TARGET}.a
+   libwx_gtk3u_gl-3.1-${TARGET}.a
    -lwebkit2gtk-4.0
    )
 
-
-#target_link_libraries(Solar2DSimulator 
-#    libcryptopp.a 
-#    libcurl.a 
-#    libssl.a
-#    libcrypto.a
-#    libwx_gtk3u_gl-3.1.a
-#    libwx_gtk3u-3.1.a
-#    libwxregexu-3.1.a
-#    libwxscintilla-3.1.a
-#    libwxtiff-3.1.a
-#    -lwebkit2gtk-4.0
-#    )
-
-#target_link_libraries(Solar2DSimulator 
-#    libcryptopp.a 
-#    libcurl.a 
-#    libssl.a
-#    libcrypto.a
-#    libwx_gtk3u_gl-3.1-aarch64-linux-gnu.a
-#    libwx_gtk3u-3.1-aarch64-linux-gnu.a
-#    libwxjpeg-3.1-aarch64-linux-gnu.a
-#    libwxregexu-3.1-aarch64-linux-gnu.a
-#    libwxscintilla-3.1-aarch64-linux-gnu.a
-#    libwxtiff-3.1-aarch64-linux-gnu.a
-#    -lwebkit2gtk-4.0
-#    )
 
 #    libwxjpeg-3.1-arm-linux-gnueabihf.a
 

@@ -1,68 +1,49 @@
 #!/usr/bin/env bash
 
-#BASEDIR=$(dirname "$0")
 BASEDIR=$(cd $(dirname $0); pwd)
 echo $BASEDIR
 
-#if [[ $("$1") -eq "arm-linux-gnueabihf" ]] ; then
+BASE=/usr/bin
+#BASE=/home/tux/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin
+#BASE=/home/tux/pitools/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
+TARGET=arm-linux-gnueabihf
+CPLUS=7.5.0
+#CPLUS=8
 
-	# cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
-	# -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
-	# -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
-	# -DBASE=/usr/local/opt/llvm/bin \
-	# -DSYSROOT="$HOME/Documents/work/sysroot_arm-linux-gnueabihf" \
-	# -DTARGET=arm-linux-gnueabihf \
-	# -DISYSTEM_0=/usr/include/c++/8 \
-	# -DISYSTEM_1=/usr/include/arm-linux-gnueabihf \
-	# -DISYSTEM_2=/usr/include/arm-linux-gnueabihf/c++/8 \
-	# -DTOOLCHAIN="/usr/local/opt/arm-linux-gnueabihf-binutils" \
-	# -DLIB_1=/usr/lib/gcc/arm-linux-gnueabihf/8 \
-	# -DLIB_2=/usr/lib/arm-linux-gnueabihf \
-	# -DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_arm-linux-gnueabihf \
-	# -DCONFIG_NAME="Release" \
-	# $BASEDIR/.
 
-#else
+#	-DCMAKE_CXX_COMPILER="${BASE}/clang++" \
+#	-DCMAKE_C_COMPILER="${BASE}/clang" \
 
-	BASE=/home/tux/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin
-	TARGET=aarch64-linux-gnu
+cmake -G "Unix Makefiles" \
+	-DCMAKE_CXX_COMPILER="${BASE}/${TARGET}-g++" \
+	-DCMAKE_C_COMPILER="${BASE}/${TARGET}-gcc" \
+	-DSYSROOT="/mnt/e/Ubuntu/sysroot_arm32v7" \
+	-DTARGET=${TARGET} \
+	-DISYSTEM_0=/usr/include/c++/${CPLUS} \
+	-DISYSTEM_1=/usr/include/${TARGET} \
+	-DISYSTEM_2=/usr/include/${TARGET}/c++/${CPLUS} \
+	-DTOOLCHAIN=/usr/bin/${TARGET}-gcc \
+	-DLIB_1=/usr/lib/gcc/${TARGET}/${CPLUS} \
+	-DLIB_2=/usr/lib/${TARGET} \
+	-DLIB_3=/lib/${TARGET} \
+	-DCONFIG_NAME="wsl" \
+	$BASEDIR/.
 
-	cmake -G "Unix Makefiles" \
-		-DCMAKE_CXX_COMPILER="${BASE}/${TARGET}-g++" \
-		-DCMAKE_C_COMPILER="${BASE}/${TARGET}-gcc" \
-		-DBASE=$BASE \
-		-DSYSROOT="/mnt/e/JETSON_NANO_2GB/sysroot_ubuntu" \
-		-DTARGET=aarch64-linux-gnu \
-		-DISYSTEM_0=/usr/include/c++/7 \
-		-DISYSTEM_1=/usr/include/aarch64-linux-gnu \
-		-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7.5.0 \
-		-DTOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc \
-		-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7.5.0 \
-		-DLIB_2=/usr/lib/aarch64-linux-gnu \
-		-DLIB_3=/lib/aarch64-linux-gnu \
-		-DCONFIG_NAME="wsl" \
-		$BASEDIR/.
 
-	#	cmake -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" \
-	#	-DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
-	#	-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
-	#	-DBASE=/usr/local/opt/llvm/bin \
-	#	-DSYSROOT="$HOME/Documents/work/sysroot_ubuntu" \
-	#	-DTARGET=aarch64-linux-gnu \
-	#	-DISYSTEM_0=/usr/include/c++/7 \
-	#	-DISYSTEM_1=/usr/include/aarch64-linux-gnu \
-	#	-DISYSTEM_2=/usr/include/aarch64-linux-gnu/c++/7.5.0 \
-	#	-DTOOLCHAIN=/usr/local/aarch64-linux-gnu-gcc \
-	#	-DLIB_1=/usr/lib/gcc/aarch64-linux-gnu/7.5.0 \
-	#	-DLIB_2=/usr/lib/aarch64-linux-gnu \
-	#	-DCMAKE_OSX_SYSROOT=$HOME/Documents/work/sysroot_ubuntu \
-	#	-DCONFIG_NAME="Release" \
-	#	$BASEDIR/.
+#BASE=/home/tux/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin
+#TARGET=aarch64-linux-gnu
 
-	# -DTOOLCHAIN="$HOME/Documents/work/gcc-4.8.5-aarch64" \
-
-#fi
-#-DCONFIG_NAME="template-arm" \
-
-#-DCMAKE_SYSTEM_NAME=linux \
-#-DCMAKE_SYSTEM_PROCESSOR=arm \
+#cmake -G "Unix Makefiles" \
+#	-DCMAKE_CXX_COMPILER="${BASE}/${TARGET}-g++" \
+#	-DCMAKE_C_COMPILER="${BASE}/${TARGET}-gcc" \
+#	-DSYSROOT="/mnt/e/Jetson_Nano_2GB/sysroot_ubuntu" \
+#	-DTARGET=${TARGET} \
+#	-DISYSTEM_0=/usr/include/c++/7.5.0 \
+#	-DISYSTEM_1=/usr/include/${TARGET} \
+#	-DISYSTEM_2=/usr/include/${TARGET}/c++/7.5.0 \
+#	-DTOOLCHAIN=/usr/local/${TARGET}-gcc \
+#	-DLIB_1=/usr/lib/gcc/${TARGET}/7.5.0 \
+#	-DLIB_2=/usr/lib/${TARGET} \
+#	-DLIB_3=/lib/${TARGET} \
+#	-DCONFIG_NAME="wsl" \
+#	$BASEDIR/.	
